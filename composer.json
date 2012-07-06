@@ -1,0 +1,38 @@
+{
+    "type": "library",
+    "name": "kherge/Box",
+    "description": "A tool to simplify building PHARs.",
+    "homepage": "http://github.com/kherge/Box",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Herrera",
+            "email": "me@kevingh.com"
+        }
+    ],
+
+    "require": {
+        "php": ">=5.3.3",
+        "symfony/console": "2.1.*",
+        "symfony/finder": "2.1.*",
+        "symfony/process": "2.1.*"
+    },
+
+    "autoload": {
+        "psr-0": {
+            "KevinGH\\Box": "src/lib/"
+        }
+    },
+
+    "config": {
+        "vendor-dir": "src/vendors"
+    },
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+
+    "minimum-stability": "beta"
+}
