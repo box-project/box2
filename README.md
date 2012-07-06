@@ -8,19 +8,19 @@ Box is a library and command line application for simplifying the PHAR creation 
 
 ### As an application
 
-You may download the most recent stable version from the [tags list][tags].
+You may download the PHAR from the [downloads page][downloads].
 
 ### As a library
 
 1. Make sure you have [Composer][Composer] installed.
 2. Add Box to your list of requirements:
 
-    $ php composer.phar require kherge/Box=1.0.*
+    $ php composer.phar require kherge/box=1.0.*
 
 ## Configuration
 
 Please see [this guide][guide] for configuring your application's build process.
 
 [Composer]: http://getcomposer.org/
+[downloads]: https://github.com/kherge/Box/downloads
 [guide]: https://github.com/kherge/Box/wiki/Configuration
-[tags]: https://github.com/kherge/Box/tags
