@@ -1,0 +1,15 @@
+{
+    "alias": "box.phar",
+    "directories": ["src/lib"],
+    "finder": [
+        {
+            "name": "*.php",
+            "exclude": "Tests",
+            "in": "src/vendors"
+        }
+    ],
+    "git-version": "git_version",
+    "main": "bin/box",
+    "output": "box.phar",
+    "stub": true
+}
