@@ -247,4 +247,88 @@ STUB
         {
             $this->replacements = $replacements;
         }
+
+        /**
+         * Signs the PHAR using a private key file.
+         *
+         * @throws InvalidArgumentException If the private key does not exist.
+         * @throws RuntimeException If the public key could not be retrieved.
+         * @param string $file The private key file.
+         * @param string $pass The passhphrase.
+         */
+        public function usePrivateKeyFile($file, $pass = null)
+        {
+            if (false === file_exists($file))
+            {
+                throw new InvalidArgumentException('The private key file does not exist.');
+            }
+
+            if (false === extension_loaded('openssl'))
+            {
+                throw new RuntimeException(sprintf(
+                    'The "openssl" extension is not available.'
+                ));
+            }
+
+            if (false === ($pem = @ file_get_contents($file)))
+            {
+                $error = error_get_last();
+
+                throw new RuntimeException(sprintf(
+                    'The private key file could not be read: %s',
+                    $error['message']
+                ));
+            }
+
+            list($private, $public) = $this->getKeys($pem, $pass);
+
+            $this->setSignatureAlgorithm(self::OPENSSL, $private);
+
+            if (false === @ file_put_contents($this->name . '.pubkey', $public))
+            {
+                $error = error_get_last();
+
+                throw new RuntimeException(sprintf(
+                    'The public key could not be written: %s',
+                    $error['message']
+                ));
+            }
+        }
+
+        /**
+         * Returns the private and public key for the PEM data.
+         *
+         * @throws RuntimeException If the private key could not be exported.
+         * @param string $pem The PEM data.
+         * @param string $pass The passphrase.
+         * @return string The private key.
+         */
+        protected function getKeys($pem, $pass = null)
+        {
+            if (false === ($resource = openssl_pkey_get_private($pem, $pass)))
+            {
+                throw new RuntimeException(sprintf(
+                    'The private key could not be parsed: %s',
+                    openssl_error_string()
+                ));
+            }
+
+            if (false === openssl_pkey_export($resource, $private))
+            {
+                throw new RuntimeException(sprintf(
+                    'The private key could not be exported: %s',
+                    openssl_error_string()
+                ));
+            }
+
+            if (false === ($details = openssl_pkey_get_details($resource)))
+            {
+                throw new RuntimeException(sprintf(
+                    'The details of the private key could not be retrieved: %s',
+                    openssl_error_string()
+                ));
+            }
+
+            return array($private, $details['key']);
+        }
     }

@@ -12,6 +12,7 @@
     namespace KevinGH\Box\Console\Command;
 
     use KevinGH\Box\Console\Application,
+        Phar,
         PHPUnit_Framework_TestCase,
         Symfony\Component\Console\Output\OutputInterface,
         Symfony\Component\Console\Tester\CommandTester,
@@ -116,6 +117,86 @@ EXPECTED
             $this->assertEquals("Success!\n$version", $phar->getOutput());
         }
 
+        public function testExecuteSigned()
+        {
+            if (false === extension_loaded('openssl'))
+            {
+                $this->markTestSkipped('The openssl extension is not available.');
+
+                return;
+            }
+
+            list($private, $public) = $this->createKey($this->dir . '/test.key');
+
+            file_put_contents($this->dir . '/TestClass.php', <<<SOURCE
+<?php
+
+    class TestClass
+    {
+        public static function test()
+        {
+            echo "Success!\nVersion: @package_version@\n";
+        }
+    }
+SOURCE
+            );
+
+            file_put_contents($this->dir . '/main.php', <<<SOURCE
+<?php
+
+    require 'phar://default.phar/TestClass.php';
+
+    TestClass::test();
+SOURCE
+            );
+
+            $version = "Version: @package_version@\n";
+
+            $make = new Process('git init', $this->dir);
+
+            if (0 === $make->run())
+            {
+                $this->command('git add .');
+                $this->command('git commit -a --author="Test <test@test.com>" -m "Adding test files."');
+                $this->command('git tag TEST-999');
+
+                $version = "Version: TEST-999\n";
+            }
+
+            file_put_contents($this->file, utf8_encode(json_encode(array(
+                'git-version' => (false === strpos($version, '@')) ? 'package_version' : null,
+                'files' => 'TestClass.php',
+                'key' => 'test.key',
+                'main' => 'main.php',
+                'stub' => true
+            ))));
+
+            $this->tester->execute(array(
+                'command' => 'create',
+                '--config' => $this->file
+            ), array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            ));
+
+            $this->assertEquals(<<<EXPECTED
+Adding files...
+    - TestClass.php
+
+EXPECTED
+            , $this->tester->getDisplay());
+
+            $phar = new Process('php ' . escapeshellarg($this->dir . '/default.phar'));
+
+            $this->assertEquals(0, $phar->run());
+            $this->assertEquals("Success!\n$version", $phar->getOutput());
+
+            $phar = new Phar($this->dir . '/default.phar');
+
+            $signature = $phar->getSignature();
+
+            $this->assertEquals('OpenSSL', $signature['hash_type']);
+        }
+
         /**
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage The main file does not exist.
@@ -202,5 +283,21 @@ SOURCE
             {
                 throw new RuntimeException("The command failed: $command");
             }
+        }
+
+        private function createKey($file)
+        {
+            $resource = openssl_pkey_new();
+
+            openssl_pkey_export($resource, $key);
+
+            file_put_contents($file, $key);
+
+            $public = openssl_pkey_get_details($resource);
+            $public = $public['key'];
+
+            openssl_pkey_free($resource);
+
+            return array($key, $public);
         }
     }

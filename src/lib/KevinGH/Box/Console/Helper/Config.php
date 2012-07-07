@@ -48,6 +48,8 @@
                 'files' => array(),
                 'finder' => array(),
                 'git-version' => null,
+                'key' => null,
+                'key-pass' => null,
                 'main' => null,
                 'output' => 'default.phar',
                 'replacements' => array(),

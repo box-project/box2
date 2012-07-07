@@ -13,6 +13,7 @@
 
     use InvalidArgumentException,
         KevinGH\Box\Box,
+        Phar,
         RuntimeException,
         Symfony\Component\Console\Command\Command,
         Symfony\Component\Console\Input\InputInterface,
@@ -125,6 +126,16 @@
             }
 
             $box->stopBuffering();
+
+            if ($config['key'])
+            {
+                $box->usePrivateKeyFile($config['key'], $config['key-pass']);
+            }
+
+            else
+            {
+                $box->setSignatureAlgorithm($config['algorithm']);
+            }
         }
 
         /**
@@ -137,11 +148,6 @@
             $config = $this->getHelper('config');
 
             $box = new Box($config['output'], 0, $config['alias']);
-
-            /**
-             * @todo support OpenSSL keys
-             */
-            $box->setSignatureAlgorithm($config['algorithm']);
 
             if ($config['replacements'])
             {
