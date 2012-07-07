@@ -57,6 +57,16 @@
 
             $config->load($config->find($input->getOption('config')));
 
+            if (true === $config['key-pass'])
+            {
+                $dialog = $this->getHelper('dialog');
+
+                if (null === ($config['key-pass'] = $dialog->ask($output, 'Private key password: ')))
+                {
+                    throw new InvalidArgumentException('Your private key password is required for signing.');
+                }
+            }
+
             $box = $this->start();
 
             if ($this->verbose)

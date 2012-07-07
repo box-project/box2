@@ -14,6 +14,7 @@
     use KevinGH\Box\Console\Application,
         Phar,
         PHPUnit_Framework_TestCase,
+        Symfony\Component\Console\Helper\DialogHelper,
         Symfony\Component\Console\Output\OutputInterface,
         Symfony\Component\Console\Tester\CommandTester,
         Symfony\Component\Process\Process;
@@ -126,7 +127,7 @@ EXPECTED
                 return;
             }
 
-            list($private, $public) = $this->createKey($this->dir . '/test.key');
+            list($private, $public) = $this->createKey($this->dir . '/test.key', 'phpunit');
 
             file_put_contents($this->dir . '/TestClass.php', <<<SOURCE
 <?php
@@ -167,9 +168,14 @@ SOURCE
                 'git-version' => (false === strpos($version, '@')) ? 'package_version' : null,
                 'files' => 'TestClass.php',
                 'key' => 'test.key',
+                'key-pass' => true,
                 'main' => 'main.php',
                 'stub' => true
             ))));
+
+            $this->app->getHelperSet()->set($dialog = new Dialog);
+
+            $dialog->setReturn('phpunit');
 
             $this->tester->execute(array(
                 'command' => 'create',
@@ -195,6 +201,25 @@ EXPECTED
             $signature = $phar->getSignature();
 
             $this->assertEquals('OpenSSL', $signature['hash_type']);
+        }
+
+        /**
+         * @expectedException InvalidArgumentException
+         * @expectedExceptionMessage Your private key password is required for signing.
+         */
+        public function testExecuteSignedNoPass()
+        {
+            file_put_contents($this->file, utf8_encode(json_encode(array(
+                'key' => 'test.key',
+                'key-pass' => true
+            ))));
+
+            $this->app->getHelperSet()->set($dialog = new Dialog);
+
+            $this->tester->execute(array(
+                'command' => 'create',
+                '--config' => $this->file
+            ));
         }
 
         /**
@@ -285,11 +310,11 @@ SOURCE
             }
         }
 
-        private function createKey($file)
+        private function createKey($file, $pass = null)
         {
             $resource = openssl_pkey_new();
 
-            openssl_pkey_export($resource, $key);
+            openssl_pkey_export($resource, $key, $pass);
 
             file_put_contents($file, $key);
 
@@ -299,5 +324,20 @@ SOURCE
             openssl_pkey_free($resource);
 
             return array($key, $public);
+        }
+    }
+
+    class Dialog extends DialogHelper
+    {
+        private $return;
+
+        public function ask(OutputInterface $output, $question, $default = null)
+        {
+            return $this->return;
+        }
+
+        public function setReturn($return)
+        {
+            $this->return = $return;
         }
     }
