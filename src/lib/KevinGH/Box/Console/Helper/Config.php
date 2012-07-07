@@ -243,6 +243,19 @@
                 $data = array();
             }
 
+            if (false === empty($data['algorithm']))
+            {
+                if (false === defined('Phar::' . $data['algorithm']))
+                {
+                    throw new InvalidArgumentException(sprintf(
+                        'Invalid algorithm constant: Phar::%s',
+                        $data['algorithm']
+                    ));
+                }
+
+                $data['algorithm'] = constant('Phar::' . $data['algorithm']);
+            }
+
             $this->exchangeArray(array_merge($this->getArrayCopy(), $data));
 
             if (null === $this['base-path'])

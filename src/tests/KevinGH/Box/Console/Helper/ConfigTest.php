@@ -11,7 +11,8 @@
 
     namespace KevinGH\Box\Console\Helper;
 
-    use PHPUnit_Framework_TestCase,
+    use Phar,
+        PHPUnit_Framework_TestCase,
         Symfony\Component\Console\Helper\HelperSet,
         Symfony\Component\Process\Process;
 
@@ -278,6 +279,7 @@
             }
 
             file_put_contents($this->temp . '/box-dist.json', utf8_encode(json_encode(array(
+                'algorithm' => 'SHA256',
                 'output' => 'test.phar',
                 'replacements' => array(
                     'rand' => $rand = rand()
@@ -288,6 +290,7 @@
 
             $this->assertEquals('default.phar', $this->config['alias']);
             $this->assertEquals('test.phar', $this->config['output']);
+            $this->assertEquals(Phar::SHA256, $this->config['algorithm']);
             $this->assertEquals(array(
                 'rand' => $rand,
                 'git_version' => $this->config->getGitCommit()
@@ -301,6 +304,19 @@
             $this->config->load('box.json');
 
             $this->assertEquals('default.phar', $this->config['output']);
+        }
+
+        /**
+         * @expectedException InvalidArgumentException
+         * @expectedExceptionMessage Invalid algorithm constant: Phar::INVALID
+         */
+        public function testLoadInvalidAlgo()
+        {
+            file_put_contents($this->temp . '/box-dist.json', utf8_encode(json_encode(array(
+                'algorithm' => 'INVALID'
+            ))));
+
+            $this->config->load('box-dist.json');
         }
 
         /**
