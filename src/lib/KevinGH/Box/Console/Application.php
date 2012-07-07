@@ -11,7 +11,8 @@
 
     namespace KevinGH\Box\Console;
 
-    use KevinGH\Box\Console\Command,
+    use ErrorException,
+        KevinGH\Box\Console\Command,
         KevinGH\Box\Console\Helper,
         Symfony\Component\Console\Application as _Application;
 
@@ -33,6 +34,14 @@
         public function __construct($name = 'Box', $version = self::VERSION)
         {
             parent::__construct($name, $version);
+
+            set_error_handler(function($code, $message, $file, $line)
+            {
+                if (error_reporting() & $code)
+                {
+                    throw new ErrorException($message, 0, $code, $file, $line);
+                }
+            });
         }
 
         /** {@inheritDoc} */
@@ -41,6 +50,7 @@
             $commands = parent::getDefaultCommands();
 
             $commands[] = new Command\Create;
+            $commands[] = new Command\Verify;
 
             return $commands;
         }

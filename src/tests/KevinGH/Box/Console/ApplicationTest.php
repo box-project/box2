@@ -28,11 +28,25 @@
             $this->assertEquals('@git_version@', $this->app->getVersion());
         }
 
+        /**
+         * @expectedException ErrorException
+         * @expectedExceptionMessage Test error.
+         */
+        public function testErrorHandler()
+        {
+            trigger_error('Test error.', E_USER_ERROR);
+        }
+
         public function testGetDefaultCommands()
         {
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Create',
                 $this->app->find('create')
+            );
+
+            $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Verify',
+                $this->app->find('verify')
             );
         }
 
