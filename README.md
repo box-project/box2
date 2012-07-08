@@ -35,6 +35,10 @@ To verify a PHAR
 
     $ php box.phar verify myPhar.phar
 
+To extract a PHAR
+
+    $ php box.phar extract myPhar.phar --out /path/to/dir
+
 [Composer]: http://getcomposer.org/
 [downloads]: https://github.com/kherge/Box/downloads
 [guide]: https://github.com/kherge/Box/wiki/Configuration
