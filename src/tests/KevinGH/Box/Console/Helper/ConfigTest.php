@@ -11,299 +11,428 @@
 
     namespace KevinGH\Box\Console\Helper;
 
-    use Phar,
-        PHPUnit_Framework_TestCase,
+    use KevinGH\Box\Box,
+        KevinGH\Box\Test\TestCase,
+        RuntimeException,
         Symfony\Component\Console\Helper\HelperSet,
         Symfony\Component\Process\Process;
 
-    class ConfigTest extends PHPUnit_Framework_TestCase
+    class ConfigTest extends TestCase
     {
-        private $config;
+        private $cwd;
         private $dir;
-        private $temp;
 
         protected function setUp()
         {
-            $this->config = new Config;
+            parent::setUp();
 
-            $this->dir = getcwd();
+            if (false === ($this->cwd = getcwd()))
+            {
+                if (isset($_SERVER['PWD']))
+                {
+                    $this->cwd = $_SERVER['PWD'];
+                }
 
-            unlink($this->temp = tempnam(sys_get_temp_dir(), 'bxt'));
+                else
+                {
+                    $process = new Process('cd');
 
-            mkdir($this->temp);
+                    if (0 === $process->run())
+                    {
+                        $this->cwd = trim($process->getOutput());
+                    }
 
-            chdir($this->temp);
+                    else
+                    {
+                        throw new RuntimeException('Could not get current working directory path.');
+                    }
+                }
+            }
+
+            $this->dir = $this->dir();
+
+            chdir($this->dir);
         }
 
         protected function tearDown()
         {
-            chdir($this->dir);
+            chdir($this->cwd);
 
-            rmdir_r($this->temp);
+            parent::tearDown();
+        }
+
+        public function testConstructorDefaults()
+        {
+            $config = new Config;
+
+            $expected = array(
+                'algorithm' => Box::SHA1,
+                'alias' => 'default.phar',
+                'base-path' => null,
+                'directories' => array(),
+                'files' => array(),
+                'finder' => array(),
+                'git-version' => null,
+                'key' => null,
+                'key-pass' => null,
+                'main' => null,
+                'output' => 'default.phar',
+                'replacements' => array(),
+                'stub' => null
+            );
+
+            $this->assertEquals($expected, $config->getArrayCopy());
         }
 
         public function testFindGiven()
         {
-            touch($this->temp . '/test.json');
+            $config = new Config;
 
-            $this->assertEquals($this->temp . '/test.json', $this->config->find('test.json'));
-        }
+            touch($this->dir . '/test.json');
 
-        public function testFindUser()
-        {
-            touch($this->temp . '/box-dist.json');
-            touch($this->temp . '/box.json');
-
-            $this->assertEquals($this->temp . '/box.json', $this->config->find(''));
-        }
-
-        public function testFindDist()
-        {
-            touch($this->temp . '/box-dist.json');
-
-            $this->assertEquals($this->temp . '/box-dist.json', $this->config->find(''));
+            $this->assertEquals($this->dir . '/test.json', $config->find('test.json'));
         }
 
         /**
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage The configuration file does not exist.
          */
-        public function testFindInvalid()
+        public function testFindGivenInvalid()
         {
-            $this->config->find('test.json');
+            $config = new Config;
+
+            $config->find('test.json');
+        }
+
+        public function testFindOverride()
+        {
+            $config = new Config;
+
+            touch($this->dir . '/box.json');
+
+            $this->assertEquals($this->dir . '/box.json', $config->find(null));
+        }
+
+        public function testFindDistribution()
+        {
+            $config = new Config;
+
+            touch($this->dir . '/box-dist.json');
+
+            $this->assertEquals($this->dir . '/box-dist.json', $config->find(null));
         }
 
         /**
          * @expectedException RuntimeException
          * @expectedExceptionMessage No configuration file found.
          */
-        public function testFindNone()
+        public function testFindNotFound()
         {
-            $this->config->find('');
+            $config = new Config;
+
+            $config->find(null);
+        }
+
+        public function testGetCurrentDirGetpwd()
+        {
+            if (false === ($cwd = getcwd()))
+            {
+                $this->markTestSkipped('Unable to acquire current directory path using getcwd().');
+
+                return;
+            }
+
+            $config = new Config;
+
+            $this->assertEquals($cwd, $config->getCurrentDir());
+        }
+
+        public function testGetCurrentDirPWD()
+        {
+            if (false === extension_loaded('runkit'))
+            {
+                $this->markTestSkipped('The "runkit" extension is not available.');
+
+                return;
+            }
+
+            if (false === isset($_SERVER['PWD']))
+            {
+                $_SERVER['PWD'] = '/test/nix/path';
+            }
+
+            $this->redefine('getcwd', '', 'return false;');
+
+            $config = new Config;
+
+            $this->assertEquals($_SERVER['PWD'], $config->getCurrentDir());
+
+            $this->restore('getcwd');
+
+            if ('/test/nix/path' === $_SERVER['PWD'])
+            {
+                unset($_SERVER['PWD']);
+            }
+        }
+
+        /**
+         * @expectedException RuntimeException
+         * @expectedExceptionMessage Could not get current working directory path.
+         */
+        public function testGetCurrentDirFail()
+        {
+            if (false === extension_loaded('runkit'))
+            {
+                $this->markTestSkipped('The "runkit" extension is not available.');
+
+                return;
+            }
+
+            if (isset($_SERVER['PWD']))
+            {
+                $pwd = $_SERVER['PWD'];
+
+                unset($_SERVER['PWD']);
+            }
+
+            $this->redefine('getcwd', '', 'return false;');
+
+            $config = new Config;
+
+            try
+            {
+                $config->getCurrentDir();
+            }
+
+            catch (Exception $exception)
+            {
+            }
+
+            $this->restore('getcwd');
+
+            if (isset($pwd))
+            {
+                $_SERVER['PWD'] = $pwd;
+            }
+
+            if (isset($exception))
+            {
+                throw $exception;
+            }
         }
 
         public function testGetFiles()
         {
-            build_paths(array(
-                $this->temp => array(
-                    'files' => array(
+            $this->tree(array(
+                'files' => array(
+                    'one.php',
+                    'two.jpg',
+                    'three.php'
+                ),
+                'directories' => array(
+                    'one' => array(
                         'one.php',
+                        'two.jpg',
+                        'three.gif'
+                    ),
+                    'two' => array(
                         'one.jpg',
                         'two.php',
-                        'two.jpg'
+                        'three.phtml'
                     ),
-                    'dirs' => array(
-                        'one' => array(
-                            'test.php',
-                            'test.jpg'
-                        ),
-                        'two' => array(
-                            'test.php',
-                            'test.jpg',
-                            'sub' => array(
-                                'test.php',
-                                'test.jpg'
-                            )
-                        )
+                    'three' => array(
+                        'one.png',
+                        'two.jpg',
+                        'three.gif'
+                    )
+                )
+            ), $this->dir);
+
+            $config = new Config(array(
+                'base-path' => $this->dir,
+                'files' => array(
+                    'files/one.php',
+                    'files/three.php'
+                ),
+                'directories' => array(
+                    'directories/one',
+                    'directories/two',
+                    'directories/three'
+                ),
+                'finder' => array(
+                    array(
+                        'name' => '*.php',
+                        'in' => 'directories/one'
                     ),
-                    'finder' => array(
-                        'one' => array(
-                            'finder.php',
-                            'finder.jpg'
-                        ),
-                        'two' => array(
-                            'finder.php',
-                            'finder.php5',
-                            'finder.jpg',
-                            'sub' => array(
-                                'finder.php',
-                                'finder.jpg'
-                            )
-                        ),
-                        'three' => array(
-                            'finder.html',
-                            'finder.jpg',
-                            'finder.php4'
+                    array(
+                        'name' => array('*.php', '*.phtml'),
+                        'in' => array(
+                            'directories/one',
+                            'directories/two',
+                            'directories/three'
                         )
                     )
                 )
             ));
 
-            $this->config['files'] = array(
-                'files/one.php',
-                'files/two.jpg'
-            );
+            $result = $config->getFiles();
 
-            $this->config['directories'] = array(
-                'dirs/one',
-                'dirs/two'
-            );
-
-            $this->config['finder'] = array(
-                array(
-                    'name' => '*.php',
-                    'in' => 'finder/one'
-                ),
-                array(
-                    'name' => array('*.php', '*.php5'),
-                    'in' => array(
-                        'finder/two',
-                        'finder/three'
-                    )
-                )
-            );
+            sort($result);
 
             $expected = array(
-                $this->temp . '/dirs/one/test.php',
-                $this->temp . '/dirs/two/sub/test.php',
-                $this->temp . '/dirs/two/test.php',
-                $this->temp . '/files/one.php',
-                $this->temp . '/files/two.jpg',
-                $this->temp . '/finder/one/finder.php',
-                $this->temp . '/finder/two/finder.php',
-                $this->temp . '/finder/two/finder.php5',
-                $this->temp . '/finder/two/sub/finder.php',
+                "{$this->dir}/directories/one/one.php",
+                "{$this->dir}/directories/one/one.php",
+                "{$this->dir}/directories/one/one.php",
+                "{$this->dir}/directories/one/one.php",
+                "{$this->dir}/directories/two/three.phtml",
+                "{$this->dir}/directories/two/two.php",
+                "{$this->dir}/directories/two/two.php",
+                "{$this->dir}/files/one.php",
+                "{$this->dir}/files/three.php"
             );
 
-            $files = $this->config->getFiles();
-
-            sort($files);
-
-            $this->assertEquals($expected, $files);
+            $this->assertEquals($expected, $result);
         }
 
         /**
          * @expectedException InvalidArgumentException
-         * @expectedExceptionMessage The path is not a file:
+         * @expectedExceptionMessage The path is not a file: /does/not/exist
          */
-        public function testGetFilesNotFile()
+        public function testGetFilesInvalidFile()
         {
-            $this->config['files'] = array($this->temp);
-
-            $this->config->getFiles();
-        }
-
-        /**
-         * @expectedException InvalidArgumentException
-         * @expectedExceptionMessage Invalid Finder setting: badSetting
-         */
-        public function testGetFilesBadFinderSetting()
-        {
-            $this->config['finder'] = array(array(
-                'badSetting' => 'test'
+            $config = new Config(array(
+                'files' => array('/does/not/exist')
             ));
 
-            $this->config->getFiles();
+            $config->getFiles();
         }
 
-        public function testGetGitCommit()
+        /**
+         * @expectedException InvalidArgumentException
+         * @expectedExceptionMessage Invalid Finder setting: badMethod
+         */
+        public function testGetFilesInvalidFinderMethod()
         {
-            $this->config['base-path'] = $this->temp;
+            $config = new Config(array(
+                'finder' => array(
+                    array(
+                        'badMethod' => true
+                    )
+                )
+            ));
 
-            $make = new Process('git init', $this->temp);
-
-            if (0 === $make->run())
-            {
-                touch($this->temp . '/file');
-
-                $this->command('git add file');
-                $this->command('git config user.name Test');
-                $this->command('git config user.email test@test.com');
-                $this->command('git commit -m "Adding test file."');
-
-                $this->assertRegExp('/^[a-f0-9]{7}$/', $this->config->getGitCommit());
-            }
-
-            else
-            {
-                $this->markTestSkipped('Unable to create Git repository.');
-            }
+            $config->getFiles();
         }
 
-        public function testGetGitCommitFail()
+        public function testGitCommit()
         {
-            $this->config['base-path'] = '/does/not/exist';
+            $this->command('git init');
+            $this->command('touch test');
+            $this->command('git add test');
+            $this->command('git commit test -m "test" --author="Test <test@test.com>"');
 
-            $this->assertNull($this->config->getGitCommit());
+            $config = new Config;
+
+            $this->assertRegExp('/^[a-f0-9]{7}+$/', $config->getGitCommit());
         }
 
-        public function testGetGitTag()
+        public function testGitCommitNotRepo()
         {
-            $this->config['base-path'] = $this->temp;
+            $config = new Config;
 
-            $make = new Process('git init', $this->temp);
-
-            if (0 === $make->run())
-            {
-                touch($this->temp . '/file');
-
-                $this->command('git add file');
-                $this->command('git config user.name Test');
-                $this->command('git config user.email test@test.com');
-                $this->command('git commit -m "Adding test file."');
-                $this->command('git tag TEST-01');
-
-                $this->assertEquals('TEST-01', $this->config->getGitTag());
-            }
-
-            else
-            {
-                $this->markTestSkipped('Unable to create Git repository.');
-            }
+            $this->assertNull($config->getGitCommit());
         }
 
-        public function testGetGitTagFail()
+        public function testGitTag()
         {
-            $this->config['base-path'] = '/does/not/exist';
+            $this->command('git init');
+            $this->command('touch test');
+            $this->command('git add test');
+            $this->command('git commit test -m "test" --author="Test <test@test.com>"');
+            $this->command('git tag v1.0-ALPHA1');
 
-            $this->assertNull($this->config->getGitTag());
+            $config = new Config;
+
+            $this->assertEquals('v1.0-ALPHA1', $config->getGitTag());
         }
 
-        public function testGetHelperSet()
+        public function testGitTagNotRepo()
         {
-            $this->assertNull($this->config->getHelperSet());
+            $config = new Config;
+
+            $this->assertNull($config->getGitTag());
+        }
+
+        public function testGetHelper()
+        {
+            $config = new Config;
+
+            $this->assertNull($config->getHelperSet());
         }
 
         public function testGetName()
         {
-            $this->assertEquals('config', $this->config->getName());
+            $config = new Config;
+
+            $this->assertEquals('config', $config->getName());
         }
 
         public function testLoad()
         {
-            $make = new Process('git init', $this->temp);
+            $this->command('git init');
+            $this->command('touch test');
+            $this->command('git add test');
+            $this->command('git commit test -m "test" --author="Test <test@test.com>"');
+            $this->command('git tag v1.0-ALPHA1');
 
-            if (0 === $make->run())
-            {
-                $this->config['git-version'] = 'git_version';
-            }
+            $file = $this->dir . '/test.json';
 
-            file_put_contents($this->temp . '/box-dist.json', utf8_encode(json_encode(array(
+            file_put_contents($file, utf8_encode(json_encode(array(
                 'algorithm' => 'SHA256',
-                'output' => 'test.phar',
-                'replacements' => array(
-                    'rand' => $rand = rand()
-                )
+                'git-version' => 'git_version'
             ))));
 
-            $this->config->load('box-dist.json');
+            $config = new Config;
 
-            $this->assertEquals('default.phar', $this->config['alias']);
-            $this->assertEquals('test.phar', $this->config['output']);
-            $this->assertEquals(Phar::SHA256, $this->config['algorithm']);
-            $this->assertEquals(array(
-                'rand' => $rand,
-                'git_version' => $this->config->getGitCommit()
-            ), $this->config['replacements']);
+            $config->load($file);
+
+            $this->assertEquals(Box::SHA256, $config['algorithm']);
+            $this->assertEquals('v1.0-ALPHA1', $config['replacements']['git_version']);
         }
 
-        public function testLoadBlank()
+        public function testLoadNull()
         {
-            touch($this->temp . '/box.json');
+            $file = $this->file();
 
-            $this->config->load('box.json');
+            $config = new Config;
 
-            $this->assertEquals('default.phar', $this->config['output']);
+            $config->load($file);
+
+            $this->assertNull($config['main']);
+        }
+
+        /**
+         * @expectedException RuntimeException
+         * @expectedExceptionMessage The configuration file could not be read:
+         */
+        public function testLoadReadError()
+        {
+            $config = new Config;
+
+            $config->load('test.json');
+        }
+
+        /**
+         * @expectedException KevinGH\Box\Console\Exception\JSONException
+         * @expectedExceptionMessage Syntax error
+         */
+        public function testLoadParseError()
+        {
+            $file = $this->file('{');
+
+            $config = new Config;
+
+            $config->load($file);
         }
 
         /**
@@ -312,59 +441,32 @@
          */
         public function testLoadInvalidAlgo()
         {
-            file_put_contents($this->temp . '/box-dist.json', utf8_encode(json_encode(array(
+            $file = $this->file(utf8_encode(json_encode(array(
                 'algorithm' => 'INVALID'
             ))));
 
-            $this->config->load('box-dist.json');
-        }
+            $config = new Config;
 
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The configuration file could not be read:
-         */
-        public function testLoadReadFail()
-        {
-            $this->config->load('box.json');
-        }
-
-        /**
-         * @expectedException KevinGH\Box\Console\Exception\JSONException
-         * @expectedExceptionMessage Syntax error
-         */
-        public function testLoadParseFail()
-        {
-            file_put_contents($this->temp . '/box.json', '{');
-
-            $this->config->load('box.json');
+            $config->load($file);
         }
 
         public function testRelativeOf()
         {
-            $this->config['base-path'] = $this->temp;
+            $config = new Config(array(
+                'base-path' => $this->dir
+            ));
 
-            $this->assertEquals('test.php', $this->config->relativeOf($this->temp . '/test.php'));
+            $this->assertEquals('test.json', $config->relativeOf($this->dir . '/test.json'));
         }
 
-        /**
-         * @depends testGetHelperSet
-         */
-        public function testSetHelper()
+        public function testSetHelperSet()
         {
-            $helper = new HelperSet;
+            $config = new Config;
 
-            $this->config->setHelperSet($helper);
+            $helperSet = new HelperSet;
 
-            $this->assertSame($helper, $this->config->getHelperSet());
-        }
+            $config->setHelperSet($helperSet);
 
-        private function command($command)
-        {
-            $process = new Process($command, $this->config['base-path']);
-
-            if (0 !== $process->run())
-            {
-                throw new RuntimeException("The command failed: $command");
-            }
+            $this->assertSame($helperSet, $config->getHelperSet());
         }
     }

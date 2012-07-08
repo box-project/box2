@@ -12,282 +12,126 @@
     namespace KevinGH\Box;
 
     use Exception,
-        Phar,
-        PHPUnit_Framework_TestCase,
-        Symfony\Component\Process\Process;
+        KevinGH\Box\Box,
+        KevinGH\Box\Test\TestCase;
 
-    class BoxTest extends PHPUnit_Framework_TestCase
+    class BoxTest extends TestCase
     {
-        private $file;
-
-        protected function setUp()
+        public function testConstructorDefaults()
         {
-            $this->file = tempnam(sys_get_temp_dir(), 'bxt');
+            $box = new Box('test.phar');
 
-            unlink($this->file);
+            $name = $this->property($box, 'name');
+            $alias = $this->property($box, 'alias');
 
-            $this->file .= '.phar';
+            $this->assertEquals('test.phar', $name());
+            $this->assertEquals('default.phar', $alias());
         }
 
-        protected function tearDown()
+        public function testConstructorArgs()
         {
-            if (file_exists($this->file))
-            {
-                unlink($this->file);
-            }
+            $box = new Box('test.phar', 0, 'test.phar');
 
-            if (file_exists($this->file . '.pubkey'))
-            {
-                unlink($this->file . '.pubkey');
-            }
+            $name = $this->property($box, 'name');
+            $alias = $this->property($box, 'alias');
+
+            $this->assertEquals('test.phar', $name());
+            $this->assertEquals('test.phar', $alias());
         }
 
-        public function testCompactSource()
+        public function testCompactSourceDefault()
         {
-            $box = new Box($this->file, 0, 'test.phar');
+            $box = new Box('test.phar');
 
-            $source = <<<SOURCE
-<?php
-
-    /**
-     * This is a test class.
-     *
-     * @author Testy McTesterson <test@cles.com>
-     */
-    class Test
-    {
-        private \$test;
-
-        public function testMethod()
-        {
-            if (func_num_args() > 0)
-            {
-                \$this->test = func_get_arg(0);
-            }
-
-            return \$this->test;
+            $this->assertEquals(
+                $this->resource('class-compacted.php'),
+                $box->compactSource($this->resource('class.php'))
+            );
         }
-    }
-SOURCE
-            ;
+
+        public function testCompactSourceCustomized()
+        {
+            $box = new Box('test.phar');
 
             $box->setCompactor(function($source)
             {
-                return $source .= "\ncustomer compactor called";
+                return str_replace('Success', 'Modified', $source);
             });
 
-            $result = $box->compactSource($source);
-
-            $expected = <<<SOURCE
-<?php
-
-
-
-
-
-
-class Test
-{
-private \$test;
-
-public function testMethod()
-{
-if (func_num_args() > 0)
-{
-\$this->test = func_get_arg(0);
-}
-
-return \$this->test;
-}
-}
-customer compactor called
-SOURCE
-            ;
-
-            $this->assertEquals($expected, $result);
+            $this->assertEquals(
+                $this->resource('class-custom.php'),
+                $box->compactSource($this->resource('class.php'))
+            );
         }
 
-        public function testCreateStub()
+        public function testCreateStubNoMain()
         {
-            $box = new Box($this->file);
+            $box = new Box('test.phar');
 
-            $expected = <<<STUB
-#!/usr/bin/env php
-<?php
-
-    /**
-     * Genereated by Box: http://github.com/kherge/Box
-     */
-
-    Phar::mapPhar('default.phar');
-
-    __HALT_COMPILER();
-STUB
-            ;
-
-            $this->assertEquals($expected, $box->createStub());
-        }
-
-        public function testCreateStubAlias()
-        {
-            $box = new Box($this->file, 0, 'wakka.phar');
-
-            $expected = <<<STUB
-#!/usr/bin/env php
-<?php
-
-    /**
-     * Genereated by Box: http://github.com/kherge/Box
-     */
-
-    Phar::mapPhar('wakka.phar');
-
-    __HALT_COMPILER();
-STUB
-            ;
-
-            $this->assertEquals($expected, $box->createStub());
+            $this->assertEquals(
+                $this->resource('stub.php'),
+                $box->createStub()
+            );
         }
 
         public function testCreateStubWithMain()
         {
-            $box = new Box($this->file, 0, 'wakka.phar');
+            $box = new Box('test.phar');
 
-            $box->importSource('test/main.php', '<?php mainCode();', true);
+            $property = $this->property($box, 'main');
 
-            $expected = <<<STUB
-#!/usr/bin/env php
-<?php
+            $property('bin/main.php');
 
-    /**
-     * Genereated by Box: http://github.com/kherge/Box
-     */
-
-    Phar::mapPhar('wakka.phar');
-
-    require 'phar://wakka.phar/test/main.php';
-
-    __HALT_COMPILER();
-STUB
-            ;
-
-            $this->assertEquals($expected, $box->createStub());
+            $this->assertEquals(
+                $this->resource('stub-main.php'),
+                $box->createStub()
+            );
         }
 
         public function testDoReplacements()
         {
-            $box = new Box($this->file);
+            $box = new Box('test.phar');
 
-            $box->setReplacements(array(
-                'test_value' => 'The actual test value.'
-            ));
+            $box->setReplacements(array('placeholder' => 'replaced value'));
 
-            $source = <<<SOURCE
-<?php
-
-    class Test
-    {
-        private \$test = '@test_value@';
-
-        public function testMethod()
-        {
-            if (func_num_args() > 0)
-            {
-                \$this->test = func_get_arg(0);
-            }
-
-            return \$this->test;
-        }
-    }
-SOURCE
-            ;
-
-            $expected = <<<SOURCE
-<?php
-
-    class Test
-    {
-        private \$test = 'The actual test value.';
-
-        public function testMethod()
-        {
-            if (func_num_args() > 0)
-            {
-                \$this->test = func_get_arg(0);
-            }
-
-            return \$this->test;
-        }
-    }
-SOURCE
-            ;
-
-            $this->assertEquals($expected, $box->doReplacements($source));
-        }
-
-        /**
-         * @depends testCompactSource
-         * @depends testCreateStub
-         * @depends testCreateStubAlias
-         * @depends testCreateStubWithMain
-         * @depends testDoReplacements
-         */
-        public function testImport()
-        {
-            $box = new Box($this->file);
-
-            $main = tempnam(sys_get_temp_dir(), 'bxt');
-            $lib = tempnam(sys_get_temp_dir(), 'bxt');
-
-            file_put_contents($main, <<<PHP
-#!/usr/bin/php env
-<?php
-
-    require 'lib/test.php';
-
-    TestLib::run();
-PHP
+            $this->assertEquals(
+                $this->resource('replace-after.php'),
+                $box->doReplacements($this->resource('replace-before.php'))
             );
-
-            file_put_contents($lib, <<<PHP
-<?php
-
-    class TestLib
-    {
-        public static function run()
-        {
-            echo "Success: @test@!\n";
         }
-    }
-PHP
-            );
 
-            $box->setReplacements(array('test' => 1234567890));
-            $box->startBuffering();
-            $box->importFile('main.php', $main, true);
-            $box->importFile('lib/test.php', $lib);
-            $box->setStub($box->createStub());
-            $box->stopBuffering();
+        public function testImportFile()
+        {
+            $box = new Box($this->dir() . '/test.phar');
 
-            unset($box);
+            $box->importFile('test/file.php', RESOURCES . 'file-imported.php');
 
-            unlink($main);
-            unlink($lib);
+            $box->extractTo($dir = $this->dir());
 
-            $process = new Process('php ' . escapeshellarg($this->file));
+            $this->assertFileEquals(RESOURCES . 'file-exported.php', "$dir/test/file.php");
+        }
 
-            $this->assertFileExists($this->file);
-            $this->assertEquals(0, $process->run());
-            $this->assertEquals("Success: 1234567890!\n", $process->getOutput());
+        public function testImportFileMain()
+        {
+            $box = new Box($this->dir() . '/test.phar');
+
+            $box->importFile('bin/main.php', RESOURCES . 'main-imported.php', true);
+
+            $property = $this->property($box, 'main');
+
+            $box->extractTo($dir = $this->dir());
+
+            $this->assertEquals('bin/main.php', $property());
+            $this->assertFileEquals(RESOURCES . 'main-exported.php', "$dir/bin/main.php");
         }
 
         /**
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage The file does not exist: /does/not/exist
          */
-        public function testImportFileInvalid()
+        public function testImportFileNotExist()
         {
-            $box = new Box($this->file);
+            $box = new Box('test.phar');
 
             $box->importFile('not/exist', '/does/not/exist');
         }
@@ -298,74 +142,76 @@ PHP
          */
         public function testImportFileReadError()
         {
-            $box = new Box($this->file);
+            $box = new Box('test.phar');
 
             $box->importFile('root', '/root');
+        }
+
+        public function testImportSource()
+        {
+            $box = new Box($this->dir() . '/test.phar');
+
+            $box->importSource('test/file.php', $this->resource('file-imported.php'));
+
+            $box->extractTo($dir = $this->dir());
+
+            $this->assertFileEquals(RESOURCES . 'file-exported.php', "$dir/test/file.php");
+        }
+
+        public function testImportSourceMain()
+        {
+            $box = new Box($this->dir() . '/test.phar');
+
+            $box->importSource('bin/main.php', $this->resource('main-imported.php'), true);
+
+            $property = $this->property($box, 'main');
+
+            $box->extractTo($dir = $this->dir());
+
+            $this->assertEquals('bin/main.php', $property());
+            $this->assertFileEquals(RESOURCES . 'main-exported.php', "$dir/bin/main.php");
+        }
+
+        public function testSetCompactor()
+        {
+            $box = new Box('test.phar');
+
+            $box->setCompactor(function($source)
+            {
+                return str_replace('class', 'klass', $source);
+            });
+
+            $this->assertEquals('klass Test {}', $box->compactSource('class Test {}'));
+        }
+
+        public function testSetReplacements()
+        {
+            $box = new Box('test.phar');
+
+            $box->setReplacements(array(
+                'key1' => 123,
+                'key2' => 'abc'
+            ));
+
+            $this->assertEquals('abc123', $box->doReplacements('@key2@@key1@'));
         }
 
         public function testUsePrivateKeyFile()
         {
             if (false === extension_loaded('openssl'))
             {
-                $this->markTestSkipped('The openssl extension is not available.');
+                $this->markTestSkipped('The "openssl" extension is not available.');
 
                 return;
             }
 
-            $box = new Box($this->file);
+            $key = $this->file($this->createPrivateKey('phpunit'));
 
-            $key = tempnam(sys_get_temp_dir(), 'bxt');
-            $main = tempnam(sys_get_temp_dir(), 'bxt');
-            $lib = tempnam(sys_get_temp_dir(), 'bxt');
+            $file = $this->getApp(true, 'phpunit');
 
-            $this->createKey($key, $pass = 'phpunit');
+            $box = new Box($file);
 
-            file_put_contents($main, <<<PHP
-#!/usr/bin/php env
-<?php
-
-    require 'lib/test.php';
-
-    TestLib::run();
-PHP
-            );
-
-            file_put_contents($lib, <<<PHP
-<?php
-
-    class TestLib
-    {
-        public static function run()
-        {
-            echo "Success: @test@!\n";
-        }
-    }
-PHP
-            );
-
-            $box->setReplacements(array('test' => 1234567890));
-            $box->startBuffering();
-            $box->importFile('main.php', $main, true);
-            $box->importFile('lib/test.php', $lib);
-            $box->setStub($box->createStub());
-            $box->stopBuffering();
-            $box->usePrivateKeyFile($key, $pass);
-
-            unset($box);
-
-            unlink($key);
-            unlink($main);
-            unlink($lib);
-
-            $process = new Process('php ' . escapeshellarg($this->file));
-
-            $this->assertFileExists($this->file);
-            $this->assertEquals(0, $process->run());
-            $this->assertEquals("Success: 1234567890!\n", $process->getOutput());
-
-            $phar = new Phar($this->file);
-
-            $signature = $phar->getSignature();
+            $signature = $box->getSignature();
 
             $this->assertEquals('OpenSSL', $signature['hash_type']);
         }
@@ -374,9 +220,9 @@ PHP
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage The private key file does not exist.
          */
-        public function testUsePrivateKeyFileInvalid()
+        public function testUsePrivateKeyFileInvalidFile()
         {
-            $box = new Box($this->file);
+            $box = new Box('test.phar');
 
             $box->usePrivateKeyFile('/does/not/exist');
         }
@@ -385,36 +231,33 @@ PHP
          * @expectedException RuntimeException
          * @expectedExceptionMessage The "openssl" extension is not available.
          */
-        public function testUsePrivateKeyFileExtensionNotLoaded()
+        public function testUsePrivateKeyFileNoExtension()
         {
-            if (extension_loaded('runkit'))
+            if (false === extension_loaded('runkit'))
             {
-                $box = new Box($this->file);
+                $this->markTestSkipped('The "runkit" extension is not available.');
 
-                touch($this->file);
-
-                $this->redefine('extension_loaded', '', 'return false;');
-
-                try
-                {
-                    $box->usePrivateKeyFile($this->file);
-                }
-
-                catch (Exception $exception)
-                {
-                }
-
-                $this->restore('extension_loaded');
-
-                if (isset($exception))
-                {
-                    throw $exception;
-                }
+                return;
             }
 
-            else
+            $this->redefine('extension_loaded', '', 'return false;');
+
+            $box = new Box('test.phar');
+
+            try
             {
-                $this->markTestSkipped('The runkit extension is not available.');
+                $box->usePrivateKeyFile($this->file());
+            }
+
+            catch (Exception $exception)
+            {
+            }
+
+            $this->restore('extension_loaded');
+
+            if (isset($exception))
+            {
+                throw $exception;
             }
         }
 
@@ -424,35 +267,9 @@ PHP
          */
         public function testUsePrivateKeyFileReadError()
         {
-            if (extension_loaded('runkit'))
-            {
-                $box = new Box($this->file);
+            $box = new Box('test.phar');
 
-                touch($this->file);
-
-                $this->redefine('file_get_contents', '', 'return false;');
-
-                try
-                {
-                    $box->usePrivateKeyFile($this->file);
-                }
-
-                catch (Exception $exception)
-                {
-                }
-
-                $this->restore('file_get_contents');
-
-                if (isset($exception))
-                {
-                    throw $exception;
-                }
-            }
-
-            else
-            {
-                $this->markTestSkipped('The runkit extension is not available.');
-            }
+            $box->usePrivateKeyFile('/root');
         }
 
         /**
@@ -461,189 +278,120 @@ PHP
          */
         public function testUsePrivateKeyFileWriteError()
         {
-            if (extension_loaded('runkit'))
-            {
-                $box = new Box($this->file);
+            $key = $this->file($this->createPrivateKey('phpunit'));
 
-                $key = tempnam(sys_get_temp_dir(), 'bxt');
+            $box = new Box('/root/test.phar');
 
-                $this->createKey($key);
-
-                $this->redefine('file_put_contents', '', 'return false;');
-
-                try
-                {
-                    $box->usePrivateKeyFile($key);
-                }
-
-                catch (Exception $exception)
-                {
-                }
-
-                $this->restore('file_put_contents');
-
-                unlink($key);
-
-                if (isset($exception))
-                {
-                    throw $exception;
-                }
-            }
-
-            else
-            {
-                $this->markTestSkipped('The runkit extension is not available.');
-            }
+            $box->usePrivateKeyFile($key, 'phpunit');
         }
 
         /**
          * @expectedException RuntimeException
          * @expectedExceptionMessage The private key could not be parsed:
          */
-        public function testUsePrivateKeyFileParseError()
+        public function testGetKeyParseError()
         {
-            if (extension_loaded('runkit'))
+            if (false === extension_loaded('openssl'))
             {
-                $box = new Box($this->file);
+                $this->markTestSkipped('The "openssl" extension is not available.');
 
-                $key = tempnam(sys_get_temp_dir(), 'bxt');
-
-                $this->createKey($key);
-
-                $this->redefine('openssl_pkey_get_private', '', 'return false;');
-
-                try
-                {
-                    $box->usePrivateKeyFile($key);
-                }
-
-                catch (Exception $exception)
-                {
-                }
-
-                $this->restore('openssl_pkey_get_private');
-
-                unlink($key);
-
-                if (isset($exception))
-                {
-                    throw $exception;
-                }
+                return;
             }
 
-            else
+            $box = new Box('test.phar');
+
+            $method = $this->method($box, 'getKeys');
+
+            $method('test');
+        }
+
+        /**
+         * @expectedException RuntimeException
+         * @expectedException The private key could not be exported:
+         */
+        public function testGetKeyExportError()
+        {
+            if (false === extension_loaded('openssl'))
             {
-                $this->markTestSkipped('The runkit extension is not available.');
+                $this->markTestSkipped('The "openssl" extension is not available.');
+
+                return;
+            }
+
+            if (false === extension_loaded('runkit'))
+            {
+                $this->markTestSkipped('The "runkit" extension is not available.');
+
+                return;
+            }
+
+            $key = $this->createPrivateKey('phpunit');
+
+            $box = new Box('test.phar');
+
+            $this->redefine('openssl_pkey_export', '$a, &$b', 'return false;');
+
+            $method = $this->method($box, 'getKeys');
+
+            try
+            {
+                $method($key, 'phpunit');
+            }
+
+            catch (Exception $exception)
+            {
+            }
+
+            $this->restore('openssl_pkey_export');
+
+            if (isset($exception))
+            {
+                throw $exception;
             }
         }
 
         /**
          * @expectedException RuntimeException
-         * @expectedExceptionMessage The private key could not be exported:
+         * @expectedException The details of the private key could not be retrieved:
          */
-        public function testUsePrivateKeyFileExportError()
+        public function testGetKeyDetailsError()
         {
-            if (extension_loaded('runkit'))
+            if (false === extension_loaded('openssl'))
             {
-                $box = new Box($this->file);
+                $this->markTestSkipped('The "openssl" extension is not available.');
 
-                $key = tempnam(sys_get_temp_dir(), 'bxt');
-
-                $this->createKey($key);
-
-                $this->redefine('openssl_pkey_export', '$a, &$b', 'return false;');
-
-                try
-                {
-                    $box->usePrivateKeyFile($key);
-                }
-
-                catch (Exception $exception)
-                {
-                }
-
-                $this->restore('openssl_pkey_export');
-
-                unlink($key);
-
-                if (isset($exception))
-                {
-                    throw $exception;
-                }
+                return;
             }
 
-            else
+            if (false === extension_loaded('runkit'))
             {
-                $this->markTestSkipped('The runkit extension is not available.');
-            }
-        }
+                $this->markTestSkipped('The "runkit" extension is not available.');
 
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The details of the private key could not be retrieved:
-         */
-        public function testUsePrivateKeyFileDetailsError()
-        {
-            if (extension_loaded('runkit'))
-            {
-                $box = new Box($this->file);
-
-                $key = tempnam(sys_get_temp_dir(), 'bxt');
-
-                $this->createKey($key);
-
-                $this->redefine('openssl_pkey_get_details', '', 'return false;');
-
-                try
-                {
-                    $box->usePrivateKeyFile($key);
-                }
-
-                catch (Exception $exception)
-                {
-                }
-
-                $this->restore('openssl_pkey_get_details');
-
-                unlink($key);
-
-                if (isset($exception))
-                {
-                    throw $exception;
-                }
+                return;
             }
 
-            else
+            $key = $this->createPrivateKey('phpunit');
+
+            $box = new Box('test.phar');
+
+            $this->redefine('openssl_pkey_get_details', '', 'return false;');
+
+            $method = $this->method($box, 'getKeys');
+
+            try
             {
-                $this->markTestSkipped('The runkit extension is not available.');
+                $method($key, 'phpunit');
             }
-        }
 
-        private function createKey($file, $pass = null)
-        {
-            $resource = openssl_pkey_new();
+            catch (Exception $exception)
+            {
+            }
 
-            openssl_pkey_export($resource, $key, $pass);
+            $this->restore('openssl_pkey_get_details');
 
-            file_put_contents($file, $key);
-
-            $public = openssl_pkey_get_details($resource);
-            $public = $public['key'];
-
-            openssl_pkey_free($resource);
-
-            return array($key, $public);
-        }
-
-        private function redefine($func, $args, $code)
-        {
-            runkit_function_rename($func, "_$func");
-            runkit_function_add($func, $args, $code);
-        }
-
-        private function restore($func)
-        {
-            runkit_function_remove($func);
-            runkit_function_rename("_$func", $func);
+            if (isset($exception))
+            {
+                throw $exception;
+            }
         }
     }

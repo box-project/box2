@@ -11,50 +11,56 @@
 
     namespace KevinGH\Box\Console;
 
-    use PHPUnit_Framework_TestCase;
+    use KevinGH\Box\Test\TestCase;
 
-    class ApplicationTest extends PHPUnit_Framework_TestCase
+    class ApplicationTest extends TestCase
     {
-        private $app;
-
-        protected function setUp()
-        {
-            $this->app = new Application;
-        }
-
         public function testConstructor()
         {
-            $this->assertEquals('Box', $this->app->getName());
-            $this->assertEquals('@git_version@', $this->app->getVersion());
+            $app = new Application;
+
+            $this->assertEquals('Box', $app->getName());
+            $this->assertEquals('@git_version@', $app->getVersion());
         }
 
         /**
          * @expectedException ErrorException
          * @expectedExceptionMessage Test error.
          */
-        public function testErrorHandler()
+        public function testConstructorErrorHandler()
         {
+            $app = new Application;
+
             trigger_error('Test error.', E_USER_ERROR);
         }
 
         public function testGetDefaultCommands()
         {
+            $app = new Application;
+
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Create',
-                $this->app->find('create')
+                $app->find('create')
+            );
+
+            $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Extract',
+                $app->find('extract')
             );
 
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Verify',
-                $this->app->find('verify')
+                $app->find('verify')
             );
         }
 
         public function testGetDefaultHelperSet()
         {
+            $app = new Application;
+
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Helper\Config',
-                $this->app->getHelperSet()->get('config')
+                $app->getHelperSet()->get('config')
             );
         }
     }

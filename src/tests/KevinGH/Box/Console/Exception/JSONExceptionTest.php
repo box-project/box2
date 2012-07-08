@@ -11,9 +11,9 @@
 
     namespace KevinGH\Box\Console\Exception;
 
-    use PHPUnit_Framework_TestCase;
+    use KevinGH\Box\Test\TestCase;
 
-    class JSONExceptionTest extends PHPUnit_Framework_TestCase
+    class JSONExceptionTest extends TestCase
     {
         /**
          * @expectedException KevinGH\Box\Console\Exception\JSONException
