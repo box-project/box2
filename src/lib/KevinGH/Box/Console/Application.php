@@ -50,6 +50,7 @@
             $commands = parent::getDefaultCommands();
 
             $commands[] = new Command\Create;
+            $commands[] = new Command\Extract;
             $commands[] = new Command\Verify;
 
             return $commands;
