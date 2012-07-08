@@ -38,22 +38,25 @@
         /**
          * Sets the default configuration settings.
          */
-        public function __construct()
+        public function __construct(array $input = array())
         {
-            parent::__construct(array(
-                'algorithm' => Phar::SHA1,
-                'alias' => 'default.phar',
-                'base-path' => null,
-                'directories' => array(),
-                'files' => array(),
-                'finder' => array(),
-                'git-version' => null,
-                'key' => null,
-                'key-pass' => null,
-                'main' => null,
-                'output' => 'default.phar',
-                'replacements' => array(),
-                'stub' => null,
+            parent::__construct(array_merge(
+                array(
+                    'algorithm' => Phar::SHA1,
+                    'alias' => 'default.phar',
+                    'base-path' => null,
+                    'directories' => array(),
+                    'files' => array(),
+                    'finder' => array(),
+                    'git-version' => null,
+                    'key' => null,
+                    'key-pass' => null,
+                    'main' => null,
+                    'output' => 'default.phar',
+                    'replacements' => array(),
+                    'stub' => null
+                ),
+                $input
             ));
         }
 
@@ -95,6 +98,29 @@
         }
 
         /**
+         * Returns the current work directory path.
+         *
+         * @return string The directory path.
+         */
+        public function getCurrentDir()
+        {
+            if (false === ($cwd = getcwd()))
+            {
+                if (isset($_SERVER['PWD']))
+                {
+                    $cwd = $_SERVER['PWD'];
+                }
+
+                else
+                {
+                    throw new RuntimeException('Could not get current working directory path.');
+                }
+            }
+
+            return $cwd;
+        }
+
+        /**
          * Returns a list of files found using the configuration.
          *
          * @throws InvalidArgumentException If a path is not a file.
@@ -106,7 +132,7 @@
 
             if (is_dir($this['base-path']))
             {
-                $pwd = getcwd();
+                $pwd = $this->getCurrentDir();
 
                 chdir($this['base-path']);
             }
