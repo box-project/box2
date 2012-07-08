@@ -61,7 +61,7 @@
             {
                 $dialog = $this->getHelper('dialog');
 
-                if (null === ($config['key-pass'] = $dialog->ask($output, 'Private key password: ')))
+                if ('' == ($config['key-pass'] = trim($dialog->ask($output, 'Private key password: '))))
                 {
                     throw new InvalidArgumentException('Your private key password is required for signing.');
                 }
@@ -99,6 +99,10 @@
         protected function end(Box $box)
         {
             $config = $this->getHelper('config');
+
+            $cwd = $config->getCurrentDir();
+
+            chdir($config['base-path']);
 
             if ($config['main'])
             {
@@ -146,6 +150,8 @@
             {
                 $box->setSignatureAlgorithm($config['algorithm']);
             }
+
+            chdir($cwd);
         }
 
         /**
@@ -157,7 +163,11 @@
         {
             $config = $this->getHelper('config');
 
-            $box = new Box($config['output'], 0, $config['alias']);
+            $box = new Box(
+                $config['base-path'] . DIRECTORY_SEPARATOR . $config['output'],
+                0,
+                $config['alias']
+            );
 
             if ($config['replacements'])
             {
