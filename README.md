@@ -23,7 +23,7 @@ Please see [this guide][guide] for configuring your application's build process.
 
 ## Usage
 
-To create a PHAR
+### Create
 
     $ php box.phar create
 
@@ -31,13 +31,17 @@ To create a PHAR
 
     $ php box.phar create --config /path/to/box.json
 
-To verify a PHAR
+### Verify
 
     $ php box.phar verify myPhar.phar
 
-To extract a PHAR
+### Extract
 
     $ php box.phar extract myPhar.phar --out /path/to/dir
+
+### Update (Box)
+
+    $ php box.phar update
 
 [Composer]: http://getcomposer.org/
 [downloads]: https://github.com/kherge/Box/downloads
