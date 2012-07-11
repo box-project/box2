@@ -69,6 +69,7 @@
                 'algorithm' => Box::SHA1,
                 'alias' => 'default.phar',
                 'base-path' => null,
+                'blacklist' => array(),
                 'directories' => array(),
                 'files' => array(),
                 'finder' => array(),
@@ -250,6 +251,9 @@
 
             $config = new Config(array(
                 'base-path' => $this->dir,
+                'blacklist' => array(
+                    'directories/two/three.phtml'
+                ),
                 'files' => array(
                     'files/one.php',
                     'files/three.php'
@@ -281,11 +285,6 @@
 
             $expected = array(
                 "{$this->dir}/directories/one/one.php",
-                "{$this->dir}/directories/one/one.php",
-                "{$this->dir}/directories/one/one.php",
-                "{$this->dir}/directories/one/one.php",
-                "{$this->dir}/directories/two/three.phtml",
-                "{$this->dir}/directories/two/two.php",
                 "{$this->dir}/directories/two/two.php",
                 "{$this->dir}/files/one.php",
                 "{$this->dir}/files/three.php"

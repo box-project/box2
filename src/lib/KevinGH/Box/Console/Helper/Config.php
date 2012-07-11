@@ -45,6 +45,7 @@
                     'algorithm' => Phar::SHA1,
                     'alias' => 'default.phar',
                     'base-path' => null,
+                    'blacklist' => array(),
                     'directories' => array(),
                     'files' => array(),
                     'finder' => array(),
@@ -147,7 +148,9 @@
                     ));
                 }
 
-                $files[] = realpath($file);
+                $absolute = realpath($file);
+
+                $files[$this->relativeOf($absolute)] = $absolute;
             }
 
             foreach ((array) $this['directories'] as $dir)
@@ -161,7 +164,9 @@
 
                 foreach ($finder as $file)
                 {
-                    $files[] = $file->getRealPath();
+                    $absolute = $file->getRealPath();
+
+                    $files[$this->relativeOf($absolute)] = $absolute;
                 }
             }
 
@@ -189,7 +194,9 @@
 
                 foreach ($finder as $file)
                 {
-                    $files[] = $file->getRealPath();
+                    $absolute = $file->getRealPath();
+
+                    $files[$this->relativeOf($absolute)] = $absolute;
                 }
             }
 
@@ -198,7 +205,15 @@
                 chdir($pwd);
             }
 
-            return $files;
+            if ($this['blacklist'])
+            {
+                foreach ((array) $this['blacklist'] as $relative)
+                {
+                    unset($files[$relative]);
+                }
+            }
+
+            return array_values($files);
         }
 
         /**
