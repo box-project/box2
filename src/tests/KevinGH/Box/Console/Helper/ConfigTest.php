@@ -118,9 +118,9 @@
         {
             $config = new Config;
 
-            touch($this->dir . '/box-dist.json');
+            touch($this->dir . '/box.dist.json');
 
-            $this->assertEquals($this->dir . '/box-dist.json', $config->find(null));
+            $this->assertEquals($this->dir . '/box.dist.json', $config->find(null));
         }
 
         /**

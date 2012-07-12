@@ -85,9 +85,9 @@
                 $file = realpath('box.json');
             }
 
-            elseif (file_exists('box-dist.json'))
+            elseif (file_exists('box.dist.json'))
             {
-                $file = realpath('box-dist.json');
+                $file = realpath('box.dist.json');
             }
 
             else
