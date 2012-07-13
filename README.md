@@ -16,10 +16,9 @@ Updates can later be performed by running Box's update command:
 
 ## Usage
 
-For available Box commands, please run the this command:
+For an explanation on available commands, please see [this guide][commands].
 
-    $ php box.phar help
+For an explanation on available configuration settings, please see [this guide][config].
 
-To configure Box for creating your PHAR, please see [this guide][guide].
-
-[guide]: https://github.com/kherge/Box/wiki/Configuration
+[commands]: https://github.com/kherge/Box/wiki/Commands
+[config]: https://github.com/kherge/Box/wiki/Configuration
