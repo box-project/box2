@@ -14,8 +14,7 @@
     use Closure,
         InvalidArgumentException,
         Phar,
-        RuntimeException,
-        Symfony\Component\Finder\Finder;
+        RuntimeException;
 
     /**
      * Simplifies the process of creating new PHARs.
