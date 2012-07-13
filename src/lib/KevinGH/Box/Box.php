@@ -129,11 +129,11 @@
 #!/usr/bin/env php
 <?php
 
-    /**
-     * Genereated by Box: http://github.com/kherge/Box
-     */
+/**
+ * Genereated by Box: http://github.com/kherge/Box
+ */
 
-    Phar::mapPhar('{$this->alias}');
+Phar::mapPhar('{$this->alias}');
 
 
 STUB
@@ -142,14 +142,14 @@ STUB
             if ($this->main)
             {
                 $stub .= <<<STUB
-    require 'phar://{$this->alias}/{$this->main}';
+require 'phar://{$this->alias}/{$this->main}';
 
 
 STUB
                 ;
             }
 
-            $stub .= "    __HALT_COMPILER();";
+            $stub .= "__HALT_COMPILER();";
 
             return $stub;
         }

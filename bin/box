@@ -2,7 +2,7 @@
 <?php
 
     require __DIR__ . '/../src/vendors/autoload.php';
-    
+
     $app = new KevinGH\Box\Console\Application;
-    
+
     $app->run();
