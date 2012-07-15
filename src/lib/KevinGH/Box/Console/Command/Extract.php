@@ -46,6 +46,13 @@
                 InputOption::VALUE_REQUIRED,
                 'The output directory path.'
             );
+
+            $this->addOption(
+                'want',
+                'w',
+                InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
+                'The file or directory wanted from the PHAR.'
+            );
         }
 
         /** {@inheritDoc} */
@@ -67,7 +74,18 @@
             {
                 $phar = new Phar($file);
 
-                $phar->extractTo($out);
+                if ($want = $input->getOption('want'))
+                {
+                    foreach ($want as $wanted)
+                    {
+                        $phar->extractTo($out, $wanted, true);
+                    }
+                }
+
+                else
+                {
+                    $phar->extractTo($out, null, true);
+                }
             }
 
             catch (PharException $exception)

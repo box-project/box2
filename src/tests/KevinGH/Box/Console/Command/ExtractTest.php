@@ -47,6 +47,22 @@
             $this->assertFileExists("{$this->dir}/src/lib/class.php");
         }
 
+        public function testExecuteWithWant()
+        {
+            $file = $this->getApp();
+
+            $this->tester->execute(array(
+                'command' => self::COMMAND,
+                'phar' => $file,
+                '--want' => array('bin/main.php')
+            ));
+
+            $dir = "$file-contents";
+
+            $this->assertFileExists("$dir/bin/main.php");
+            $this->assertFileNotExists("$dir/src/lib/class.php");
+        }
+
         /**
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage The PHAR does not exist.
