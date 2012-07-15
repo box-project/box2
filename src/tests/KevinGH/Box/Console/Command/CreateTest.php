@@ -75,8 +75,6 @@
             $this->tester->execute(array(
                 'command' => self::COMMAND,
                 '--config' => $file
-            ), array(
-                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
             ));
 
             $this->assertEquals(

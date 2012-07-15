@@ -28,6 +28,13 @@
     class Create extends Command
     {
         /**
+         * The output instance.
+         *
+         * @type OutputInterface
+         */
+        private $output;
+
+        /**
          * The verbosity level.
          *
          * @type boolean
@@ -56,7 +63,19 @@
                 throw new RuntimeException('PHAR writing has been disabled by "phar.readonly".');
             }
 
+            $this->output = $output;
+
             $this->verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
+
+            if ($this->verbose)
+            {
+                $output->writeln('Creating PHAR...');
+            }
+
+            else
+            {
+                $output->write('Creating PHAR...');
+            }
 
             $config = $this->getHelper('config');
 
@@ -76,7 +95,7 @@
 
             if ($this->verbose)
             {
-                $output->writeln('Adding files...');
+                $output->writeln('    - Adding files');
             }
 
             foreach ($config->getFiles() as $file)
@@ -85,13 +104,23 @@
 
                 if ($this->verbose)
                 {
-                    $output->writeln("    - $relative");
+                    $output->writeln("        - $relative");
                 }
 
                 $box->importFile($relative, $file);
             }
 
             $this->end($box);
+
+            if ($this->verbose)
+            {
+                $output->writeln('Done.');
+            }
+
+            else
+            {
+                $output->writeln(' done.');
+            }
         }
 
         /**
@@ -111,6 +140,8 @@
 
             if ($config['main'])
             {
+                $this->verbose('    - Adding main script');
+
                 if (false === ($real = realpath($config['main'])))
                 {
                     throw new InvalidArgumentException('The main file does not exist.');
@@ -121,11 +152,15 @@
 
             if (true === $config['stub'])
             {
+                $this->verbose('    - Generating new stub');
+
                 $box->setStub($box->createStub());
             }
 
             elseif ($config['stub'])
             {
+                $this->verbose('    - Adding existing stub');
+
                 if (false === file_exists($config['stub']))
                 {
                     throw new InvalidArgumentException('The stub file does not exist.');
@@ -148,15 +183,33 @@
 
             if ($config['key'])
             {
+                $this->verbose('    - Signing with private key');
+
                 $box->usePrivateKeyFile($config['key'], $config['key-pass']);
             }
 
             else
             {
+                $this->verbose('    - Signing without private key');
+
                 $box->setSignatureAlgorithm($config['algorithm']);
             }
 
             chdir($cwd);
+        }
+
+        /**
+         * Writes to output only if verbose.
+         *
+         * @param string|array $messages The message as an array of lines of a single string
+         * @param integer $type The type of output
+         */
+        protected function verbose($message, $type = 0)
+        {
+            if ($this->verbose)
+            {
+                $this->output->writeln($message, $type);
+            }
         }
 
         /**
@@ -174,15 +227,24 @@
                 $config['alias']
             );
 
-            $box->setIntercept($config['intercept']);
+            if ($config['intercept'])
+            {
+                $this->verbose('    - Enabling file function intercept');
+
+                $box->setIntercept(true);
+            }
 
             if (null !== $config['metadata'])
             {
+                $this->verbose('    - Setting metadata');
+
                 $box->setMetadata($config['metadata']);
             }
 
             if ($config['replacements'])
             {
+                $this->verbose('    - Setting replacement values');
+
                 $box->setReplacements($config['replacements']);
             }
 
