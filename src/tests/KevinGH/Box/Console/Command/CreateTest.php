@@ -27,6 +27,7 @@
             $file = $this->setConfig(array(
                 'files' => 'src/lib/class.php',
                 'git-version' => 'git_version',
+                'intercept' => true,
                 'main' => 'bin/main.php',
                 'key' => 'test.pem',
                 'key-pass' => true,

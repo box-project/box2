@@ -74,6 +74,7 @@
                 'files' => array(),
                 'finder' => array(),
                 'git-version' => null,
+                'intercept' => false,
                 'key' => null,
                 'key-pass' => null,
                 'main' => null,

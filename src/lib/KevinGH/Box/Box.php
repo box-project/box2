@@ -38,6 +38,13 @@
         private $compactor;
 
         /**
+         * Include interceptFileFuncs() in stub?
+         *
+         * @type boolean
+         */
+        private $intercept = false;
+
+        /**
          * The relative path of the main script.
          *
          * @type string
@@ -138,6 +145,16 @@ Phar::mapPhar('{$this->alias}');
 STUB
             ;
 
+            if ($this->intercept)
+            {
+                $stub .= <<<STUB
+Phar::interceptFileFuncs();
+
+
+STUB
+                ;
+            }
+
             if ($this->main)
             {
                 $stub .= <<<STUB
@@ -235,6 +252,16 @@ STUB
         public function setCompactor(Closure $compactor)
         {
             $this->compactor = $compactor;
+        }
+
+        /**
+         * Toggles the interceptFileFunc() flag for the generated stub.
+         *
+         * @param boolean $toggle The new intercept state.
+         */
+        public function setIntercept($toggle)
+        {
+            $this->intercept = (bool) $toggle;
         }
 
         /**

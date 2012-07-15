@@ -88,6 +88,18 @@
             );
         }
 
+        public function testCreateStubWithIntercept()
+        {
+            $box = new Box('test.phar');
+
+            $box->setIntercept(true);
+
+            $this->assertEquals(
+                $this->resource('stub-intercept.php'),
+                $box->createStub()
+            );
+        }
+
         public function testDoReplacements()
         {
             $box = new Box('test.phar');

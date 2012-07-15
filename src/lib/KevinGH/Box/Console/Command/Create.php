@@ -174,6 +174,8 @@
                 $config['alias']
             );
 
+            $box->setIntercept($config['intercept']);
+
             if ($config['replacements'])
             {
                 $box->setReplacements($config['replacements']);
