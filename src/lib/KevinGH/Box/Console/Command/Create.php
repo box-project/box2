@@ -51,6 +51,11 @@
         /** {@inheritDoc} */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            if (true == ini_get('phar.readonly'))
+            {
+                throw new RuntimeException('PHAR writing has been disabled by "phar.readonly".');
+            }
+
             $this->verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
 
             $config = $this->getHelper('config');

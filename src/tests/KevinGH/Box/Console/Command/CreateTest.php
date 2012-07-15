@@ -11,7 +11,8 @@
 
     namespace KevinGH\Box\Console\Command;
 
-    use KevinGH\Box\Test\CommandTestCase,
+    use Exception,
+        KevinGH\Box\Test\CommandTestCase,
         KevinGH\Box\Test\Dialog,
         Symfony\Component\Console\Output\OutputInterface;
 
@@ -73,6 +74,52 @@
                 "Success!\nVersion: v1.0-ALPHA1",
                 $this->command('php ' . escapeshellarg(dirname($file) . '/default.phar'))
             );
+        }
+
+        /**
+         * @expectedException RuntimeException
+         * @expectedExceptionMessage PHAR writing has been disabled by "phar.readonly".
+         */
+        public function testExecuteReadonly()
+        {
+            if (false === extension_loaded('runkit'))
+            {
+                $this->markTestSkipped('The "runkit" extension is not available.');
+
+                return;
+            }
+
+            $this->prepareApp();
+
+            $file = $this->setConfig(array(
+                'files' => 'src/lib/class.php',
+                'git-version' => 'git_version',
+                'main' => 'bin/main.php',
+                'stub' => true
+            ));
+
+            $this->redefine('ini_get', '', 'return "1";');
+
+            try
+            {
+                $this->tester->execute(array(
+                    'command' => self::COMMAND,
+                    '--config' => $file
+                ), array(
+                    'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+                ));
+            }
+
+            catch (Exception $exception)
+            {
+            }
+
+            $this->restore('ini_get');
+
+            if (isset($exception))
+            {
+                throw $exception;
+            }
         }
 
         /**
