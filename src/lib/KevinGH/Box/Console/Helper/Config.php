@@ -54,6 +54,7 @@
                     'key' => null,
                     'key-pass' => null,
                     'main' => null,
+                    'metadata' => null,
                     'output' => 'default.phar',
                     'replacements' => array(),
                     'stub' => null

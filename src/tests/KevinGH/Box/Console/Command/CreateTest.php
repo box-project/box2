@@ -14,6 +14,7 @@
     use Exception,
         KevinGH\Box\Test\CommandTestCase,
         KevinGH\Box\Test\Dialog,
+        Phar,
         Symfony\Component\Console\Output\OutputInterface;
 
     class CreateTest extends CommandTestCase
@@ -29,6 +30,7 @@
                 'git-version' => 'git_version',
                 'intercept' => true,
                 'main' => 'bin/main.php',
+                'metadata' => array('rand' => $rand = rand()),
                 'key' => 'test.pem',
                 'key-pass' => true,
                 'stub' => 'src/stub.php'
@@ -51,6 +53,12 @@
                 "Success!\nVersion: v1.0-ALPHA1",
                 $this->command('php ' . escapeshellarg(dirname($file) . '/default.phar'))
             );
+
+            $phar = new Phar(dirname($file) . '/default.phar');
+
+            $metadata = $phar->getMetadata();
+
+            $this->assertEquals($rand, $metadata['rand']);
         }
 
         public function testExecuteDefaultStub()

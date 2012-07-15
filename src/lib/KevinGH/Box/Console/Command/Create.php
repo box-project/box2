@@ -176,6 +176,11 @@
 
             $box->setIntercept($config['intercept']);
 
+            if (null !== $config['metadata'])
+            {
+                $box->setMetadata($config['metadata']);
+            }
+
             if ($config['replacements'])
             {
                 $box->setReplacements($config['replacements']);
