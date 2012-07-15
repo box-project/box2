@@ -1,6 +1,6 @@
 {
     "type": "library",
-    "name": "kherge/Box",
+    "name": "kherge/box",
     "description": "A tool to simplify building PHARs.",
     "homepage": "http://github.com/kherge/Box",
     "license": "MIT",
