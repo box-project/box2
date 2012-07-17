@@ -241,5 +241,15 @@
                     $error['message']
                 ));
             }
+
+            if (false === @ chmod($_SERVER['argv'][0], 0755))
+            {
+                $error = error_get_last();
+
+                throw new RuntimeException(sprintf(
+                    'The application could not be marked as executable: %s',
+                    $error['message']
+                ));
+            }
         }
     }
