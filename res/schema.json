@@ -1,0 +1,74 @@
+{
+    "description": "Settings used to build a new PHAR using Box.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "algorithm": {
+            "description": "The algorithm to use for signing the PHAR.",
+            "type": ["string", "number"]
+        },
+        "alias": {
+            "description": "The internal PHAR alias used for I/O streams.",
+            "type": "string"
+        },
+        "base-path": {
+            "description": "The base path where relative paths are resolved to.",
+            "type": "string"
+        },
+        "blacklist": {
+            "description": "A list of relative file paths to skip.",
+            "items": "string",
+            "type": ["array", "string"]
+        },
+        "directories": {
+            "description": "A list of relative directory paths to search for scripts.",
+            "items": "string",
+            "type": ["array", "string"]
+        },
+        "files": {
+            "description": "A list of relative file paths to include.",
+            "items": "string",
+            "type": ["array", "string"]
+        },
+        "finder": {
+            "description": "A list of Finder configuration settings.",
+            "type": "array"
+        },
+        "git-version": {
+            "description": "The replacement name for the current Git tag or commit hash.",
+            "type": "string"
+        },
+        "intercept": {
+            "description": "Allow the PHAR to intercept file functions?",
+            "type": "boolean"
+        },
+        "key": {
+            "description": "The path to the private key used for signing.",
+            "type": "string"
+        },
+        "key-pass": {
+            "description": "The password or prompt flag used for the private key.",
+            "type": ["boolean", "string"]
+        },
+        "main": {
+            "description": "The file path to the main script.",
+            "type": "string"
+        },
+        "metadata": {
+            "description": "Extra PHAR metadata.",
+            "type": "any"
+        },
+        "output": {
+            "description": "The file name or path of the new PHAR.",
+            "type": "string"
+        },
+        "replacements": {
+            "description": "A list of replacement names and their values.",
+            "type": ["array", "object"]
+        },
+        "stub": {
+            "description": "The relative file path to the stub file, or the flag to use the default stub.",
+            "type": ["boolean", "string"]
+        }
+    }
+}

@@ -263,30 +263,16 @@
         /**
          * Loads the configuration file.
          *
-         * @throws RuntimeException If the data could not be loaded.
+         * @throws InvalidArgumentException If the data is invalid.
          * @param string $file The configuration file path.
          */
         public function load($file)
         {
-            if (false === ($data = @ file_get_contents($file)))
-            {
-                $error = error_get_last();
+            $json = $this->getHelperSet()->get('json');
 
-                throw new RuntimeException(sprintf(
-                    'The configuration file could not be read: %s',
-                    $error['message']
-                ));
-            }
+            $data = $json->parse($file);
 
-            if (null === ($data = json_decode($data, true)))
-            {
-                if (JSON_ERROR_NONE !== ($code = json_last_error()))
-                {
-                    throw new JSONException($code);
-                }
-
-                $data = array();
-            }
+            $json->validate($file, $data);
 
             if (false === empty($data['algorithm']))
             {

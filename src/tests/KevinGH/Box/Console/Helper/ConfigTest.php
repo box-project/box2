@@ -395,45 +395,12 @@
 
             $config = new Config;
 
+            $config->setHelperSet(new HelperSet(array(new JSON)));
+
             $config->load($file);
 
             $this->assertEquals(Box::SHA256, $config['algorithm']);
             $this->assertEquals('v1.0-ALPHA1', $config['replacements']['git_version']);
-        }
-
-        public function testLoadNull()
-        {
-            $file = $this->file();
-
-            $config = new Config;
-
-            $config->load($file);
-
-            $this->assertNull($config['main']);
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The configuration file could not be read:
-         */
-        public function testLoadReadError()
-        {
-            $config = new Config;
-
-            $config->load('test.json');
-        }
-
-        /**
-         * @expectedException KevinGH\Box\Console\Exception\JSONException
-         * @expectedExceptionMessage Syntax error
-         */
-        public function testLoadParseError()
-        {
-            $file = $this->file('{');
-
-            $config = new Config;
-
-            $config->load($file);
         }
 
         /**
@@ -447,6 +414,8 @@
             ))));
 
             $config = new Config;
+
+            $config->setHelperSet(new HelperSet(array(new JSON)));
 
             $config->load($file);
         }

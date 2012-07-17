@@ -63,6 +63,7 @@
             $helperSet = parent::getDefaultHelperSet();
 
             $helperSet->set(new Helper\Config);
+            $helperSet->set(new Helper\JSON);
 
             return $helperSet;
         }
