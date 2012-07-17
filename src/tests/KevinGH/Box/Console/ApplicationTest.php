@@ -54,6 +54,11 @@
             );
 
             $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Validate',
+                $app->find('validate')
+            );
+
+            $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Verify',
                 $app->find('verify')
             );
@@ -66,6 +71,11 @@
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Helper\Config',
                 $app->getHelperSet()->get('config')
+            );
+
+            $this->assertInstanceOf(
+                'KevinGH\Box\Console\Helper\JSON',
+                $app->getHelperSet()->get('json')
             );
         }
     }
