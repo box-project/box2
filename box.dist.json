@@ -1,6 +1,9 @@
 {
     "alias": "box.phar",
     "directories": ["src/lib"],
+    "files": [
+        "res/schema.json"
+    ],
     "finder": [
         {
             "name": "*.php",
