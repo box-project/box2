@@ -61,6 +61,29 @@
             $this->assertEquals($rand, $metadata['rand']);
         }
 
+        public function testExecuteNoFiles()
+        {
+            $this->prepareApp('phpunit');
+
+            $file = $this->setConfig(array());
+
+            $this->tester->execute(array(
+                'command' => self::COMMAND,
+                '--config' => $file
+            ), array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            ));
+
+            $this->assertRegExp('/No files found/', $this->tester->getDisplay());
+
+            $this->tester->execute(array(
+                'command' => self::COMMAND,
+                '--config' => $file
+            ));
+
+            $this->assertRegExp('/no files found/', $this->tester->getDisplay());
+        }
+
         public function testExecuteDefaultStub()
         {
             $this->prepareApp('phpunit');

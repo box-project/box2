@@ -98,7 +98,7 @@
                 $output->writeln('    - Adding files');
             }
 
-            foreach ($config->getFiles() as $file)
+            foreach ($files = $config->getFiles() as $file)
             {
                 $relative = $config->relativeOf($file);
 
@@ -110,6 +110,14 @@
                 $box->importFile($relative, $file);
             }
 
+            if ($this->verbose)
+            {
+                if (empty($files))
+                {
+                    $output->writeln('        - No files found');
+                }
+            }
+
             $this->end($box);
 
             if ($this->verbose)
@@ -119,7 +127,15 @@
 
             else
             {
-                $output->writeln(' done.');
+                if ($files)
+                {
+                    $output->writeln(' done.');
+                }
+
+                else
+                {
+                    $output->writeln(' no files found.');
+                }
             }
         }
 
