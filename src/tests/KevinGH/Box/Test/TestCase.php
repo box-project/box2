@@ -291,9 +291,16 @@ SOURCE
          * Returns the contents of the resource file.
          *
          * @param string $file The resource file name.
+         * @param boolean $return Return the file path?
+         * @return string The file contents or path.
          */
-        public function resource($file)
+        public function resource($file, $return = false)
         {
+            if ($return)
+            {
+                return RESOURCES . $file;
+            }
+
             return file_get_contents(RESOURCES . $file);
         }
 
