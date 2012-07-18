@@ -127,7 +127,7 @@
 
             else
             {
-                if ($files)
+                if ($files || $config['main'])
                 {
                     $output->writeln(' done.');
                 }
