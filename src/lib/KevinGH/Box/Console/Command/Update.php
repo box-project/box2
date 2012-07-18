@@ -101,10 +101,7 @@
                     ));
                 }
 
-                if (null === ($data = json_decode($data, true)))
-                {
-                    throw new JSONException(json_last_error());
-                }
+                $data = $this->getHelper('json')->parse($this->updateURL, $data);
 
                 foreach ($data as $item)
                 {
