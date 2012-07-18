@@ -44,6 +44,7 @@
 
             $commands[] = new Command\Create;
             $commands[] = new Command\Extract;
+            $commands[] = new Command\Info;
             $commands[] = new Command\Update;
             $commands[] = new Command\Validate;
             $commands[] = new Command\Verify;

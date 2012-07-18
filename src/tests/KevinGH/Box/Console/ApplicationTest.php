@@ -49,6 +49,11 @@
             );
 
             $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Info',
+                $app->find('info')
+            );
+
+            $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Update',
                 $app->find('update')
             );
