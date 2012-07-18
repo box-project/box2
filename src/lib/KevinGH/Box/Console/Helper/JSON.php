@@ -40,6 +40,30 @@
         }
 
         /**
+         * Parses the JSON string, checking for errors.
+         *
+         * @param string $file The file path.
+         * @param string $string The JSON data.
+         * @param boolean $array Return as associative array instead of object?
+         * @return mixed The result.
+         */
+        public function parse($file, $string, $array = true)
+        {
+            if (null === ($data = json_decode($string, $array)))
+            {
+                if (JSON_ERROR_NONE !== json_last_error())
+                {
+                    $this->validateSyntax($file, $string);
+
+                    // @codeCoverageIgnoreStart
+                }
+                // @codeCoverageIgnoreEnd
+            }
+
+            return $data;
+        }
+
+        /**
          * Parses the JSON file, checking for errors.
          *
          * @throws InvalidArgumentException
@@ -48,7 +72,7 @@
          * @param boolean $array Return as associative array instead of object?
          * @return mixed The result.
          */
-        public function parse($file, $array = true)
+        public function parseFile($file, $array = true)
         {
             if (false === file_exists($file))
             {
@@ -69,18 +93,7 @@
                 ));
             }
 
-            if (null === ($data = json_decode($string, $array)))
-            {
-                if (JSON_ERROR_NONE !== json_last_error())
-                {
-                    $this->validateSyntax($file, $string);
-
-                    // @codeCoverageIgnoreStart
-                }
-                // @codeCoverageIgnoreEnd
-            }
-
-            return $data;
+            return $this->parse($file, $string, $array);
         }
 
         /**
@@ -96,7 +109,7 @@
 
             if (null === $schema)
             {
-                $schema = $this->parse(BOX_SCHEMA_FILE, false);
+                $schema = $this->parseFile(BOX_SCHEMA_FILE, false);
             }
 
             $validator = new Validator;

@@ -270,7 +270,7 @@
         {
             $json = $this->getHelperSet()->get('json');
 
-            $data = $json->parse($file);
+            $data = $json->parseFile($file);
 
             $json->validate($file, $data);
 

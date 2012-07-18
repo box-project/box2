@@ -23,44 +23,44 @@
             $this->json = new JSON;
         }
 
-        public function testParse()
+        public function testParseFile()
         {
             $file = $this->file(utf8_encode(json_encode(array('rand' => $rand = rand()))));
 
-            $this->assertEquals(array('rand' => $rand), $this->json->parse($file));
+            $this->assertEquals(array('rand' => $rand), $this->json->parseFile($file));
 
             $file = $this->file('');
 
-            $this->assertNull($this->json->parse($file));
+            $this->assertNull($this->json->parseFile($file));
         }
 
         /**
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage The file "test.json" does not exist.
          */
-        public function testParseNotExist()
+        public function testParseFileNotExist()
         {
-            $this->json->parse('test.json');
+            $this->json->parseFile('test.json');
         }
 
         /**
          * @expectedException RuntimeException
          * @expectedExceptionMessage The file
          */
-        public function testParseReadError()
+        public function testParseFileReadError()
         {
-            $this->json->parse('/root');
+            $this->json->parseFile('/root');
         }
 
         /**
          * @expectedException Seld\JsonLint\ParsingException
          * @expectedExceptionMessage The file
          */
-        public function testParseInvalid()
+        public function testParseFileInvalid()
         {
             $file = $this->file('{');
 
-            $this->json->parse($file);
+            $this->json->parseFile($file);
         }
 
         public function testValidate()
