@@ -146,7 +146,10 @@
          */
         public function file($content = null)
         {
-            $file = tempnam(sys_get_temp_dir(), self::PREFIX);
+            if (false === ($file = tempnam(sys_get_temp_dir(), self::PREFIX)))
+            {
+                throw new RuntimeException('Could not create temporary file.');
+            }
 
             if (null !== $content)
             {
