@@ -201,14 +201,6 @@
                 $box = new Box($temp, 0, null);
             }
 
-            catch (PharException $exception)
-            {
-                throw new RuntimeException(sprintf(
-                    'The PHAR is corrupt: %s',
-                    $exception->getMessage()
-                ));
-            }
-
             catch (UnexpectedValueException $exception)
             {
                 throw new RuntimeException(sprintf(
