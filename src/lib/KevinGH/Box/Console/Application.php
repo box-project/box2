@@ -23,15 +23,8 @@
      */
     class Application extends _Application
     {
-        /**
-         * The application version.
-         *
-         * @type string
-         */
-        const VERSION = '@git_version@';
-
         /** {@inheritDoc} */
-        public function __construct($name = 'Box', $version = self::VERSION)
+        public function __construct($name = 'Box', $version = '@git_version@')
         {
             parent::__construct($name, $version);
 

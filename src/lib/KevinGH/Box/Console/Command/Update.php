@@ -30,6 +30,27 @@
      */
     class Update extends Command
     {
+        /**
+         * The update information.
+         *
+         * @type array
+         */
+        private $updateInfo;
+
+        /**
+         * The update name.
+         *
+         * @type string
+         */
+        private $updateName = '@update_name@';
+
+        /**
+         * The update URL.
+         *
+         * @type string
+         */
+        private $updateURL = '@update_url@';
+
         /** {@inheritDoc} */
         public function configure()
         {
@@ -68,11 +89,9 @@
          */
         private function getInfo()
         {
-            static $info;
-
-            if (null === $info)
+            if (null === $this->updateInfo)
             {
-                if (false === ($data = @ file_get_contents('@update_url@')))
+                if (false === ($data = @ file_get_contents($this->updateURL)))
                 {
                     $error = error_get_last();
 
@@ -89,7 +108,7 @@
 
                 foreach ($data as $item)
                 {
-                    if ('@update_name@' == $item['name'])
+                    if ($this->updateName == $item['name'])
                     {
                         break;
                     }
@@ -102,20 +121,20 @@
                     throw new RuntimeException('Unable to find any updates.');
                 }
 
-                $info = array(
+                $this->updateInfo = array(
                     'name' => $item['name'],
                     'stamp' => new DateTime($item['created_at']),
                     'url' => $item['html_url'],
                     'version' => $item['description']
                 );
 
-                if (preg_match('/^[a-f0-9]{40}$/', $info['version']))
+                if (preg_match('/^[a-f0-9]{40}$/', $this->updateInfo['version']))
                 {
-                    $info['version'] = substr($info['version'], 0, 7);
+                    $this->updateInfo['version'] = substr($this->updateInfo['version'], 0, 7);
                 }
             }
 
-            return $info;
+            return $this->updateInfo;
         }
 
         /**
@@ -214,14 +233,16 @@
          */
         private function isCurrent()
         {
-            if ('git_version' === trim(Application::VERSION, '@'))
+            $version = $this->getApplication()->getVersion();
+
+            if ('git_version' === trim($version, '@'))
             {
                 throw new RuntimeException('Use `git pull` to update.');
             }
 
             $info = $this->getInfo();
 
-            return (Application::VERSION == $info['version']);
+            return ($version == $info['version']);
         }
 
         /**
