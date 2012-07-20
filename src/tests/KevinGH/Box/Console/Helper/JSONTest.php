@@ -74,8 +74,20 @@
                     'path/to/file2'
                 ),
                 'directories' => '/path/to/dir',
+                'directories-bin' => '/path/to/dir',
                 'files' => '/path/to/file',
+                'files-bin' => '/path/to/file',
                 'finder' => array(
+                    array(
+                        'name' => array('*.php', '*.phtml'),
+                        'in' => array('/path/to/dir', '/path/to/another/dir')
+                    ),
+                    array(
+                        'name' => '*.php',
+                        'in' => '/path/to/yet/another/dir'
+                    )
+                ),
+                'finder-bin' => array(
                     array(
                         'name' => array('*.php', '*.phtml'),
                         'in' => array('/path/to/dir', '/path/to/another/dir')

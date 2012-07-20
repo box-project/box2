@@ -44,7 +44,7 @@
             "description": "A list of Finder configuration settings.",
             "type": "array"
         },
-        "finder": {
+        "finder-bin": {
             "description": "(binary safe) A list of Finder configuration settings.",
             "type": "array"
         },
