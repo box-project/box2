@@ -90,6 +90,7 @@
 
             $file = $this->setConfig(array(
                 'files' => 'src/lib/class.php',
+                'files-bin' => 'assets/favicon.ico',
                 'git-version' => 'git_version',
                 'main' => 'bin/main.php',
                 'stub' => true
@@ -100,10 +101,18 @@
                 '--config' => $file
             ));
 
+            $dir = dirname($file);
+
             $this->assertEquals(
                 "Success!\nVersion: v1.0-ALPHA1",
-                $this->command('php ' . escapeshellarg(dirname($file) . '/default.phar'))
+                $this->command('php ' . "$dir/default.phar")
             );
+
+            $phar = new Phar("$dir/default.phar");
+
+            copy($phar['assets/favicon.ico'], "$dir/favicon.ico");
+
+            $this->assertFileEquals($this->dir . '/assets/favicon.ico', $this->dir . '/favicon.ico');
         }
 
         /**

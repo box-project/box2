@@ -71,8 +71,11 @@
                 'base-path' => null,
                 'blacklist' => array(),
                 'directories' => array(),
+                'directories-bin' => array(),
                 'files' => array(),
+                'files-bin' => array(),
                 'finder' => array(),
+                'finder-bin' => array(),
                 'git-version' => null,
                 'intercept' => false,
                 'key' => null,
@@ -84,7 +87,7 @@
                 'stub' => null
             );
 
-            $this->assertEquals($expected, $config->getArrayCopy());
+            $this->assertSame($expected, $config->getArrayCopy());
         }
 
         public function testFindGiven()

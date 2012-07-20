@@ -78,8 +78,10 @@
         public function prepareApp($pass = null)
         {
             mkdir($this->dir . '/src/lib', 0755, true);
+            mkdir($this->dir . '/assets');
             mkdir($this->dir . '/bin');
 
+            copy(RESOURCES . 'app/assets/favicon.ico', $this->dir . '/assets/favicon.ico');
             copy(RESOURCES . 'app/bin/main.php', $this->dir . '/bin/main.php');
             copy(RESOURCES . 'app/src/stub.php', $this->dir . '/src/stub.php');
             copy(RESOURCES . 'app/src/lib/class.php', $this->dir . '/src/lib/class.php');

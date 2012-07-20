@@ -47,8 +47,11 @@
                     'base-path' => null,
                     'blacklist' => array(),
                     'directories' => array(),
+                    'directories-bin' => array(),
                     'files' => array(),
+                    'files-bin' => array(),
                     'finder' => array(),
+                    'finder-bin' => array(),
                     'git-version' => null,
                     'intercept' => false,
                     'key' => null,
@@ -127,10 +130,13 @@
          * Returns a list of files found using the configuration.
          *
          * @throws InvalidArgumentException If a path is not a file.
+         * @param boolean $bin Use binary-safe paths?
          * @return array The list of files.
          */
-        public function getFiles()
+        public function getFiles($bin = false)
         {
+            $bin = $bin ? '-bin' : '';
+
             $files = array();
 
             if (is_dir($this['base-path']))
@@ -140,7 +146,7 @@
                 chdir($this['base-path']);
             }
 
-            foreach ((array) $this['files'] as $file)
+            foreach ((array) $this["files$bin"] as $file)
             {
                 if (false === is_file($file))
                 {
@@ -155,7 +161,7 @@
                 $files[$this->relativeOf($absolute)] = $absolute;
             }
 
-            foreach ((array) $this['directories'] as $dir)
+            foreach ((array) $this["directories$bin"] as $dir)
             {
                 $finder = new Finder;
 
@@ -172,7 +178,7 @@
                 }
             }
 
-            foreach ((array) $this['finder'] as $methods)
+            foreach ((array) $this["finder$bin"] as $methods)
             {
                 $finder = new Finder;
 

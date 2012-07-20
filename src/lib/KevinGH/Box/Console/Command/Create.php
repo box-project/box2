@@ -93,30 +93,8 @@
 
             $box = $this->start();
 
-            if ($this->verbose)
-            {
-                $output->writeln('    - Adding files');
-            }
-
-            foreach ($files = $config->getFiles() as $file)
-            {
-                $relative = $config->relativeOf($file);
-
-                if ($this->verbose)
-                {
-                    $output->writeln("        - $relative");
-                }
-
-                $box->importFile($relative, $file);
-            }
-
-            if ($this->verbose)
-            {
-                if (empty($files))
-                {
-                    $output->writeln('        - No files found');
-                }
-            }
+            $count = $this->add($box);
+            $count += $this->add($box, true);
 
             $this->end($box);
 
@@ -127,7 +105,7 @@
 
             else
             {
-                if ($files || $config['main'])
+                if (0 < $count)
                 {
                     $output->writeln(' done.');
                 }
@@ -137,6 +115,57 @@
                     $output->writeln(' no files found.');
                 }
             }
+        }
+
+        /**
+         * Adds files to the PHAR.
+         *
+         * @param Box $box The Box instance.
+         * @param boolean $bin Binary safe adding of files?
+         * @return integer The number of files added.
+         */
+        protected function add(Box $box, $bin = false)
+        {
+            if ($this->verbose)
+            {
+                $this->output->writeln(
+                    $bin ? '    - Adding files'
+                         : '    - Adding files (binary safe)'
+                );
+            }
+
+            $counter = 0;
+
+            $config = $this->getHelper('config');
+
+            foreach ($config->getFiles($bin) as $file)
+            {
+                $relative = $config->relativeOf($file);
+
+                if ($this->verbose)
+                {
+                    $this->output->writeln("        - $relative");
+                }
+
+                if ($bin)
+                {
+                    $box->addFile($file, $relative);
+                }
+
+                else
+                {
+                    $box->importFile($relative, $file);
+                }
+
+                $counter++;
+            }
+
+            if ($this->verbose && (0 == $counter))
+            {
+                $this->output->writeln('        - No files found');
+            }
+
+            return $counter;
         }
 
         /**
