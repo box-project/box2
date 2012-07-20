@@ -129,8 +129,8 @@
             if ($this->verbose)
             {
                 $this->output->writeln(
-                    $bin ? '    - Adding files'
-                         : '    - Adding files (binary safe)'
+                    $bin ? '    - Adding files (binary safe)'
+                         : '    - Adding files'
                 );
             }
 
