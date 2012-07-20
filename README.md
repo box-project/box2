@@ -16,9 +16,6 @@ Updates can later be performed by running Box's update command:
 
 ## Usage
 
-For an explanation on available commands, please see [this guide][commands].
+Please see [the wiki][wiki] for usage information.
 
-For an explanation on available configuration settings, please see [this guide][config].
-
-[commands]: https://github.com/kherge/Box/wiki/Commands
-[config]: https://github.com/kherge/Box/wiki/Configuration
+[wiki]: https://github.com/kherge/Box/wiki
