@@ -26,6 +26,7 @@
             $this->prepareApp('phpunit');
 
             $file = $this->setConfig(array(
+                'chmod' => "0755",
                 'files' => 'src/lib/class.php',
                 'git-version' => 'git_version',
                 'intercept' => true,
@@ -49,12 +50,16 @@
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
             ));
 
+            $pharFile = dirname($file) . '/default.phar';
+
+            $this->assertEquals(0755, fileperms($pharFile) & 511);
+
             $this->assertEquals(
                 "Success!\nVersion: v1.0-ALPHA1",
-                $this->command('php ' . escapeshellarg(dirname($file) . '/default.phar'))
+                $this->command('php ' . escapeshellarg($pharFile))
             );
 
-            $phar = new Phar(dirname($file) . '/default.phar');
+            $phar = new Phar($pharFile);
 
             $metadata = $phar->getMetadata();
 
@@ -242,5 +247,52 @@
             ), array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
             ));
+        }
+
+        /**
+         * @expectedException RuntimeException
+         * @expectedExceptionMessage The PHAR could not be chmodded to "0755":
+         */
+        public function testExecuteChmodFail()
+        {
+            if (false === extension_loaded('runkit'))
+            {
+                $this->markTestSkipped('The "runkit" extension is not available.');
+
+                return;
+            }
+
+            $this->prepareApp();
+
+            $file = $this->setConfig(array(
+                'chmod' => "0755",
+                'files' => 'src/lib/class.php',
+                'git-version' => 'git_version',
+                'main' => 'bin/main.php',
+                'stub' => true
+            ));
+
+            $this->redefine('chmod', '', 'return false;');
+
+            try
+            {
+                $this->tester->execute(array(
+                    'command' => self::COMMAND,
+                    '--config' => $file
+                ), array(
+                    'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+                ));
+            }
+
+            catch (Exception $exception)
+            {
+            }
+
+            $this->restore('chmod');
+
+            if (isset($exception))
+            {
+                throw $exception;
+            }
         }
     }

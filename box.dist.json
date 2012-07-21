@@ -1,5 +1,6 @@
 {
     "alias": "box.phar",
+    "chmod": "0755",
     "directories": ["src/lib"],
     "files": [
         "res/schema.json"

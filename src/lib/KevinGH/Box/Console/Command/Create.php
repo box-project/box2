@@ -98,6 +98,25 @@
 
             $this->end($box);
 
+            unset($box);
+
+            if (null !== $config['chmod'])
+            {
+                if (false === @ chmod(
+                    $config['base-path'] . DIRECTORY_SEPARATOR . $config['output'],
+                    intval($config['chmod'], 8)
+                ))
+                {
+                    $error = error_get_last();
+
+                    throw new RuntimeException(sprintf(
+                        'The PHAR could not be chmodded to "%s": %s',
+                        $config['chmod'],
+                        $error['message']
+                    ));
+                }
+            }
+
             if ($this->verbose)
             {
                 $output->writeln('Done.');

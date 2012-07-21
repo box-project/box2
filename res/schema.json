@@ -20,6 +20,10 @@
             "items": "string",
             "type": ["array", "string"]
         },
+        "chmod": {
+            "description": "The permission mode for the new PHAR.",
+            "type": "integer"
+        },
         "directories": {
             "description": "A list of relative directory paths to search for scripts.",
             "items": "string",

@@ -46,6 +46,7 @@
                     'alias' => 'default.phar',
                     'base-path' => null,
                     'blacklist' => array(),
+                    'chmod' => null,
                     'directories' => array(),
                     'directories-bin' => array(),
                     'files' => array(),
