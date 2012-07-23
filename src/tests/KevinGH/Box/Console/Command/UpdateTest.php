@@ -27,9 +27,9 @@
         {
             parent::setUp();
 
-            $name = $this->property($this->command, 'updateName');
+            $matcher = $this->property($this->command, 'updateMatcher');
 
-            $name('box.phar');
+            $matcher('/box\\-(.+?)\\.phar/');
 
             $this->self = $_SERVER['argv'][0];
 
@@ -43,14 +43,14 @@
 
         public function testExecute()
         {
-            $this->app->setVersion('abcdef0');
+            $this->app->setVersion('1.0.0');
 
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
                 )
             )))));
 
@@ -62,22 +62,91 @@
             $this->assertEquals("Box has been updated!\n", $this->tester->getDisplay());
         }
 
-        public function testExecuteAlreadyUpdated()
+        public function testExecuteMajorAvailable()
         {
-            $this->app->setVersion('abcdef0');
+            $this->app->setVersion('1.0.0');
 
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
+                ),
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-2.0.0.phar'
+                )
+            )))));
+
+            $this->tester->execute(array(
+                'command' => self::COMMAND,
+                '--force' => true
+            ));
+
+            $this->assertEquals("Box has been updated but a major update (2.0.0) is available!\n", $this->tester->getDisplay());
+        }
+
+        public function testExecuteAlreadyUpdated()
+        {
+            $this->app->setVersion('1.0.0');
+
+            $this->setURL($this->file(utf8_encode(json_encode(array(
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-1.0.0-alpha.1.phar'
+                ),
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-1.0.0.phar'
                 )
             )))));
 
             $this->tester->execute(array('command' => self::COMMAND));
 
             $this->assertEquals("Box is up-to-date.\n", $this->tester->getDisplay());
+        }
+
+        public function testExecuteAlreadyUpdatedMajorAvailable()
+        {
+            $this->app->setVersion('1.0.0');
+
+            $this->setURL($this->file(utf8_encode(json_encode(array(
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-1.0.0-alpha.1.phar'
+                ),
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-1.0.0.phar'
+                ),
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-2.0.0.phar'
+                ),
+                array(
+                    'created_at' => '2012-07-17T21:49:11Z',
+                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
+                    'html_url' => $this->resource('test.phar', true),
+                    'name' => 'box-2.0.1.phar'
+                )
+            )))));
+
+            $this->tester->execute(array('command' => self::COMMAND));
+
+            $this->assertEquals("Box is up-to-date but a major update (2.0.1) is available!\n", $this->tester->getDisplay());
         }
 
         /**
@@ -99,6 +168,8 @@
          */
         public function testGetInfoNoUpdateFound()
         {
+            $this->app->setVersion('1.0.0');
+
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
@@ -119,12 +190,14 @@
          */
         public function testGetUpdateOpenFail()
         {
+            $this->app->setVersion('1.0.0');
+
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => '/does/not/exist',
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
                 )
             )))));
 
@@ -146,12 +219,14 @@
                 return;
             }
 
+            $this->app->setVersion('1.0.0');
+
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
                 )
             )))));
 
@@ -189,12 +264,14 @@
                 return;
             }
 
+            $this->app->setVersion('1.0.0');
+
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
                 )
             )))));
 
@@ -232,12 +309,14 @@
                 return;
             }
 
+            $this->app->setVersion('1.0.0');
+
             $this->setURL($this->file(utf8_encode(json_encode(array(
                 array(
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
                 )
             )))));
 
@@ -268,6 +347,8 @@
          */
         public function testGetUpdateCorrupted()
         {
+            $this->app->setVersion('1.0.0');
+
             $corrupt = $this->file(123);
 
             $this->setURL($this->file(utf8_encode(json_encode(array(
@@ -275,7 +356,7 @@
                     'created_at' => '2012-07-17T21:49:11Z',
                     'description' => 'abcdef0123456789abcdef0123456789abcdef01',
                     'html_url' => $corrupt,
-                    'name' => 'box.phar'
+                    'name' => 'box-1.0.1.phar'
                 )
             )))));
 

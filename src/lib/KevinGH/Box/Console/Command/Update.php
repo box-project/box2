@@ -15,6 +15,7 @@
         KevinGH\Box\Console\Application,
         KevinGH\Box\Box,
         KevinGH\Box\Console\Exception\JSONException,
+        KevinGH\Version\Version,
         PharException,
         RuntimeException,
         Symfony\Component\Console\Command\Command,
@@ -31,6 +32,27 @@
     class Update extends Command
     {
         /**
+         * The flag that allows updates to the next major version.
+         *
+         * @type boolean
+         */
+        private $allowMajor = false;
+
+        /**
+         * The current version.
+         *
+         * @type Version
+         */
+        private $currentVersion;
+
+        /**
+         * The next major update.
+         *
+         * @type Version
+         */
+        private $nextMajor;
+
+        /**
          * The update information.
          *
          * @type array
@@ -38,11 +60,11 @@
         private $updateInfo;
 
         /**
-         * The update name.
+         * The update matching regex.
          *
          * @type string
          */
-        private $updateName = '@update_name@';
+        private $updateMatcher = '@update_matcher@';
 
         /**
          * The update URL.
@@ -63,21 +85,67 @@
                 InputOption::VALUE_NONE,
                 'Re-download if already current version.'
             );
+
+            $this->addOption(
+                'major',
+                'm',
+                InputOption::VALUE_NONE,
+                'Allow update to next major version.'
+            );
         }
 
         /** {@inheritDoc} */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $this->allowMajor = $input->getOption('major');
+
             if ($this->isCurrent() && (false === $input->getOption('force')))
             {
-                $output->writeln('<info>Box is up-to-date.</info>');
+                if ($this->nextMajor)
+                {
+                    $output->writeln(sprintf(
+                        '<info>Box is up-to-date</info><comment> but a major update (%s) is available!</comment>',
+                        $this->nextMajor
+                    ));
+                }
+
+                else
+                {
+                    $output->writeln('<info>Box is up-to-date.</info>');
+                }
 
                 return 0;
             }
 
             $this->replaceSelf($this->getUpdate());
 
-            $output->writeln('<info>Box has been updated!</info>');
+            if ($this->nextMajor)
+            {
+                $output->writeln(sprintf(
+                    '<info>Box has been updated</info><comment> but a major update (%s) is available!</comment>',
+                    $this->nextMajor
+                ));
+            }
+
+            else
+            {
+                $output->writeln('<info>Box has been updated!</info>');
+            }
+        }
+
+        /**
+         * Returns the current version.
+         *
+         * @return Version The version.
+         */
+        private function getCurrentVersion()
+        {
+            if (null === $this->currentVersion)
+            {
+                $this->currentVersion = new Version($this->getApplication()->getVersion());
+            }
+
+            return $this->currentVersion;
         }
 
         /**
@@ -101,34 +169,59 @@
                     ));
                 }
 
-                $data = $this->getHelper('json')->parse($this->updateURL, $data);
+                $current = $this->getCurrentVersion();
 
-                foreach ($data as $item)
+                $downloads = $this->getHelper('json')->parse($this->updateURL, $data);
+
+                $list = array();
+
+                foreach ($downloads as $download)
                 {
-                    if ($this->updateName == $item['name'])
+                    if (preg_match($this->updateMatcher, $download['name']))
                     {
-                        break;
-                    }
+                        $version = new Version(preg_replace($this->updateMatcher, '\\1', $download['name']));
 
-                    unset($item);
+                        if ($this->allowMajor || ($version->getMajor() == $current->getMajor()))
+                        {
+                            $list[] = array($version, $download);
+                        }
+
+                        elseif ($version->getMajor() > $current->getMajor())
+                        {
+                            if ($this->nextMajor)
+                            {
+                                if ($version->isGreaterThan($this->nextMajor))
+                                {
+                                    $this->nextMajor = $version;
+                                }
+                            }
+
+                            else
+                            {
+                                $this->nextMajor = $version;
+                            }
+                        }
+                    }
                 }
 
-                if (false === isset($item))
+                if (empty($list))
                 {
                     throw new RuntimeException('Unable to find any updates.');
                 }
 
-                $this->updateInfo = array(
-                    'name' => $item['name'],
-                    'stamp' => new DateTime($item['created_at']),
-                    'url' => $item['html_url'],
-                    'version' => $item['description']
-                );
-
-                if (preg_match('/^[a-f0-9]{40}$/', $this->updateInfo['version']))
+                usort($list, function ($a, $b)
                 {
-                    $this->updateInfo['version'] = substr($this->updateInfo['version'], 0, 7);
-                }
+                    return $a[0]->compareTo($b[0]);
+                });
+
+                $item = array_shift($list);
+
+                $this->updateInfo = array(
+                    'name' => $item[1]['name'],
+                    'stamp' => new DateTime($item[1]['created_at']),
+                    'url' => $item[1]['html_url'],
+                    'version' => $item[0]
+                );
             }
 
             return $this->updateInfo;
@@ -231,7 +324,9 @@
 
             $info = $this->getInfo();
 
-            return ($version == $info['version']);
+            $current = $this->getCurrentVersion();
+
+            return ($current->isEqualTo($info['version']) || $current->isGreaterThan($info['version']));
         }
 
         /**
