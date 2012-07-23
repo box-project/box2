@@ -8,7 +8,7 @@ Box is a library and command line application for simplifying the PHAR creation 
 
 To install, you need to run this command in your shell:
 
-    curl -s http://kherge.github.com/Box/installer.php | php
+    $ curl -s http://kherge.github.com/Box/installer.php | php
 
 Updates can later be performed by running Box's update command:
 
