@@ -53,10 +53,7 @@
                 $app->find('info')
             );
 
-            $this->assertInstanceOf(
-                'KevinGH\Box\Console\Command\Update',
-                $app->find('update')
-            );
+            $this->assertFalse($app->has('update'));
 
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Validate',
@@ -69,9 +66,24 @@
             );
         }
 
+        public function testGetDefaultCommandsWithUpdate()
+        {
+            $app = new Application('Box', '1.0.0');
+
+            $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Update',
+                $app->find('update')
+            );
+        }
+
         public function testGetDefaultHelperSet()
         {
             $app = new Application;
+
+            $this->assertInstanceOf(
+                'KevinGH\Amend\Helper',
+                $app->getHelperSet()->get('amend')
+            );
 
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Helper\Config',

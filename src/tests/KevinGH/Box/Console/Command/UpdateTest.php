@@ -12,24 +12,27 @@
     namespace KevinGH\Box\Console\Command;
 
     use Exception,
-        KevinGH\Box\Test\CommandTestCase,
-        KevinGH\Box\Test\Dialog,
-        Phar,
-        Symfony\Component\Console\Output\OutputInterface;
+        KevinGH\Box\Test\CommandTestCase;
 
     class UpdateTest extends CommandTestCase
     {
         const COMMAND = 'update';
 
+        private $url;
         private $self;
 
-        protected function setUp()
+        protected function setUp($name = 'Box', $version = '@git_version@')
         {
-            parent::setUp();
+            parent::setUp($name, '1.0.0');
 
-            $matcher = $this->property($this->command, 'updateMatcher');
+            $extract = $this->property($this->command, 'extract');
+            $extract('/box\\-(.+?)\\.phar/');
 
+            $matcher = $this->property($this->command, 'match');
             $matcher('/box\\-(.+?)\\.phar/');
+
+            $url = $this->property($this->command, 'url');
+            $url($this->url = $this->dir());
 
             $this->self = $_SERVER['argv'][0];
 
@@ -41,419 +44,54 @@
             $_SERVER['argv'][0] = $this->self;
         }
 
-        public function testExecute()
+        public function testIntegrityCheck()
         {
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
+            file_put_contents($this->url . '/downloads', utf8_encode(json_encode(array(
                 array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.1.phar'
+                    'name' => 'box-1.0.1.phar',
+                    'html_url' => $this->resource('test.phar', true)
                 )
-            )))));
+            ))));
 
             $this->tester->execute(array(
-                'command' => self::COMMAND,
-                '--force' => true
+                'command' => self::COMMAND
             ));
 
-            $this->assertEquals("Box has been updated!\n", $this->tester->getDisplay());
+            $this->assertEquals(
+                "Update successful!\n",
+                $this->tester->getDisplay()
+            );
         }
 
-        public function testExecuteMajorAvailable()
+        public function testIntegrityCheckFail()
         {
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
+            file_put_contents($this->url . '/downloads', utf8_encode(json_encode(array(
                 array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.1.phar'
-                ),
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-2.0.0.phar'
+                    'name' => 'box-1.0.1.phar',
+                    'html_url' => $this->file(str_replace(
+                        '__HALT_COMPILER',
+                        '',
+                        $this->resource('test.phar')
+                    ))
                 )
-            )))));
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                '--force' => true
-            ));
-
-            $this->assertEquals("Box has been updated but a major update (2.0.0) is available!\n", $this->tester->getDisplay());
-        }
-
-        public function testExecuteAlreadyUpdated()
-        {
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.0-alpha.1.phar'
-                ),
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.0.phar'
-                )
-            )))));
-
-            $this->tester->execute(array('command' => self::COMMAND));
-
-            $this->assertEquals("Box is up-to-date.\n", $this->tester->getDisplay());
-        }
-
-        public function testExecuteAlreadyUpdatedMajorAvailable()
-        {
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.0-alpha.1.phar'
-                ),
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.0.phar'
-                ),
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-2.0.0.phar'
-                ),
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-2.0.1.phar'
-                )
-            )))));
-
-            $this->tester->execute(array('command' => self::COMMAND));
-
-            $this->assertEquals("Box is up-to-date but a major update (2.0.1) is available!\n", $this->tester->getDisplay());
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The update information could not be retrieved:
-         */
-        public function testGetInfoBadURL()
-        {
-            $this->setURL('/does/not/exist');
-
-            $method = $this->method($this->command, 'getInfo');
-
-            $method();
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage Unable to find any updates.
-         */
-        public function testGetInfoNoUpdateFound()
-        {
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'test.phar'
-                )
-            )))));
-
-            $method = $this->method($this->command, 'getInfo');
-
-            $method();
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The update file could not be opened:
-         */
-        public function testGetUpdateOpenFail()
-        {
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => '/does/not/exist',
-                    'name' => 'box-1.0.1.phar'
-                )
-            )))));
-
-            $method = $this->method($this->command, 'getUpdate');
-
-            $method();
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The temporary file could not be opened:
-         */
-        public function testGetUpdateTempOpenFail()
-        {
-            if (false === extension_loaded('runkit'))
-            {
-                $this->markTestSkipped('The "runkit" extension is not available.');
-
-                return;
-            }
-
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.1.phar'
-                )
-            )))));
-
-            $method = $this->method($this->command, 'getUpdate');
-
-            $this->redefine('fopen', '$a, $b', 'if (0 === strpos($a, sys_get_temp_dir())) return false; return _fopen($a, $b);');
+            ))));
 
             try
             {
-                $method();
+                $this->tester->execute(array(
+                    'command' => self::COMMAND
+                ));
             }
 
             catch (Exception $exception)
             {
             }
 
-            $this->restore('fopen');
+            $this->assertEquals(
+                "The update was corrupted.\n\n",
+                $this->tester->getDisplay()
+            );
 
-            if (isset($exception))
-            {
-                throw $exception;
-            }
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The update file could not be read:
-         */
-        public function testGetUpdateReadFail()
-        {
-            if (false === extension_loaded('runkit'))
-            {
-                $this->markTestSkipped('The "runkit" extension is not available.');
-
-                return;
-            }
-
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.1.phar'
-                )
-            )))));
-
-            $method = $this->method($this->command, 'getUpdate');
-
-            $this->redefine('fread', '', 'return false;');
-
-            try
-            {
-                $method();
-            }
-
-            catch (Exception $exception)
-            {
-            }
-
-            $this->restore('fread');
-
-            if (isset($exception))
-            {
-                throw $exception;
-            }
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The temporary file could not be written:
-         */
-        public function testGetUpdateTempWriteFail()
-        {
-            if (false === extension_loaded('runkit'))
-            {
-                $this->markTestSkipped('The "runkit" extension is not available.');
-
-                return;
-            }
-
-            $this->app->setVersion('1.0.0');
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $this->resource('test.phar', true),
-                    'name' => 'box-1.0.1.phar'
-                )
-            )))));
-
-            $method = $this->method($this->command, 'getUpdate');
-
-            $this->redefine('fwrite', '', 'return false;');
-
-            try
-            {
-                $method();
-            }
-
-            catch (Exception $exception)
-            {
-            }
-
-            $this->restore('fwrite');
-
-            if (isset($exception))
-            {
-                throw $exception;
-            }
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The PHAR is corrupt:
-         */
-        public function testGetUpdateCorrupted()
-        {
-            $this->app->setVersion('1.0.0');
-
-            $corrupt = $this->file(123);
-
-            $this->setURL($this->file(utf8_encode(json_encode(array(
-                array(
-                    'created_at' => '2012-07-17T21:49:11Z',
-                    'description' => 'abcdef0123456789abcdef0123456789abcdef01',
-                    'html_url' => $corrupt,
-                    'name' => 'box-1.0.1.phar'
-                )
-            )))));
-
-            $method = $this->method($this->command, 'getUpdate');
-
-            $method();
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage Use `git pull` to update.
-         */
-        public function testIsCurrentRepo()
-        {
-            $method = $this->method($this->command, 'isCurrent');
-
-            $method();
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The application could not be replaced:
-         */
-        public function testReplaceSelfRenameError()
-        {
-            if (false === extension_loaded('runkit'))
-            {
-                $this->markTestSkipped('The "runkit" extension is not available.');
-
-                return;
-            }
-
-            $method = $this->method($this->command, 'replaceSelf');
-
-            $this->redefine('rename', '', 'return false;');
-
-            try
-            {
-                $method('/test/self');
-            }
-
-            catch (Exception $exception)
-            {
-            }
-
-            $this->restore('rename');
-
-            if (isset($exception))
-            {
-                throw $exception;
-            }
-        }
-
-        /**
-         * @expectedException RuntimeException
-         * @expectedExceptionMessage The application could not be marked as executable:
-         */
-        public function testReplaceSelfChmodError()
-        {
-            if (false === extension_loaded('runkit'))
-            {
-                $this->markTestSkipped('The "runkit" extension is not available.');
-
-                return;
-            }
-
-            $method = $this->method($this->command, 'replaceSelf');
-
-            $this->redefine('chmod', '', 'return false;');
-
-            $temp = $_SERVER['argv'][0];
-
-            $_SERVER['argv'][0] = $this->file();
-
-            try
-            {
-                $method($this->file());
-            }
-
-            catch (Exception $exception)
-            {
-            }
-
-            $_SERVER['argv'][0] = $temp;
-
-            $this->restore('chmod');
-
-            if (isset($exception))
-            {
-                throw $exception;
-            }
-        }
-
-        private function setURL($url)
-        {
-            $property = $this->property($this->command, 'updateURL');
-
-            $property($url);
+            $this->assertInstanceOf('UnexpectedValueException', $exception);
         }
     }

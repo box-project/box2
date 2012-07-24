@@ -59,11 +59,11 @@
         /**
          * Sets up the command.
          */
-        protected function setUp()
+        protected function setUp($name = 'Box', $version = '@git_version@')
         {
             parent::setUp();
 
-            $this->app = new Application;
+            $this->app = new Application($name, $version);
 
             $this->command = $this->app->find(static::COMMAND);
 

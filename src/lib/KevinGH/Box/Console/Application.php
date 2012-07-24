@@ -12,6 +12,7 @@
     namespace KevinGH\Box\Console;
 
     use ErrorException,
+        KevinGH\Amend,
         KevinGH\Box\Console\Command,
         KevinGH\Box\Console\Helper,
         Symfony\Component\Console\Application as _Application;
@@ -45,9 +46,13 @@
             $commands[] = new Command\Create;
             $commands[] = new Command\Extract;
             $commands[] = new Command\Info;
-            $commands[] = new Command\Update;
             $commands[] = new Command\Validate;
             $commands[] = new Command\Verify;
+
+            if (false === strpos($this->getVersion(), 'git_version'))
+            {
+                $commands[] = new Command\Update;
+            }
 
             return $commands;
         }
@@ -57,6 +62,7 @@
         {
             $helperSet = parent::getDefaultHelperSet();
 
+            $helperSet->set(new Amend\Helper);
             $helperSet->set(new Helper\Config);
             $helperSet->set(new Helper\JSON);
 
