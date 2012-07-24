@@ -61,4 +61,19 @@
 
             $this->assertEquals($expected, $this->tester->getDisplay());
         }
+
+        public function testExecuteWithCorruptPhars()
+        {
+            $temp = $this->file($this->resource('test.phar'));
+
+            $this->tester->execute(array(
+                'command' => self::COMMAND,
+                'phar' => array($temp)
+            ));
+
+            $this->assertEquals(
+                "$temp:\n    - Is corrupt.\n\n",
+                $this->tester->getDisplay()
+            );
+        }
     }

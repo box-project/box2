@@ -65,7 +65,7 @@
 
                     catch (UnexpectedValueException $exception)
                     {
-                        $output->writeln("<error>$phar: is corrupt</error>\n");
+                        $output->writeln("    - <error>Is corrupt.</error>\n");
 
                         continue;
                     }
