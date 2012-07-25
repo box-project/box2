@@ -28,6 +28,13 @@
     class Create extends Command
     {
         /**
+         * The files added counter.
+         *
+         * @type integer
+         */
+        private $counter = 0;
+
+        /**
          * The output instance.
          *
          * @type OutputInterface
@@ -93,8 +100,8 @@
 
             $box = $this->start();
 
-            $count = $this->add($box);
-            $count += $this->add($box, true);
+            $this->add($box);
+            $this->add($box, true);
 
             $this->end($box);
 
@@ -124,7 +131,7 @@
 
             else
             {
-                if (0 < $count)
+                if (0 < $this->counter)
                 {
                     $output->writeln(' done.');
                 }
@@ -153,8 +160,6 @@
                 );
             }
 
-            $counter = 0;
-
             $config = $this->getHelper('config');
 
             foreach ($config->getFiles($bin) as $file)
@@ -176,15 +181,13 @@
                     $box->importFile($relative, $file);
                 }
 
-                $counter++;
+                $this->counter++;
             }
 
-            if ($this->verbose && (0 == $counter))
+            if ($this->verbose && (0 == $this->counter))
             {
                 $this->output->writeln('        - No files found');
             }
-
-            return $counter;
         }
 
         /**
@@ -212,6 +215,8 @@
                 }
 
                 $box->importFile($config->relativeOf($real), $real, true);
+
+                $this->counter++;
             }
 
             if (true === $config['stub'])
