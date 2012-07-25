@@ -290,11 +290,23 @@
         {
             $config = $this->getHelper('config');
 
-            $box = new Box(
-                $config['base-path'] . DIRECTORY_SEPARATOR . $config['output'],
-                0,
-                $config['alias']
-            );
+            $path = $config['base-path'] . DIRECTORY_SEPARATOR . $config['output'];
+
+            if (file_exists($path))
+            {
+                if (false === @ unlink($path))
+                {
+                    $error = error_get_last();
+
+                    throw new RuntimeException(sprintf(
+                        'The old PHAR "%s" could not be deleted: %s',
+                        $path,
+                        $error['message']
+                    ));
+                }
+            }
+
+            $box = new Box($path, 0, $config['alias']);
 
             if ($config['intercept'])
             {

@@ -37,6 +37,8 @@
                 'stub' => 'src/stub.php'
             ));
 
+            touch(dirname($file) . '/default.phar');
+
             $dialog = new Dialog;
 
             $dialog->setReturn('phpunit');
@@ -118,6 +120,47 @@
             copy($phar['assets/favicon.ico'], "$dir/favicon.ico");
 
             $this->assertFileEquals($this->dir . '/assets/favicon.ico', $this->dir . '/favicon.ico');
+        }
+
+        /**
+         * @expectedException RuntimeException
+         * @expectedExceptionMessage The old PHAR
+         */
+        public function testExecuteUnlinkFail()
+        {
+            if (false === extension_loaded('runkit'))
+            {
+                $this->markTestSkipped('The "runkit" extension is not available.');
+
+                return;
+            }
+
+            $dir = $this->dir();
+
+            file_put_contents("$dir/box.json", '{"output": "test.phar"}');
+
+            copy($this->resource('test.phar', true), "$dir/test.phar");
+
+            $this->redefine('unlink', '', 'return false;');
+
+            try
+            {
+                $this->tester->execute(array(
+                    'command' => self::COMMAND,
+                    '--config' => "$dir/box.json"
+                ));
+            }
+
+            catch (Exception $exception)
+            {
+            }
+
+            $this->restore('unlink');
+
+            if (isset($exception))
+            {
+                throw $exception;
+            }
         }
 
         /**
