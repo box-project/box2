@@ -219,28 +219,6 @@ SOURCE
 
             return $file;
 
-            /*
-            $box = new Box($file);
-
-            $box->startBuffering();
-
-            $box->importFile('bin/main.php', RESOURCES . 'app/bin/main.php', true);
-            $box->importFile('src/lib/class.php', RESOURCES . 'app/src/lib/class.php');
-
-            $box->setStub($box->createStub());
-
-            $box->stopBuffering();
-
-            if ($sign)
-            {
-                $pem = dirname($file) . '/test.pem';
-
-                file_put_contents($pem, $this->createPrivateKey('phpunit'));
-
-                $box->usePrivateKeyFile($pem, 'phpunit');
-            }
-            */
-
             return array($file, $box);
         }
 
