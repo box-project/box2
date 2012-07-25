@@ -72,28 +72,10 @@
 
                     $output->writeln("    - API v" . $object->getVersion());
 
-                    $output->write('    - Compression: ');
-
-                    switch ($compression = $object->isCompressed())
-                    {
-                        case Phar::BZ2: $output->writeln('BZ2'); break;
-                        case Phar::GZ: $output->writeln('GZ'); break;
-                        case Phar::TAR: $output->writeln('TAR'); break;
-                        case Phar::ZIP: $output->writeln('ZIP'); break;
-
-                        default:
-                        {
-                            if (false === $compression)
-                            {
-                                $output->writeln('none');
-                            }
-
-                            else
-                            {
-                                $output->writeln('unrecognized');
-                            }
-                        }
-                    }
+                    $output->writeln(sprintf(
+                        '    - Compression: %s',
+                        $this->getCompressionName($object->isCompressed())
+                    ));
 
                     $output->writeln("    - Metadata: " . ($object->hasMetadata() ? 'Yes' : 'No'));
 
@@ -125,5 +107,29 @@
                     $output->writeln("    - $algorithm");
                 }
             }
+        }
+
+        /**
+         * Returns the name of the compression algorithm, if any.
+         *
+         * @param integer $code The algorithm code.
+         * @return string The algorithm name.
+         */
+        protected function getCompressionName($code)
+        {
+            if (false === $code)
+            {
+                return 'none';
+            }
+
+            switch ($code)
+            {
+                case Phar::BZ2: return 'BZ2';
+                case Phar::GZ: return 'GZ';
+                case Phar::TAR: return 'TAR';
+                case Phar::ZIP: return 'ZIP';
+            }
+
+            return 'unrecognized';
         }
     }

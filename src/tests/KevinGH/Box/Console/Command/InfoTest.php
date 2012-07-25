@@ -76,4 +76,28 @@
                 $this->tester->getDisplay()
             );
         }
+
+        /**
+         * @dataProvider getPharCompressAlgos
+         */
+        public function testGetCompressionName($code, $name)
+        {
+            $method = $this->method($this->command, 'getCompressionName');
+
+            $this->assertEquals($name, $method($code));
+        }
+
+        public function getPharCompressAlgos()
+        {
+            $algos = array(
+                array(9999, 'unrecognized')
+            );
+
+            if (defined('Phar::BZ2')) $algos[] = array(Phar::BZ2, 'BZ2');
+            if (defined('Phar::GZ')) $algos[] = array(Phar::GZ, 'GZ');
+            if (defined('Phar::TAR')) $algos[] = array(Phar::TAR, 'TAR');
+            if (defined('Phar::ZIP')) $algos[] = array(Phar::ZIP, 'ZIP');
+
+            return $algos;
+        }
     }
