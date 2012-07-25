@@ -71,6 +71,7 @@
                 'base-path' => null,
                 'blacklist' => array(),
                 'chmod' => null,
+                'compression' => null,
                 'directories' => array(),
                 'directories-bin' => array(),
                 'files' => array(),
@@ -411,10 +412,27 @@
          * @expectedException InvalidArgumentException
          * @expectedExceptionMessage Invalid algorithm constant: Phar::INVALID
          */
-        public function testLoadInvalidAlgo()
+        public function testLoadInvalidSignAlgo()
         {
             $file = $this->file(utf8_encode(json_encode(array(
                 'algorithm' => 'INVALID'
+            ))));
+
+            $config = new Config;
+
+            $config->setHelperSet(new HelperSet(array(new JSON)));
+
+            $config->load($file);
+        }
+
+        /**
+         * @expectedException InvalidArgumentException
+         * @expectedExceptionMessage Invalid compression algorithm constant: Phar::INVALID
+         */
+        public function testLoadInvalidCompressAlgo()
+        {
+            $file = $this->file(utf8_encode(json_encode(array(
+                'compression' => 'INVALID'
             ))));
 
             $config = new Config;

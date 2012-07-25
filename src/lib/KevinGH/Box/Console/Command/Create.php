@@ -214,7 +214,12 @@
                     throw new InvalidArgumentException('The main file does not exist.');
                 }
 
-                $box->importFile($config->relativeOf($real), $real, true);
+                $box->importFile($relative = $config->relativeOf($real), $real, true);
+
+                if ($config['compression'] && (false === isset($box['index.php'])))
+                {
+                    $box->addFromString('index.php', $box[$relative]->getContent());
+                }
 
                 $this->counter++;
             }
@@ -249,6 +254,16 @@
             }
 
             $box->stopBuffering();
+
+            if ($config['compression'])
+            {
+                if (isset($config['stub']))
+                {
+                    $this->verbose('    - <comment>Enabling compression overrides the stub.</comment>');
+                }
+
+                $box->compress($config['compression']);
+            }
 
             if ($config['key'])
             {
@@ -292,17 +307,20 @@
 
             $path = $config['base-path'] . DIRECTORY_SEPARATOR . $config['output'];
 
-            if (file_exists($path))
+            foreach (array('', '.bz2', '.gz', '.tar', '.zip') as $ext)
             {
-                if (false === @ unlink($path))
+                if (file_exists($path . $ext))
                 {
-                    $error = error_get_last();
+                    if (false === @ unlink($path . $ext))
+                    {
+                        $error = error_get_last();
 
-                    throw new RuntimeException(sprintf(
-                        'The old PHAR "%s" could not be deleted: %s',
-                        $path,
-                        $error['message']
-                    ));
+                        throw new RuntimeException(sprintf(
+                            'The old PHAR "%s" could not be deleted: %s',
+                            $path . $ext,
+                            $error['message']
+                        ));
+                    }
                 }
             }
 

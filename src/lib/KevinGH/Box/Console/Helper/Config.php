@@ -47,6 +47,7 @@
                     'base-path' => null,
                     'blacklist' => array(),
                     'chmod' => null,
+                    'compression' => null,
                     'directories' => array(),
                     'directories-bin' => array(),
                     'files' => array(),
@@ -292,6 +293,19 @@
                 }
 
                 $data['algorithm'] = constant('Phar::' . $data['algorithm']);
+            }
+
+            if (false === empty($data['compression']))
+            {
+                if (false === defined('Phar::' . $data['compression']))
+                {
+                    throw new InvalidArgumentException(sprintf(
+                        'Invalid compression algorithm constant: Phar::%s',
+                        $data['compression']
+                    ));
+                }
+
+                $data['compression'] = constant('Phar::' . $data['compression']);
             }
 
             $this->exchangeArray(array_merge($this->getArrayCopy(), $data));

@@ -27,6 +27,7 @@
 
             $file = $this->setConfig(array(
                 'chmod' => "0755",
+                'compression' => 'GZ',
                 'files' => 'src/lib/class.php',
                 'git-version' => 'git_version',
                 'intercept' => true,

@@ -24,6 +24,10 @@
             "description": "The permission mode for the new PHAR.",
             "type": "integer"
         },
+        "compression": {
+            "description": "The compression algorithm to use for the PHAR.",
+            "type": ["string", "number"]
+        },
         "directories": {
             "description": "A list of relative directory paths to search for scripts.",
             "items": "string",
