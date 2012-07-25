@@ -66,6 +66,30 @@
             );
         }
 
+        public function testGetDefaultCommandsWithOpenSSL()
+        {
+            $app = new Application;
+
+            if (extension_loaded('openssl'))
+            {
+                $this->assertInstanceOf(
+                    'KevinGH\Box\Console\Command\Key\Create',
+                    $app->find('key:create')
+                );
+
+                $this->assertInstanceOf(
+                    'KevinGH\Box\Console\Command\Key\Extract',
+                    $app->find('key:extract')
+                );
+            }
+
+            else
+            {
+                $this->assertFalse($app->has('key:create'));
+                $this->assertFalse($app->has('key:extract'));
+            }
+        }
+
         public function testGetDefaultCommandsWithUpdate()
         {
             $app = new Application('Box', '1.0.0');
@@ -80,10 +104,7 @@
         {
             $app = new Application;
 
-            $this->assertInstanceOf(
-                'KevinGH\Amend\Helper',
-                $app->getHelperSet()->get('amend')
-            );
+            $this->assertFalse($app->getHelperSet()->has('amend'));
 
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Helper\Config',
@@ -93,6 +114,34 @@
             $this->assertInstanceOf(
                 'KevinGH\Box\Console\Helper\JSON',
                 $app->getHelperSet()->get('json')
+            );
+        }
+
+        public function testGetDefaultHelperSetWithOpenSSL()
+        {
+            $app = new Application;
+
+            if (extension_loaded('openssl'))
+            {
+                $this->assertInstanceOf(
+                    'KevinGH\Box\Console\Helper\OpenSSL',
+                    $app->getHelperSet()->get('openssl')
+                );
+            }
+
+            else
+            {
+                $this->assertFalse($app->getHelperSet()->has('openssl'));
+            }
+        }
+
+        public function testGetDefaultHelpersWithUpdate()
+        {
+            $app = new Application('Box', '1.0.0');
+
+            $this->assertInstanceOf(
+                'KevinGH\Amend\Helper',
+                $app->getHelperSet()->get('amend')
             );
         }
     }

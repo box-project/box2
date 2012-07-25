@@ -54,6 +54,12 @@
                 $commands[] = new Command\Update;
             }
 
+            if (extension_loaded('openssl'))
+            {
+                $commands[] = new Command\Key\Create;
+                $commands[] = new Command\Key\Extract;
+            }
+
             return $commands;
         }
 
@@ -62,9 +68,18 @@
         {
             $helperSet = parent::getDefaultHelperSet();
 
-            $helperSet->set(new Amend\Helper);
             $helperSet->set(new Helper\Config);
             $helperSet->set(new Helper\JSON);
+
+            if (false === strpos($this->getVersion(), 'git_version'))
+            {
+                $helperSet->set(new Amend\Helper);
+            }
+
+            if (extension_loaded('openssl'))
+            {
+                $helperSet->set(new Helper\OpenSSL);
+            }
 
             return $helperSet;
         }
