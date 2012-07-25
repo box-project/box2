@@ -44,6 +44,8 @@
             $commands = parent::getDefaultCommands();
 
             $commands[] = new Command\Create;
+            $commands[] = new Command\Edit\Add;
+            $commands[] = new Command\Edit\Remove;
             $commands[] = new Command\Extract;
             $commands[] = new Command\Info;
             $commands[] = new Command\Validate;

@@ -44,6 +44,16 @@
             );
 
             $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Edit\Add',
+                $app->find('edit:add')
+            );
+
+            $this->assertInstanceOf(
+                'KevinGH\Box\Console\Command\Edit\Remove',
+                $app->find('edit:remove')
+            );
+
+            $this->assertInstanceOf(
                 'KevinGH\Box\Console\Command\Extract',
                 $app->find('extract')
             );
