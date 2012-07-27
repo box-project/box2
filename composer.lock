@@ -1,5 +1,5 @@
 {
-    "hash": "369bb83c6f8c2af5933e5becc79fd726",
+    "hash": "777ec4935b10af1149a2b3b51c2e4f82",
     "packages": [
         {
             "package": "justinrainbow/json-schema",
@@ -7,27 +7,11 @@
         },
         {
             "package": "kherge/amend",
-            "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
-        },
-        {
-            "package": "kherge/amend",
-            "version": "dev-master",
-            "source-reference": "1.0.0-beta.1",
-            "commit-date": "1343251308"
+            "version": "1.0.0-beta.1"
         },
         {
             "package": "kherge/version",
-            "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
-        },
-        {
-            "package": "kherge/version",
-            "version": "dev-master",
-            "source-reference": "1.0.0",
-            "commit-date": "1343250561"
+            "version": "1.0.0"
         },
         {
             "package": "seld/jsonlint",
@@ -46,15 +30,12 @@
             "version": "v2.1.0-BETA4"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
     "minimum-stability": "beta",
-    "stability-flags": {
-        "kherge/amend": 20,
-        "kherge/version": 20
-    }
+    "stability-flags": [
+
+    ]
 }
