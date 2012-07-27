@@ -3,7 +3,6 @@
 !.travis.yml
 box.phar
 box.phar.pubkey
-composer.lock
 private.key
 public.key
 coverage/
