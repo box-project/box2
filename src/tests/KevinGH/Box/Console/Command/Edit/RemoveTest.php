@@ -43,7 +43,7 @@
 
             $process->run();
 
-            $this->assertRegExp('/manifest/', $process->getOutput());
+            $this->assertRegExp('/manifest/', $process->getOutput() . $process->getErrorOutput());
         }
 
         /**

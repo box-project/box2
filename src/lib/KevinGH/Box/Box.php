@@ -1,137 +1,126 @@
 <?php
 
-    /* This file is part of Box.
+/* This file is part of Box.
+ *
+ * (c) 2012 Kevin Herrera
+ *
+ * For the full copyright and license information, please
+ * view the LICENSE file that was distributed with this
+ * source code.
+ */
+
+namespace KevinGH\Box;
+
+use Closure;
+use InvalidArgumentException;
+use Phar;
+use RuntimeException;
+
+/**
+ * Simplifies the process of creating new PHARs.
+ *
+ * @author Kevin Herrera <me@kevingh.com>
+ */
+class Box extends Phar
+{
+    /**
+     * The alias.
      *
-     * (c) 2012 Kevin Herrera
-     *
-     * For the full copyright and license information, please
-     * view the LICENSE file that was distributed with this
-     * source code.
+     * @type string
      */
-
-    namespace KevinGH\Box;
-
-    use Closure,
-        InvalidArgumentException,
-        Phar,
-        RuntimeException;
+    private $alias;
 
     /**
-     * Simplifies the process of creating new PHARs.
+     * The user-defined compact callback.
      *
-     * @author Kevin Herrera <me@kevingh.com>
+     * @type Closure
      */
-    class Box extends Phar
+    private $compactor;
+
+    /**
+     * Include interceptFileFuncs() in stub?
+     *
+     * @type boolean
+     */
+    private $intercept = false;
+
+    /**
+     * The relative path of the main script.
+     *
+     * @type string
+     */
+    private $main;
+
+    /**
+     * The file name of the PHAR.
+     *
+     * @type string
+     */
+    private $name;
+
+    /**
+     * The replacement values.
+     *
+     * @type array
+     */
+    private $replacements = array();
+
+    /** {@inheritDoc} */
+    public function __construct($fname, $flags = 0, $alias = 'default.phar')
     {
-        /**
-         * The alias.
-         *
-         * @type string
-         */
-        private $alias;
+        $this->alias = $alias;
 
-        /**
-         * The user-defined compact callback.
-         *
-         * @type Closure
-         */
-        private $compactor;
+        $this->name = $fname;
 
-        /**
-         * Include interceptFileFuncs() in stub?
-         *
-         * @type boolean
-         */
-        private $intercept = false;
+        parent::__construct($fname, $flags, $alias);
+    }
 
-        /**
-         * The relative path of the main script.
-         *
-         * @type string
-         */
-        private $main;
+    /**
+     * Compacts the source code, making it smaller while preserving line count.
+     *
+     * @param string $source The source code.
+     *
+     * @return string The compacted source code.
+     */
+    public function compactSource($source)
+    {
+        $temp = '';
 
-        /**
-         * The file name of the PHAR.
-         *
-         * @type string
-         */
-        private $name;
+        foreach (token_get_all($source) as $token) {
+            if (is_string($token)) {
+                $temp .= $token;
+            } elseif ((T_COMMENT === $token[0]) || (T_DOC_COMMENT === $token[0])) {
+                $temp .= str_repeat("\n", substr_count($token[1], "\n"));
+            } elseif (T_WHITESPACE === $token[0]) {
+                $whitespace = preg_replace('{[ \t]+}', ' ', $token[1]);
+                $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
+                $whitespace = preg_replace('{\n +}', "\n", $whitespace);
 
-        /**
-         * The replacement values.
-         *
-         * @type array
-         */
-        private $replacements = array();
-
-        /** {@inheritDoc} */
-        public function __construct($fname, $flags = 0, $alias = 'default.phar')
-        {
-            $this->alias = $alias;
-
-            $this->name = $fname;
-
-            parent::__construct($fname, $flags, $alias);
+                $temp .= $whitespace;
+            } else {
+                $temp .= $token[1];
+            }
         }
 
-        /**
-         * Compacts the source code, making it smaller while preserving line count.
-         *
-         * @param string $source The source code.
-         * @return string The compacted source code.
-         */
-        public function compactSource($source)
-        {
-            $temp = '';
+        $source = $temp;
 
-            foreach (token_get_all($source) as $token)
-            {
-                if (is_string($token))
-                {
-                    $temp .= $token;
-                }
+        unset($temp);
 
-                elseif ((T_COMMENT === $token[0]) || (T_DOC_COMMENT === $token[0]))
-                {
-                    $temp .= str_repeat("\n", substr_count($token[1], "\n"));
-                }
-
-                elseif (T_WHITESPACE === $token[0])
-                {
-                    $whitespace = preg_replace('{[ \t]+}', ' ', $token[1]);
-                    $whitespace = preg_replace('{(?:\r\n|\r|\n)}', "\n", $whitespace);
-                    $whitespace = preg_replace('{\n +}', "\n", $whitespace);
-
-                    $temp .= $whitespace;
-                }
-
-                else
-                {
-                    $temp .= $token[1];
-                }
-            }
-
-            $source = $temp;
-
-            unset($temp);
-
-            if ($this->compactor)
-            {
-                $source = call_user_func($this->compactor, $source);
-            }
-
-            return $source;
+        if ($this->compactor) {
+            $source = call_user_func($this->compactor, $source);
         }
 
-        /**
-         * Creates the a stub using the alias, and main script if available.
-         *
-         * @return string The default stub.
-         */
-        public function createStub()
-        {
-            $stub = <<<STUB
+        return $source;
+    }
+
+    /**
+     * Creates the a stub using the alias, and main script if available.
+     *
+     * @return string The default stub.
+     */
+    public function createStub()
+    {
+        $stub = <<<STUB
 #!/usr/bin/env php
 <?php
 
@@ -143,218 +132,209 @@ Phar::mapPhar('{$this->alias}');
 
 
 STUB
-            ;
+        ;
 
-            if ($this->intercept)
-            {
-                $stub .= <<<STUB
+        if ($this->intercept) {
+            $stub .= <<<STUB
 Phar::interceptFileFuncs();
 
 
 STUB
-                ;
-            }
+            ;
+        }
 
-            if ($this->main)
-            {
-                $stub .= <<<STUB
+        if ($this->main) {
+            $stub .= <<<STUB
 require 'phar://{$this->alias}/{$this->main}';
 
 
 STUB
-                ;
-            }
-
-            $stub .= "__HALT_COMPILER();";
-
-            return $stub;
+            ;
         }
 
-        /**
-         * Replaces placeholders in the source code with their real values.
-         *
-         * @param string $source The source code.
-         * @return string The replaced source code.
-         */
-        public function doReplacements($source)
-        {
-            foreach ($this->replacements as $key => $value)
-            {
-                $source = str_replace("@$key@", $value, $source);
-            }
+        $stub .= "__HALT_COMPILER();";
 
-            return $source;
+        return $stub;
+    }
+
+    /**
+     * Replaces placeholders in the source code with their real values.
+     *
+     * @param string $source The source code.
+     *
+     * @return string The replaced source code.
+     */
+    public function doReplacements($source)
+    {
+        foreach ($this->replacements as $key => $value) {
+            $source = str_replace("@$key@", $value, $source);
         }
 
-        /**
-         * Imports a file's source code after compacting and doing replacements.
-         *
-         * @throws InvalidArgumentException If the file does not exist.
-         * @throws RuntimeException If the file could not be imported.
-         * @param string $relative The relative file path.
-         * @param string $absolute The absolute file path.
-         * @param boolean $main Is it the main program code?
-         */
-        public function importFile($relative, $absolute, $main = false)
-        {
-            if (false === file_exists($absolute))
-            {
-                throw new InvalidArgumentException(sprintf(
-                    'The file does not exist: %s',
-                    $absolute
-                ));
-            }
+        return $source;
+    }
 
-            if (false === ($source = @ file_get_contents($absolute)))
-            {
-                $error = error_get_last();
-
-                throw new RuntimeException(sprintf(
-                    'The file could not be read: %s',
-                    $error['message']
-                ));
-            }
-
-            $this->importSource($relative, $source, $main);
+    /**
+     * Imports a file's source code after compacting and doing replacements.
+     *
+     * @param string  $relative The relative file path.
+     * @param string  $absolute The absolute file path.
+     * @param boolean $main     Is it the main program code?
+     *
+     * @throws InvalidArgumentException If the file does not exist.
+     * @throws RuntimeException If the file could not be imported.
+     */
+    public function importFile($relative, $absolute, $main = false)
+    {
+        if (false === file_exists($absolute)) {
+            throw new InvalidArgumentException(sprintf(
+                'The file does not exist: %s',
+                $absolute
+            ));
         }
 
-        /**
-         * Imports the source code after compacting and doing replacements.
-         *
-         * @param string $relative The relative file path.
-         * @param string $source The source code.
-         * @param boolean $main Is it the main program code?
-         */
-        public function importSource($relative, $source, $main = false)
-        {
-            if (false !== strpos($source, '<?php'))
-            {
-                $source = $this->compactSource($source);
-            }
+        if (false === ($source = @ file_get_contents($absolute))) {
+            $error = error_get_last();
 
-            $source = $this->doReplacements($source);
-
-            if ($main)
-            {
-                $this->main = $relative;
-
-                $source = preg_replace('/^#!.*\s*/', '', $source);
-            }
-
-            $this->addFromString($relative, $source);
+            throw new RuntimeException(sprintf(
+                'The file could not be read: %s',
+                $error['message']
+            ));
         }
 
-        /**
-         * Sets the custom compactor.
-         *
-         * @param Closure $compactor The compactor closure.
-         */
-        public function setCompactor(Closure $compactor)
-        {
-            $this->compactor = $compactor;
+        $this->importSource($relative, $source, $main);
+    }
+
+    /**
+     * Imports the source code after compacting and doing replacements.
+     *
+     * @param string  $relative The relative file path.
+     * @param string  $source   The source code.
+     * @param boolean $main     Is it the main program code?
+     */
+    public function importSource($relative, $source, $main = false)
+    {
+        if (false !== strpos($source, '<?php')) {
+            $source = $this->compactSource($source);
         }
 
-        /**
-         * Toggles the interceptFileFunc() flag for the generated stub.
-         *
-         * @param boolean $toggle The new intercept state.
-         */
-        public function setIntercept($toggle)
-        {
-            $this->intercept = (bool) $toggle;
+        $source = $this->doReplacements($source);
+
+        if ($main) {
+            $this->main = $relative;
+
+            $source = preg_replace('/^#!.*\s*/', '', $source);
         }
 
-        /**
-         * Sets the replacement values.
-         *
-         * @param array $replacements The replacement values.
-         */
-        public function setReplacements(array $replacements)
-        {
-            $this->replacements = $replacements;
+        $this->addFromString($relative, $source);
+    }
+
+    /**
+     * Sets the custom compactor.
+     *
+     * @param Closure $compactor The compactor closure.
+     */
+    public function setCompactor(Closure $compactor)
+    {
+        $this->compactor = $compactor;
+    }
+
+    /**
+     * Toggles the interceptFileFunc() flag for the generated stub.
+     *
+     * @param boolean $toggle The new intercept state.
+     */
+    public function setIntercept($toggle)
+    {
+        $this->intercept = (bool) $toggle;
+    }
+
+    /**
+     * Sets the replacement values.
+     *
+     * @param array $replacements The replacement values.
+     */
+    public function setReplacements(array $replacements)
+    {
+        $this->replacements = $replacements;
+    }
+
+    /**
+     * Signs the PHAR using a private key file.
+     *
+     * @param string $file The private key file.
+     * @param string $pass The passhphrase.
+     *
+     * @throws InvalidArgumentException If the private key does not exist.
+     * @throws RuntimeException If the public key could not be retrieved.
+     */
+    public function usePrivateKeyFile($file, $pass = null)
+    {
+        if (false === file_exists($file)) {
+            throw new InvalidArgumentException('The private key file does not exist.');
         }
 
-        /**
-         * Signs the PHAR using a private key file.
-         *
-         * @throws InvalidArgumentException If the private key does not exist.
-         * @throws RuntimeException If the public key could not be retrieved.
-         * @param string $file The private key file.
-         * @param string $pass The passhphrase.
-         */
-        public function usePrivateKeyFile($file, $pass = null)
-        {
-            if (false === file_exists($file))
-            {
-                throw new InvalidArgumentException('The private key file does not exist.');
-            }
-
-            if (false === extension_loaded('openssl'))
-            {
-                throw new RuntimeException(sprintf(
-                    'The "openssl" extension is not available.'
-                ));
-            }
-
-            if (false === ($pem = @ file_get_contents($file)))
-            {
-                $error = error_get_last();
-
-                throw new RuntimeException(sprintf(
-                    'The private key file could not be read: %s',
-                    $error['message']
-                ));
-            }
-
-            list($private, $public) = $this->getKeys($pem, $pass);
-
-            $this->setSignatureAlgorithm(self::OPENSSL, $private);
-
-            if (false === @ file_put_contents($this->name . '.pubkey', $public))
-            {
-                $error = error_get_last();
-
-                throw new RuntimeException(sprintf(
-                    'The public key could not be written: %s',
-                    $error['message']
-                ));
-            }
+        if (false === extension_loaded('openssl')) {
+            throw new RuntimeException(sprintf(
+                'The "openssl" extension is not available.'
+            ));
         }
 
-        /**
-         * Returns the private and public key for the PEM data.
-         *
-         * @throws RuntimeException If the private key could not be exported.
-         * @param string $pem The PEM data.
-         * @param string $pass The passphrase.
-         * @return string The private key.
-         */
-        protected function getKeys($pem, $pass = null)
-        {
-            if (false === ($resource = openssl_pkey_get_private($pem, $pass)))
-            {
-                throw new RuntimeException(sprintf(
-                    'The private key could not be parsed: %s',
-                    openssl_error_string()
-                ));
-            }
+        if (false === ($pem = @ file_get_contents($file))) {
+            $error = error_get_last();
 
-            if (false === openssl_pkey_export($resource, $private))
-            {
-                throw new RuntimeException(sprintf(
-                    'The private key could not be exported: %s',
-                    openssl_error_string()
-                ));
-            }
+            throw new RuntimeException(sprintf(
+                'The private key file could not be read: %s',
+                $error['message']
+            ));
+        }
 
-            if (false === ($details = openssl_pkey_get_details($resource)))
-            {
-                throw new RuntimeException(sprintf(
-                    'The details of the private key could not be retrieved: %s',
-                    openssl_error_string()
-                ));
-            }
+        list($private, $public) = $this->getKeys($pem, $pass);
 
-            return array($private, $details['key']);
+        $this->setSignatureAlgorithm(self::OPENSSL, $private);
+
+        if (false === @ file_put_contents($this->name . '.pubkey', $public)) {
+            $error = error_get_last();
+
+            throw new RuntimeException(sprintf(
+                'The public key could not be written: %s',
+                $error['message']
+            ));
         }
     }
+
+    /**
+     * Returns the private and public key for the PEM data.
+     *
+     * @param string $pem  The PEM data.
+     * @param string $pass The passphrase.
+     *
+     * @return string The private key.
+     *
+     * @throws RuntimeException If the private key could not be exported.
+     */
+    protected function getKeys($pem, $pass = null)
+    {
+        if (false === ($resource = openssl_pkey_get_private($pem, $pass))) {
+            throw new RuntimeException(sprintf(
+                'The private key could not be parsed: %s',
+                openssl_error_string()
+            ));
+        }
+
+        if (false === openssl_pkey_export($resource, $private)) {
+            throw new RuntimeException(sprintf(
+                'The private key could not be exported: %s',
+                openssl_error_string()
+            ));
+        }
+
+        if (false === ($details = openssl_pkey_get_details($resource))) {
+            throw new RuntimeException(sprintf(
+                'The details of the private key could not be retrieved: %s',
+                openssl_error_string()
+            ));
+        }
+
+        return array($private, $details['key']);
+    }
+}
