@@ -11,15 +11,7 @@
         },
         {
             "package": "kherge/elf",
-            "version": "dev-master",
-            "alias-pretty-version": "1.0.x-dev",
-            "alias-version": "1.0.9999999.9999999-dev"
-        },
-        {
-            "package": "kherge/elf",
-            "version": "dev-master",
-            "source-reference": "1.0.0",
-            "commit-date": "1345174249"
+            "version": "1.0.0"
         },
         {
             "package": "kherge/version",
