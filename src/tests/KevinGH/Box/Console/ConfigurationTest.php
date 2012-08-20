@@ -84,6 +84,7 @@ class ConfigurationTest extends TestCase
         file_put_contents('base/src/test/test.php', '');
 
         $this->config['base-path'] = realpath('base');
+        $this->config['blacklist'] = 'src/test.html';
         $this->config['directories'] = 'src/test';
         $this->config['files'] = array(
             'src/test.html',
@@ -97,7 +98,6 @@ class ConfigurationTest extends TestCase
         );
 
         $expected = array(
-            'src/test.html' => realpath('base/src/test.html'),
             'src/test.php' => realpath('base/src/test.php'),
             'src/test/test.php' => realpath('base/src/test/test.php'),
             'src/finder/test.php' => realpath('base/src/finder/test.php')

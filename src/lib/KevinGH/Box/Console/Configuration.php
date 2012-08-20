@@ -169,6 +169,12 @@ class Configuration extends ArrayObject
             chdir($cwd);
         }
 
+        if ($this['blacklist']) {
+            foreach ((array) $this['blacklist'] as $relative) {
+                unset($files[$relative]);
+            }
+        }
+
         return $files;
     }
 
