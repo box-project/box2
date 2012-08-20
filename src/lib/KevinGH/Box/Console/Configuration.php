@@ -206,6 +206,18 @@ class Configuration extends ArrayObject
     }
 
     /**
+     * Returns the private key file path, if any.
+     *
+     * @return null|string The private key path.
+     */
+    public function getPrivateKeyPath()
+    {
+        if ($this['key']) {
+            return $this['base-path'] . DIRECTORY_SEPARATOR . $this['key'];
+        }
+    }
+
+    /**
      * Returns the relative path based on the current base directory path.
      *
      * @param string $path The absolute path.

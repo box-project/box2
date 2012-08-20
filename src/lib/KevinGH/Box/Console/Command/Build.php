@@ -140,7 +140,7 @@ class Build extends Command
                 ));
             }
 
-            $phar->usePrivateKeyFile($config['key'], $config['key-pass']);
+            $phar->usePrivateKeyFile($config->getPrivateKeyPath(), $config['key-pass']);
         }
 
         unset($phar);

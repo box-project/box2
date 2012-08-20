@@ -198,6 +198,21 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    public function testGetPrivateKeyPathNotSet()
+    {
+        $this->assertNull($this->config->getPrivateKeyPath());
+    }
+
+    public function testGetPrivateKeyPathSet()
+    {
+        $this->config['key'] = 'private.key';
+
+        $this->assertEquals(
+            $this->config['base-path'] . DIRECTORY_SEPARATOR . $this->config['key'],
+            $this->config->getPrivateKeyPath()
+        );
+    }
+
     public function testProcessConfig()
     {
         file_put_contents('test', '');
