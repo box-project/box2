@@ -43,12 +43,12 @@ OUTPUT
     {
         $this->tester->execute(array(
             'command' => self::COMMAND,
-            'phar' => $this->getResource('example.phar')
+            'phar' => $file = $this->getResource('example.phar')
         ));
 
         $this->assertEquals(
             <<<OUTPUT
-<prefix>FILE</prefix> /Users/kherrera/Projects/Personal/Box/res/example.phar
+<prefix>FILE</prefix> $file
 <prefix>INFO</prefix> API: v1.1.0
 <prefix>INFO</prefix> Compression: None
 <prefix>INFO</prefix> Signature: SHA-1
