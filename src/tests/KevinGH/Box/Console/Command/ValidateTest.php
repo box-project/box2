@@ -1,76 +1,49 @@
 <?php
 
-    /* This file is part of Box.
-     *
-     * (c) 2012 Kevin Herrera
-     *
-     * For the full copyright and license information, please
-     * view the LICENSE file that was distributed with this
-     * source code.
-     */
+/* This file is part of Box.
+ *
+ * (c) 2012 Kevin Herrera
+ *
+ * For the full copyright and license information, please
+ * view the LICENSE file that was distributed with this
+ * source code.
+ */
 
-    namespace KevinGH\Box\Console\Command;
+namespace KevinGH\Box\Console\Command;
 
-    use Exception,
-        KevinGH\Box\Test\CommandTestCase,
-        KevinGH\Box\Test\Dialog,
-        Phar,
-        Symfony\Component\Console\Output\OutputInterface;
+use KevinGH\Box\Box;
+use KevinGH\Box\Test\CommandTestCase;
+use Seld\JsonLint\ParsingException;
+use Symfony\Component\Console\Output\OutputInterface;
 
-    class ValidateTest extends CommandTestCase
+class ValidateTest extends CommandTestCase
+{
+    const COMMAND = 'validate';
+
+    public function testExecuteValid()
     {
-        const COMMAND = 'validate';
+        $this->tester->execute(array(
+            'command' => self::COMMAND,
+            'configuration' => $this->getResource('example/box-generated.json')
+        ));
 
-        public function testExecute()
-        {
-            $file = $this->setConfig(array(
-                'files' => 'src/lib/class.php',
-                'git-version' => 'git_version',
-                'intercept' => true,
-                'main' => 'bin/main.php',
-                'metadata' => array('rand' => $rand = rand()),
-                'key' => 'test.pem',
-                'key-pass' => true,
-                'stub' => 'src/stub.php'
-            ));
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                '--config' => $file
-            ));
-
-            $this->assertEquals(
-                "The configuration file is valid.\n",
-                $this->tester->getDisplay()
-            );
-        }
-
-        /**
-         * @expectedException Seld\JsonLint\ParsingException
-         * @expectedExceptionMessage The file
-         */
-        public function testExecuteInvalidSyntax()
-        {
-            $file = $this->file('{');
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                '--config' => $file
-            ));
-        }
-
-        public function testExecuteInvalid()
-        {
-            $file = $this->file('{"files": true}');
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                '--config' => $file
-            ));
-
-            $this->assertRegExp(
-                '/The configuration file is not valid/',
-                $this->tester->getDisplay()
-            );
-        }
+        $this->assertEquals('The configuration file is valid.', trim($this->tester->getDisplay()));
     }
+
+    public function testExecuteInvalid()
+    {
+        try {
+            $this->tester->execute(array(
+                'command' => self::COMMAND,
+                'configuration' => $this->getResource('example/box-invalid.json')
+            ), array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            ));
+        } catch (ParsingException $exception) {
+        }
+
+        $this->assertTrue(isset($exception));
+        $this->assertEquals('The configuration file is invalid.', trim($this->tester->getDisplay()));
+    }
+}
+

@@ -13,10 +13,9 @@
 
     "require": {
         "php": ">=5.3.3",
-        "justinrainbow/json-schema": "1.1.*",
         "kherge/amend": "1.*",
+        "kherge/elf": "@dev",
         "kherge/version": "1.*",
-        "seld/jsonlint": "1.*",
         "symfony/console": "2.1.*",
         "symfony/finder": "2.1.*",
         "symfony/process": "2.1.*"

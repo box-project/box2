@@ -1,0 +1,9 @@
+{
+    "alias": "example.phar",
+    "files": ["src/Put.php"],
+    "main": "bin/example",
+    "output": "example.phar",
+    "replacements": {
+        "name": "world"
+    }
+}

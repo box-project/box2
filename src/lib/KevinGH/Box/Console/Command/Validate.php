@@ -11,11 +11,11 @@
 
 namespace KevinGH\Box\Console\Command;
 
-use KevinGH\Box\Console\Exception\JSONValidationException;
-use Seld\JsonLint\ParsingException;
+use Exception;
+use KevinGH\Box\Box;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -28,38 +28,34 @@ class Validate extends Command
     /** {@inheritDoc} */
     public function configure()
     {
-        $this->setName('validate')
-             ->setDescription('Validates the configuration file.');
+        $this->setName('validate');
+        $this->setDescription('Validates a configuration file.');
 
-        $this->addOption(
-            'config',
-            'c',
-            InputOption::VALUE_REQUIRED,
-            'The configuration file path.'
+        $this->addArgument(
+            'configuration',
+            InputArgument::OPTIONAL,
+            'The configuration file.'
         );
     }
 
     /** {@inheritDoc} */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $this->getHelper('config');
+        $box = $this->getHelper('box');
 
         try {
-            $config->load($config->find($input->getOption('config')));
-        } catch (JSONValidationException $exception) {
-            $output->writeln("<error>The configuration file is not valid.</error>\n");
+            $box->find($input->getArgument('configuration'));
+        } catch (Exception $exception) {
+            $output->writeln('<error>The configuration file is invalid.</error>');
 
-            foreach ($exception->getErrors() as $error) {
-                $output->writeln("    - $error");
+            if (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity()) {
+                throw $exception;
             }
-
-            return 1;
-        } catch (ParsingException $exception) {
-            $output->writeln("<error>The configuration file is not valid.</error>\n");
-
-            throw $exception;
         }
 
-        $output->writeln('<info>The configuration file is valid.</info>');
+        if (false === isset($exception)) {
+            $output->writeln('<info>The configuration file is valid.');
+        }
     }
 }
+

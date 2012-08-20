@@ -11,18 +11,15 @@
 
 namespace KevinGH\Box\Console\Command;
 
-use InvalidArgumentException;
-use Phar;
-use PharException;
+use KevinGH\Box\Box;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use UnexpectedValueException;
 
 /**
- * Extracts the PHAR to a directory.
+ * Extracts one or more files from a PHAR.
  *
  * @author Kevin Herrera <me@kevingh.com>
  */
@@ -31,72 +28,59 @@ class Extract extends Command
     /** {@inheritDoc} */
     public function configure()
     {
-        $this->setName('extract')
-             ->setDescription('Extracts the PHAR to a directory.');
+        $this->setName('extract');
+        $this->setDescription('Extracts an existing PHAR.');
 
         $this->addArgument(
             'phar',
             InputArgument::REQUIRED,
-            'The PHAR file path.'
+            'The PHAR to extract.'
         );
 
         $this->addOption(
             'out',
             'o',
             InputOption::VALUE_REQUIRED,
-            'The output directory path.'
+            'The alternative output directory.'
         );
 
         $this->addOption(
             'want',
             'w',
-            InputOption::VALUE_IS_ARRAY | InputOption::VALUE_REQUIRED,
-            'The file or directory wanted from the PHAR.'
+            InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+            'The file or directory you want.'
         );
     }
 
     /** {@inheritDoc} */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        if (false === is_file($file = $input->getArgument('phar'))) {
+            $output->writeln(sprintf(
+                '<error>The path "%s" is not a file or does not exist.</error>',
+                $file
+            ));
+
+            return 1;
+        }
+
+        $box = $this->getHelper('box');
         $file = $input->getArgument('phar');
+        $phar = new Box($file);
+        $target = $input->getOption('out') ?: $file . '-contents';
 
-        if (false === file_exists($file)) {
-            throw new InvalidArgumentException('The PHAR does not exist.');
+        $box->setOutput($output);
+        $box->putln('EXTRACT', "Extracting: <comment>$file</comment>", true);
+
+        if ($want = $input->getOption('want')) {
+            foreach ($want as $item) {
+                $phar->extractTo($target, $item, true);
+            }
+        } else {
+            $phar->extractTo($target, null, true);
         }
 
-        if (null === ($out = $input->getOption('out'))) {
-            $out = realpath($file) . '-contents';
-        }
-
-        try {
-            $phar = new Phar($file);
-
-            if ($want = $input->getOption('want')) {
-                foreach ($want as $wanted) {
-                    $phar->extractTo($out, $wanted, true);
-                }
-            } else {
-                $phar->extractTo($out, null, true);
-            }
-        } catch (PharException $exception) {
-            if (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity()) {
-                throw $exception;
-            } else {
-                $output->writeln(sprintf(
-                    '<error>The PHAR could not be extracted: %s',
-                    $exception->getMessage()
-                ));
-            }
-
-            return 1;
-        } catch (UnexpectedValueException $exception) {
-            $output->writeln('<error>The PHAR could not be opened.</error>');
-
-            if (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity()) {
-                throw $exception;
-            }
-
-            return 1;
-        }
+        $box->putln('EXTRACT', '<info>Done!</info>', true);
     }
 }
+

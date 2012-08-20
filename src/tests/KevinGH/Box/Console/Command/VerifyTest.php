@@ -1,87 +1,55 @@
 <?php
 
-    /* This file is part of Box.
-     *
-     * (c) 2012 Kevin Herrera
-     *
-     * For the full copyright and license information, please
-     * view the LICENSE file that was distributed with this
-     * source code.
-     */
+/* This file is part of Box.
+ *
+ * (c) 2012 Kevin Herrera
+ *
+ * For the full copyright and license information, please
+ * view the LICENSE file that was distributed with this
+ * source code.
+ */
 
-    namespace KevinGH\Box\Console\Command;
+namespace KevinGH\Box\Console\Command;
 
-    use KevinGH\Box\Test\CommandTestCase,
-        Symfony\Component\Console\Output\OutputInterface;
+use Exception;
+use KevinGH\Box\Box;
+use KevinGH\Box\Test\CommandTestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 
-    class VerifyTest extends CommandTestCase
+class VerifyTest extends CommandTestCase
+{
+    const COMMAND = 'verify';
+
+    public function testExecuteValid()
     {
-        const COMMAND = 'verify';
+        $this->tester->execute(array(
+            'command' => self::COMMAND,
+            'phar' => $this->getResource('example.phar')
+        ));
 
-        public function testExecuteSigned()
-        {
-            $file = $this->getApp(true, 'phpunit');
+        $this->assertEquals('The PHAR was verified using SHA-1.', trim($this->tester->getDisplay()));
+    }
 
+    public function testExecuteInvalid()
+    {
+        file_put_contents('test.phar', str_replace(
+            '__HALT_COMPILER',
+            '',
+            $this->getResource('example.phar', true)
+        ));
+
+        try {
             $this->tester->execute(array(
                 'command' => self::COMMAND,
-                'phar' => $file
-            ));
-
-            $this->assertEquals('The PHAR is verified and signed.', trim($this->tester->getDisplay()));
-        }
-
-        public function testExecuteUnsigned()
-        {
-            $file = $this->getApp();
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                'phar' => $file
-            ));
-
-            $this->assertEquals('The PHAR is verified but not signed.', trim($this->tester->getDisplay()));
-        }
-
-        public function testExecuteFailsVerify()
-        {
-            $file = $this->getApp();
-
-            file_put_contents($file, $copy = str_replace('class', 'klass', file_get_contents($file)));
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                'phar' => $file
-            ));
-
-            $this->assertEquals('The PHAR failed verification.', trim($this->tester->getDisplay()));
-        }
-
-        /**
-         * @expectedException UnexpectedValueException
-         */
-        public function testExecuteFailsVerifyVerbose()
-        {
-            $file = $this->getApp();
-
-            file_put_contents($file, $copy = str_replace('class', 'klass', file_get_contents($file)));
-
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                'phar' => $file
+                'phar' => realpath('test.phar')
             ), array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
             ));
+        } catch (Exception $exception) {
         }
 
-        /**
-         * @expectedException InvalidArgumentException
-         * @expectedExceptionMessage The PHAR does not exist.
-         */
-        public function testExecuteNotExist()
-        {
-            $this->tester->execute(array(
-                'command' => self::COMMAND,
-                'phar' => '/does/not/exist'
-            ));
-        }
+        $this->assertTrue(isset($exception));
+        $this->assertEquals('The PHAR failed verification.', trim($this->tester->getDisplay()));
     }
+}
+

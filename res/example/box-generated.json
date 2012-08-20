@@ -1,0 +1,19 @@
+{
+    "alias": "example.phar",
+    "chmod": "0755",
+    "compression": "GZ",
+    "files": ["src/Put.php"],
+    "files-bin": ["res/icon.ico"],
+    "intercept": true,
+    "key": "private.key",
+    "key-pass": true,
+    "main": "bin/example",
+    "metadata": {
+        "description": "This is an example Box console application."
+    },
+    "output": "example.phar",
+    "replacements": {
+        "name": "world"
+    },
+    "stub": true
+}

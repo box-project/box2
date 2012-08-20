@@ -1,5 +1,5 @@
 {
-    "hash": "777ec4935b10af1149a2b3b51c2e4f82",
+    "hash": "2b0e765a918d4c280bf44dc5b6dac8af",
     "packages": [
         {
             "package": "justinrainbow/json-schema",
@@ -10,8 +10,14 @@
             "version": "1.0.0-beta.1"
         },
         {
+            "package": "kherge/elf",
+            "version": "dev-master",
+            "source-reference": "160dd8cd44d273e0e587104e985986b5404111c4",
+            "commit-date": "1345174249"
+        },
+        {
             "package": "kherge/version",
-            "version": "1.0.0"
+            "version": "1.0.1"
         },
         {
             "package": "seld/jsonlint",
@@ -19,23 +25,25 @@
         },
         {
             "package": "symfony/console",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/finder",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         },
         {
             "package": "symfony/process",
-            "version": "v2.1.0-BETA4"
+            "version": "v2.1.0-RC1"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
     "minimum-stability": "beta",
-    "stability-flags": [
-
-    ]
+    "stability-flags": {
+        "kherge/elf": 20
+    }
 }

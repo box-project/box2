@@ -11,8 +11,7 @@
 
 namespace KevinGH\Box\Console\Command;
 
-use InvalidArgumentException;
-use Phar;
+use KevinGH\Box\Box;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use UnexpectedValueException;
 
 /**
- * Verifies the PHAR's signature.
+ * Verifies the PHAR.
  *
  * @author Kevin Herrera <me@kevingh.com>
  */
@@ -29,44 +28,39 @@ class Verify extends Command
     /** {@inheritDoc} */
     public function configure()
     {
-        $this->setName('verify')
-             ->setDescription('Verifies the PHAR.');
+        $this->setName('verify');
+        $this->setDescription('Verifies a PHAR.');
 
         $this->addArgument(
             'phar',
             InputArgument::REQUIRED,
-            'The PHAR file path.'
+            'The PHAR to verify.'
         );
     }
 
     /** {@inheritDoc} */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $file = $input->getArgument('phar');
-
-        if (false === file_exists($file)) {
-            throw new InvalidArgumentException('The PHAR does not exist.');
-        }
-
         try {
-            // Phar class verifies in constructor
-            $phar = new Phar($file);
-
-            $signature = $phar->getSignature();
-
-            if ('OpenSSL' === $signature['hash_type']) {
-                $output->writeln('<info>The PHAR is verified and signed.</info>');
-            } else {
-                $output->writeln('<comment>The PHAR is verified but not signed.</comment>');
-            }
+            $phar = new Box($input->getArgument('phar'));
         } catch (UnexpectedValueException $exception) {
             $output->writeln('<error>The PHAR failed verification.</error>');
 
             if (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity()) {
                 throw $exception;
             }
+        }
 
-            return 1;
+        if (false === isset($exception)) {
+            $signature = $phar->getSignature();
+
+            unset($phar);
+
+            $output->writeln(sprintf(
+                '<info>The PHAR was verified using %s.</info>',
+                $signature['hash_type']
+            ));
         }
     }
 }
+

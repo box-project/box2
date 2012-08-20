@@ -66,10 +66,9 @@ class Box extends Phar
     private $replacements = array();
 
     /** {@inheritDoc} */
-    public function __construct($fname, $flags = 0, $alias = 'default.phar')
+    public function __construct($fname, $flags = 0, $alias = null)
     {
         $this->alias = $alias;
-
         $this->name = $fname;
 
         parent::__construct($fname, $flags, $alias);
@@ -185,9 +184,9 @@ STUB
      */
     public function importFile($relative, $absolute, $main = false)
     {
-        if (false === file_exists($absolute)) {
+        if (false === is_file($absolute)) {
             throw new InvalidArgumentException(sprintf(
-                'The file does not exist: %s',
+                'The path "%s" is not a file or it does not exist.',
                 $absolute
             ));
         }
@@ -196,7 +195,8 @@ STUB
             $error = error_get_last();
 
             throw new RuntimeException(sprintf(
-                'The file could not be read: %s',
+                'The file "%s" could not be read: %s',
+                $absolute,
                 $error['message']
             ));
         }
@@ -259,6 +259,41 @@ STUB
     }
 
     /**
+     * Sets the stub using a file.
+     *
+     * @param string  $file    The file path.
+     * @param boolean $replace Do replacements?
+     *
+     * @throws InvalidArgumentException If the file does not exist.
+     * @throws RuntimeException         If the file could not be read.
+     */
+    public function setStubFile($file, $replace = false)
+    {
+        if (false === is_file($file)) {
+            throw new InvalidArgumentException(sprintf(
+                'The path "%s" is not a file or it does not exist.',
+                $file
+            ));
+        }
+
+        if (false === ($contents = file_get_contents($file))) {
+            $error = error_get_last();
+
+            throw new RuntimeException(sprintf(
+                'The stub file "%s" could not be read: %s',
+                $file,
+                $error['message']
+            ));
+        }
+
+        if ($replace) {
+            $contents = $this->doReplacements($contents);
+        }
+
+        $this->setStub($contents);
+    }
+
+    /**
      * Signs the PHAR using a private key file.
      *
      * @param string $file The private key file.
@@ -269,8 +304,11 @@ STUB
      */
     public function usePrivateKeyFile($file, $pass = null)
     {
-        if (false === file_exists($file)) {
-            throw new InvalidArgumentException('The private key file does not exist.');
+        if (false === is_file($file)) {
+            throw new InvalidArgumentException(sprintf(
+                'The path "%s" is not a file or it does not exist.',
+                $file
+            ));
         }
 
         if (false === extension_loaded('openssl')) {
@@ -283,12 +321,37 @@ STUB
             $error = error_get_last();
 
             throw new RuntimeException(sprintf(
-                'The private key file could not be read: %s',
+                'The private key file "%s" could not be read: %s',
+                $file,
                 $error['message']
             ));
         }
 
-        list($private, $public) = $this->getKeys($pem, $pass);
+        if (false === ($resource = openssl_pkey_get_private($pem, $pass))) {
+            throw new RuntimeException(sprintf(
+                'The private key file "%s" could not be parsed: %s',
+                $file,
+                openssl_error_string()
+            ));
+        }
+
+        if (false === openssl_pkey_export($resource, $private)) {
+            throw new RuntimeException(sprintf(
+                'The private key file "%s" could not be exported: %s',
+                $file,
+                openssl_error_string()
+            ));
+        }
+
+        if (false === ($details = openssl_pkey_get_details($resource))) {
+            throw new RuntimeException(sprintf(
+                'The details of the private key file "%s" could not be retrieved: %s',
+                $file,
+                openssl_error_string()
+            ));
+        }
+
+        $public = $details['key'];
 
         $this->setSignatureAlgorithm(self::OPENSSL, $private);
 
@@ -296,45 +359,11 @@ STUB
             $error = error_get_last();
 
             throw new RuntimeException(sprintf(
-                'The public key could not be written: %s',
+                'The public key file "%s" could not be written: %s',
+                $this->name . '.pubkey',
                 $error['message']
             ));
         }
     }
-
-    /**
-     * Returns the private and public key for the PEM data.
-     *
-     * @param string $pem  The PEM data.
-     * @param string $pass The passphrase.
-     *
-     * @return string The private key.
-     *
-     * @throws RuntimeException If the private key could not be exported.
-     */
-    protected function getKeys($pem, $pass = null)
-    {
-        if (false === ($resource = openssl_pkey_get_private($pem, $pass))) {
-            throw new RuntimeException(sprintf(
-                'The private key could not be parsed: %s',
-                openssl_error_string()
-            ));
-        }
-
-        if (false === openssl_pkey_export($resource, $private)) {
-            throw new RuntimeException(sprintf(
-                'The private key could not be exported: %s',
-                openssl_error_string()
-            ));
-        }
-
-        if (false === ($details = openssl_pkey_get_details($resource))) {
-            throw new RuntimeException(sprintf(
-                'The details of the private key could not be retrieved: %s',
-                openssl_error_string()
-            ));
-        }
-
-        return array($private, $details['key']);
-    }
 }
+

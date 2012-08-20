@@ -86,7 +86,7 @@
         },
         "replacements": {
             "description": "A list of replacement names and their values.",
-            "type": ["array", "object"]
+            "type": "object"
         },
         "stub": {
             "description": "The relative file path to the stub file, or the flag to use the default stub.",

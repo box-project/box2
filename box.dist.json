@@ -8,11 +8,11 @@
     "finder": [
         {
             "name": "*.php",
-            "exclude": "Tests",
+            "exclude": ["Tests", "tests"],
             "in": "src/vendors"
         }
     ],
-    "git-version": "git_version",
+    "git-version": "package_version",
     "main": "bin/box",
     "output": "box.phar",
     "replacements": {

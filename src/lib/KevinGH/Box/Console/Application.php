@@ -13,9 +13,13 @@ namespace KevinGH\Box\Console;
 
 use ErrorException;
 use KevinGH\Amend;
-use KevinGH\Box\Console\Command;
 use KevinGH\Box\Console\Helper;
+use KevinGH\Elf;
 use Symfony\Component\Console\Application as _Application;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * The Box application class.
@@ -24,17 +28,49 @@ use Symfony\Component\Console\Application as _Application;
  */
 class Application extends _Application
 {
+    /**
+     * The application version.
+     *
+     * @var string
+     *
+     * @api
+     */
+    const VERSION = '@package_version@';
+
     /** {@inheritDoc} */
-    public function __construct($name = 'Box', $version = '@git_version@')
+    public function __construct($name = 'Box', $version = self::VERSION)
     {
         parent::__construct($name, $version);
 
-        set_error_handler(function($code, $message, $file, $line)
-        {
-            if (error_reporting() & $code) {
-                throw new ErrorException($message, 0, $code, $file, $line);
+        set_error_handler(
+            function (
+                $code,
+                $message,
+                $file,
+                $line
+            ) {
+                if (error_reporting() & $code) {
+                    throw new ErrorException($message, 0, $code, $file, $line);
+                }
             }
-        });
+        );
+    }
+
+    /**
+     * Creates the console output stream.
+     *
+     * @return ConsoleOutput The output stream.
+     */
+    public function createOutput()
+    {
+        $output = new ConsoleOutput();
+        $formatter = $output->getFormatter();
+
+        $formatter->setStyle('error', new OutputFormatterStyle('red'));
+        $formatter->setStyle('prefix', new OutputFormatterStyle('cyan'));
+        $formatter->setStyle('question', new OutputFormatterStyle('magenta'));
+
+        return $output;
     }
 
     /** {@inheritDoc} */
@@ -42,21 +78,20 @@ class Application extends _Application
     {
         $commands = parent::getDefaultCommands();
 
-        $commands[] = new Command\Create;
-        $commands[] = new Command\Edit\Add;
-        $commands[] = new Command\Edit\Remove;
-        $commands[] = new Command\Extract;
-        $commands[] = new Command\Info;
-        $commands[] = new Command\Validate;
-        $commands[] = new Command\Verify;
-
-        if (false === strpos($this->getVersion(), 'git_version')) {
-            $commands[] = new Command\Update;
-        }
+        $commands[] = new Command\Add();
+        $commands[] = new Command\Build();
+        $commands[] = new Command\Extract();
+        $commands[] = new Command\Info();
+        $commands[] = new Command\Validate();
+        $commands[] = new Command\Verify();
 
         if (extension_loaded('openssl')) {
-            $commands[] = new Command\Key\Create;
-            $commands[] = new Command\Key\Extract;
+            $commands[] = new Command\OpenSsl\CreatePrivate();
+            $commands[] = new Command\OpenSsl\ExtractPublic();
+        }
+
+        if (false === strpos($this->getVersion(), 'package_version')) {
+            $commands[] = new Command\Update();
         }
 
         return $commands;
@@ -67,17 +102,31 @@ class Application extends _Application
     {
         $helperSet = parent::getDefaultHelperSet();
 
-        $helperSet->set(new Helper\Config);
-        $helperSet->set(new Helper\JSON);
-
-        if (false === strpos($this->getVersion(), 'git_version')) {
-            $helperSet->set(new Amend\Helper);
-        }
+        $helperSet->set(new Elf\Git());
+        $helperSet->set(new Elf\Json());
+        $helperSet->set(new Helper\Box());
 
         if (extension_loaded('openssl')) {
-            $helperSet->set(new Helper\OpenSSL);
+            $helperSet->set(new Elf\OpenSsl());
+        }
+
+        if (false === strpos($this->getVersion(), 'package_version')) {
+            $helperSet->set(new Amend\Helper);
         }
 
         return $helperSet;
     }
+
+    /** {@inheritDoc} */
+    public function run(InputInterface $input = null, OutputInterface $output = null)
+    {
+        // @codeCoverageIgnoreStart
+        if (null === $output) {
+            $output = $this->createOutput();
+        }
+
+        return parent::run($input, $output);
+        // @codeCoverageIgnoreEnd
+    }
 }
+

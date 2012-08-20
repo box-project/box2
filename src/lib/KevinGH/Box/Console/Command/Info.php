@@ -1,6 +1,6 @@
 <?php
 
-/* This file is part of Bo.
+/* This file is part of Box.
  *
  * (c) 2012 Kevin Herrera
  *
@@ -11,113 +11,78 @@
 
 namespace KevinGH\Box\Console\Command;
 
-use InvalidArgumentException;
-use Phar;
+use KevinGH\Box\Box;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use UnexpectedValueException;
 
 /**
- * The command that displays PHAR information.
+ * Extracts one or more files from a PHAR.
  *
  * @author Kevin Herrera <me@kevingh.com>
  */
 class Info extends Command
 {
+    /**
+     * Recognized compression algorithms.
+     *
+     * @var array
+     */
+    private $compression = array(
+        Box::BZ2 => 'BZ2',
+        Box::GZ => 'GZ',
+        Box::TAR => 'TAR',
+        Box::ZIP => 'ZIP'
+    );
+
     /** {@inheritDoc} */
     public function configure()
     {
-        $this->setName('info')
-             ->setDescription('Display information about the PHAR extension or file.');
+        $this->setName('info');
+        $this->setDescription('Displays PHAR information.');
 
         $this->addArgument(
             'phar',
-            InputArgument::OPTIONAL | InputArgument::IS_ARRAY,
-            'The PHAR file name.'
+            InputArgument::OPTIONAL,
+            'The PHAR to view.'
         );
     }
 
     /** {@inheritDoc} */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        if ($phars = $input->getArgument('phar')) {
-            foreach ($phars as $phar) {
-                if (false === file_exists($phar)) {
-                    $output->writeln("<error>$phar: does not exist</error>\n");
+        $box = $this->getHelper('box');
 
-                    continue;
-                } else {
-                    $output->writeln("$phar:");
-                }
+        $box->setOutput($output);
 
-                try {
-                    $object = new Phar($phar);
-                } catch (UnexpectedValueException $exception) {
-                    $output->writeln("    - <error>Is corrupt.</error>\n");
+        if ($file = $input->getArgument('phar')) {
+            $phar = new Box($file);
 
-                    continue;
-                }
+            $box->putln('FILE', $file);
+            $box->putln('INFO', '<comment>API:</comment> v' . $phar->getVersion());
+            $box->putln('INFO', sprintf(
+                '<comment>Compression:</comment> %s',
+                $phar->isCompressed() ? $this->compression[$phar->isCompressed()] : 'None'
+            ));
 
-                $output->writeln("    - API v" . $object->getVersion());
+            $signature = $phar->getSignature();
 
-                $output->writeln(sprintf(
-                    '    - Compression: %s',
-                    $this->getCompressionName($object->isCompressed())
-                ));
-
-                $output->writeln("    - Metadata: " . ($object->hasMetadata() ? 'Yes' : 'No'));
-
-                $signature = $object->getSignature();
-
-                $output->writeln("    - Signature: {$signature['hash_type']}");
-
-                unset($object);
-
-                $output->writeln('');
-            }
+            $box->putln('INFO', '<comment>Signature:</comment> ' . $signature['hash_type']);
         } else {
-            $output->writeln('PHAR v' . Phar::apiVersion() . "\n");
+            $box->putln('PHAR', 'v' . Box::apiVersion());
 
-            $output->writeln('Compression algorithms:');
+            $box->putln('INFO', sprintf(
+                '<comment>Compression Algorithms:</comment> %s',
+                join(', ', Box::getSupportedCompression())
+            ));
 
-            foreach (Phar::getSupportedCompression() as $algorithm) {
-                $output->writeln("    - $algorithm");
-            }
-
-            $output->writeln("\nSignature algorithms:");
-
-            foreach (Phar::getSupportedSignatures() as $algorithm) {
-                $output->writeln("    - $algorithm");
-            }
+            $box->putln('INFO', sprintf(
+                '<comment>Signature Algorithms:</comment> %s',
+                join(', ', Box::getSupportedSignatures())
+            ));
         }
-    }
-
-    /**
-     * Returns the name of the compression algorithm, if any.
-     *
-     * @param integer $code The algorithm code.
-     *
-     * @return string The algorithm name.
-     */
-    protected function getCompressionName($code)
-    {
-        if (false === $code) {
-            return 'none';
-        }
-
-        switch ($code) {
-            case Phar::BZ2:
-                return 'BZ2';
-            case Phar::GZ:
-                return 'GZ';
-            case Phar::TAR:
-                return 'TAR';
-            case Phar::ZIP:
-                return 'ZIP';
-        }
-
-        return 'unrecognized';
     }
 }
+

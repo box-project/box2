@@ -11,12 +11,12 @@
 
 namespace KevinGH\Box\Console\Command;
 
-use KevinGH\Amend\Command,
-    Phar,
-    RuntimeException,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    UnexpectedValueException;
+use KevinGH\Amend\Command;
+use KevinGH\Box\Box;
+use RuntimeException;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use UnexpectedValueException;
 
 /** {@inheritDoc} */
 class Update extends Command
@@ -39,17 +39,19 @@ class Update extends Command
     /** {@inheritDoc} */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->integrity = function ($file) use ($output)
-        {
+        $this->integrity = function ($file) use ($output) {
             try {
-                $phar = new Phar($file);
+                $phar = new Box($file);
             } catch (UnexpectedValueException $e) {
                 $output->writeln("<error>The update was corrupted.</error>\n");
 
                 throw $e;
             }
+            // @codeCoverageIgnoreStart
         };
+        // @codeCoverageIgnoreEnd
 
         return parent::execute($input, $output);
     }
 }
+

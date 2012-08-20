@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
 
-    require __DIR__ . '/../src/vendors/autoload.php';
+require __DIR__ . '/../src/vendors/autoload.php';
 
-    $app = new KevinGH\Box\Console\Application;
+$app = new KevinGH\Box\Console\Application;
 
-    $app->run();
+$app->run();
