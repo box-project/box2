@@ -4,6 +4,7 @@
 box.phar
 box.phar.pubkey
 private.key
+!res/example/private.key
 public.key
 coverage/
 src/vendors/
