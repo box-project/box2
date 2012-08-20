@@ -21,6 +21,12 @@ class BuildTest extends CommandTestCase
 
     public function testExecuteBoxStub()
     {
+        if (false === extension_loaded('openssl')) {
+            $this->markTestSkipped('The "openssl" extension is not available.');
+
+            return;
+        }
+
         $this->setupApp();
 
         $this->command->getHelperSet()->set(new Dialog('phpunit'));
