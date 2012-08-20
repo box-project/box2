@@ -182,7 +182,11 @@ class Configuration extends ArrayObject
     public function getMainPath()
     {
         if ($this['main']) {
-            $path = $this['base-path'] . DIRECTORY_SEPARATOR . $this['main'];
+            if (self::isAbsolute($this['main'])) {
+                $path = $this['main'];
+            } else {
+                $path = $this['base-path'] . DIRECTORY_SEPARATOR . $this['main'];
+            }
 
             if (false === is_file($path)) {
                 throw new InvalidArgumentException(sprintf(
@@ -202,6 +206,10 @@ class Configuration extends ArrayObject
      */
     public function getOutputPath()
     {
+        if (self::isAbsolute($this['output'])) {
+            return $this['output'];
+        }
+
         return $this['base-path'] . DIRECTORY_SEPARATOR . $this['output'];
     }
 
@@ -213,6 +221,10 @@ class Configuration extends ArrayObject
     public function getPrivateKeyPath()
     {
         if ($this['key']) {
+            if (self::isAbsolute($this['key'])) {
+                return $this['key'];
+            }
+
             return $this['base-path'] . DIRECTORY_SEPARATOR . $this['key'];
         }
     }
@@ -227,6 +239,18 @@ class Configuration extends ArrayObject
     public function getRelativeOf($path)
     {
         return ltrim(str_replace($this['base-path'], '', $path), '\\/');
+    }
+
+    /**
+     * Checks if the file path is an absolute path.
+     *
+     * @param string $path The file path.
+     *
+     * @return boolean TRUE if absolute, FALSE if not.
+     */
+    public static function isAbsolute($path)
+    {
+        return (bool) preg_match('/^([a-zA-Z]:)?[\\\\\/]+/', $path);
     }
 
     /**

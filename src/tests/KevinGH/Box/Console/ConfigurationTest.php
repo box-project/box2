@@ -165,7 +165,7 @@ class ConfigurationTest extends TestCase
         $this->config->getFiles();
     }
 
-    public function testGetMainPath()
+    public function testGetMainPathRelative()
     {
         $this->assertNull($this->config->getMainPath());
 
@@ -179,6 +179,13 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(realpath('base/bin/main'), $this->config->getMainPath());
     }
 
+    public function testGetMainPathAbsolute()
+    {
+        $this->config['main'] = $file = $this->file();
+
+        $this->assertEquals($file, $this->config->getMainPath());
+    }
+
     /**
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage The path "bin/main" is not a file or it does not exist.
@@ -190,12 +197,19 @@ class ConfigurationTest extends TestCase
         $this->config->getMainPath();
     }
 
-    public function testGetOutputPath()
+    public function testGetOutputPathRelative()
     {
         $this->assertEquals(
             getcwd() . DIRECTORY_SEPARATOR . 'default.phar',
             $this->config->getOutputPath()
         );
+    }
+
+    public function testGetOutputPathAbsolute()
+    {
+        $this->config['output'] = $file = $this->file();
+
+        $this->assertEquals($file, $this->config->getOutputPath());
     }
 
     public function testGetPrivateKeyPathNotSet()
@@ -211,6 +225,13 @@ class ConfigurationTest extends TestCase
             $this->config['base-path'] . DIRECTORY_SEPARATOR . $this->config['key'],
             $this->config->getPrivateKeyPath()
         );
+    }
+
+    public function testGetPrivateKeyAbsolute()
+    {
+        $this->config['key'] = $file = $this->file();
+
+        $this->assertEquals($file, $this->config->getPrivateKeyPath());
     }
 
     public function testProcessConfig()
