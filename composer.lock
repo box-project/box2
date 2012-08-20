@@ -1,5 +1,5 @@
 {
-    "hash": "2b0e765a918d4c280bf44dc5b6dac8af",
+    "hash": "8b6b4ef7258159469855f3aaa4dc7d73",
     "packages": [
         {
             "package": "justinrainbow/json-schema",
@@ -7,12 +7,18 @@
         },
         {
             "package": "kherge/amend",
-            "version": "1.0.0-beta.1"
+            "version": "1.0.0"
         },
         {
             "package": "kherge/elf",
             "version": "dev-master",
-            "source-reference": "160dd8cd44d273e0e587104e985986b5404111c4",
+            "alias-pretty-version": "1.0.x-dev",
+            "alias-version": "1.0.9999999.9999999-dev"
+        },
+        {
+            "package": "kherge/elf",
+            "version": "dev-master",
+            "source-reference": "1.0.0",
             "commit-date": "1345174249"
         },
         {
@@ -36,14 +42,12 @@
             "version": "v2.1.0-RC1"
         }
     ],
-    "packages-dev": [
-
-    ],
+    "packages-dev": null,
     "aliases": [
 
     ],
     "minimum-stability": "beta",
-    "stability-flags": {
-        "kherge/elf": 20
-    }
+    "stability-flags": [
+
+    ]
 }

@@ -14,7 +14,7 @@
     "require": {
         "php": ">=5.3.3",
         "kherge/amend": "1.*",
-        "kherge/elf": "@dev",
+        "kherge/elf": "1.*",
         "kherge/version": "1.*",
         "symfony/console": "2.1.*",
         "symfony/finder": "2.1.*",
