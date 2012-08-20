@@ -256,6 +256,24 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('1.0.0', $config['replacements']['package_version']);
     }
 
+    public function testProcessConfigTagFail()
+    {
+        file_put_contents('test', '');
+
+        $this->command('git init');
+        $this->command('git add test');
+        $this->command('git commit -m "Adding test."');
+
+        $config = new Configuration($this->helpers, $this->file, array(
+            'git-version' => 'package_version'
+        ));
+
+        $this->assertEquals(
+            $this->command('git log --pretty="%h" -n1 HEAD'),
+            $config['replacements']['package_version']
+        );
+    }
+
     public function testLoad()
     {
         $config = Configuration::load($this->helpers, $this->getResource('tests/box-example.json'));

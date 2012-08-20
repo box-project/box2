@@ -14,6 +14,7 @@ namespace KevinGH\Box\Console;
 use ArrayObject;
 use InvalidArgumentException;
 use KevinGH\Box\Box;
+use KevinGH\Elf\Exception\GitException;
 use RuntimeException;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Finder\Finder;
@@ -317,7 +318,11 @@ class Configuration extends ArrayObject
             $git = $this->helpers->get('git');
             $repo = $this['base-path'] ?: $this->helpers->get('box')->getCurrentDir();
 
-            $version = $git->getTag($repo) ?: $git->getCommit(true, $repo);
+            try {
+                $version = $git->getTag($repo) ?: $git->getCommit(true, $repo);
+            } catch (GitException $exception) {
+                $version = $git->getCommit(true, $repo);
+            }
 
             $this['replacements'] = array_merge(
                 array(
