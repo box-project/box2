@@ -160,7 +160,7 @@ class TestCase extends PHPUnit_Framework_TestCase
         $process = new Process($command, $dir);
 
         if (0 === $process->run()) {
-            return trim($process->getOutput());
+            return trim($process->getOutput() . $process->getErrorOutput());
         } elseif ($throw) {
             throw new RuntimeException($process->getOutput() . $process->getErrorOutput());
         }
