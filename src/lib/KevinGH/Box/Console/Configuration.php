@@ -24,7 +24,7 @@ use Symfony\Component\Finder\Finder;
  *
  * @var string
  */
-define('BOX_SCHEMA', realpath(__DIR__ . '/../../../../../res/schema.json'));
+define('BOX_SCHEMA', BOX_PATH . '/res/schema.json');
 
 /**
  * Manages configuration settings for the Box console application.

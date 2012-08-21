@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+define('BOX_PATH', dirname(__DIR__));
+
 require __DIR__ . '/../src/vendors/autoload.php';
 
 $app = new KevinGH\Box\Console\Application;
