@@ -287,7 +287,7 @@ class Configuration extends ArrayObject
     public function processConfig()
     {
         if (empty($this['base-path'])) {
-            $this['base-path'] = $this->helpers->get('box')->getCurrentDir();
+            $this['base-path'] = dirname(realpath($this->file));
         }
 
         if (is_string($this['algorithm'])) {
