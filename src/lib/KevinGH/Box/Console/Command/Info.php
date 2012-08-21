@@ -12,6 +12,8 @@
 namespace KevinGH\Box\Console\Command;
 
 use KevinGH\Box\Box;
+use RecursiveDirectoryIterator;
+use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,6 +45,13 @@ class Info extends Command
         $this->setName('info');
         $this->setDescription('Displays PHAR information.');
 
+        $this->addOption(
+            'list',
+            'l',
+            InputOption::VALUE_NONE,
+            'List the contents?'
+        );
+
         $this->addArgument(
             'phar',
             InputArgument::OPTIONAL,
@@ -70,6 +79,31 @@ class Info extends Command
             $signature = $phar->getSignature();
 
             $box->putln('INFO', '<comment>Signature:</comment> ' . $signature['hash_type']);
+
+            if ($input->getOption('list')) {
+                $show = function (SplFileInfo $info, $indent = 0) use ($box, &$show) {
+                    $box->putln(
+                        'LIST',
+                        str_repeat(' ', $indent)
+                            . $info->getFilename()
+                            . ($info->isDir() ? DIRECTORY_SEPARATOR : '')
+                    );
+
+                    if ($info->isDir()) {
+                        $iterator = new RecursiveDirectoryIterator(
+                            $info->getPath() . DIRECTORY_SEPARATOR . $info->getFilename()
+                        );
+
+                        foreach ($iterator as $subInfo) {
+                            $show($subInfo, $indent + 2);
+                        }
+                    }
+                };
+
+                foreach ($phar as $info) {
+                    $show($info);
+                }
+            }
         } else {
             $box->putln('PHAR', 'v' . Box::apiVersion());
 

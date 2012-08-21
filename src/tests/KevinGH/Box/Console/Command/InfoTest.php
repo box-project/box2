@@ -43,7 +43,8 @@ OUTPUT
     {
         $this->tester->execute(array(
             'command' => self::COMMAND,
-            'phar' => $file = $this->getResource('example.phar')
+            'phar' => $file = $this->getResource('example.phar'),
+            '--list' => true
         ));
 
         $this->assertEquals(
@@ -52,6 +53,10 @@ OUTPUT
 <prefix>INFO</prefix> API: v1.1.0
 <prefix>INFO</prefix> Compression: None
 <prefix>INFO</prefix> Signature: SHA-1
+<prefix>LIST</prefix> bin/
+<prefix>LIST</prefix>   example
+<prefix>LIST</prefix> src/
+<prefix>LIST</prefix>   Put.php
 
 OUTPUT
             ,
