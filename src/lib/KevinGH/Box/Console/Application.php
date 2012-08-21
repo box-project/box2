@@ -82,6 +82,7 @@ class Application extends _Application
         $commands[] = new Command\Build();
         $commands[] = new Command\Extract();
         $commands[] = new Command\Info();
+        $commands[] = new Command\Remove();
         $commands[] = new Command\Validate();
         $commands[] = new Command\Verify();
 
