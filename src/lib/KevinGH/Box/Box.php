@@ -175,14 +175,14 @@ STUB
     /**
      * Imports a file's source code after compacting and doing replacements.
      *
-     * @param string  $relative The relative file path.
      * @param string  $absolute The absolute file path.
+     * @param string  $relative The relative file path.
      * @param boolean $main     Is it the main program code?
      *
      * @throws InvalidArgumentException If the file does not exist.
      * @throws RuntimeException If the file could not be imported.
      */
-    public function importFile($relative, $absolute, $main = false)
+    public function importFile($absolute, $relative, $main = false)
     {
         if (false === is_file($absolute)) {
             throw new InvalidArgumentException(sprintf(
@@ -207,8 +207,8 @@ STUB
     /**
      * Imports the source code after compacting and doing replacements.
      *
-     * @param string  $relative The relative file path.
      * @param string  $source   The source code.
+     * @param string  $relative The relative file path.
      * @param boolean $main     Is it the main program code?
      */
     public function importSource($relative, $source, $main = false)

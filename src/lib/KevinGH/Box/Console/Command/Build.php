@@ -67,7 +67,7 @@ class Build extends Command
 
             $box->putln('BUILD', "<comment>s</comment> $relative", true);
 
-            $phar->importFile($relative, $absolute);
+            $phar->importFile($absolute, $relative);
 
             $added++;
         }
@@ -77,7 +77,7 @@ class Build extends Command
 
             $box->putln('BUILD', "<comment>b</comment> $relative", true);
 
-            $phar->importFile($relative, $absolute);
+            $phar->importFile($absolute, $relative);
 
             $added++;
         }
@@ -87,11 +87,11 @@ class Build extends Command
 
             $box->putln('BUILD', "<comment>m</comment> $relative", true);
 
-            $phar->importFile($relative, $absolute, true);
+            $phar->importFile($absolute, $relative, true);
 
             if ($config['compression']) {
                 if (false === isset($phar['index.php'])) {
-                    $phar->addFromString('index.php', $phar[$relative]->getContent());
+                    $phar->copy($relative, 'index.php');
                 } else {
                     $box->putln('SETUP', '<error>Main script will not be executable</error>');
                 }

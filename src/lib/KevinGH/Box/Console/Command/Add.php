@@ -116,7 +116,7 @@ class Add extends Command
             if ($input->getOption('bin')) {
                 $phar->addFile($external, $internal);
             } else {
-                $phar->importFile($internal, $external, $input->getOption('main'));
+                $phar->importFile($external, $internal, $input->getOption('main'));
             }
         }
 

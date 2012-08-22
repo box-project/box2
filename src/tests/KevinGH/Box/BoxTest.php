@@ -97,7 +97,7 @@ class BoxTest extends TestCase
 
     public function testImportFile()
     {
-        $this->box->importFile('main.php', $this->getResource('tests/main-original.php'), true);
+        $this->box->importFile($this->getResource('tests/main-original.php'), 'main.php', true);
 
         $main = $this->property($this->box, 'main');
 
@@ -113,7 +113,7 @@ class BoxTest extends TestCase
             "The path \"$file\" is not a file or it does not exist."
         );
 
-        $this->box->importFile('file.php', $file);
+        $this->box->importFile($file, 'file.php');
     }
 
     public function testImportFileReadError()
@@ -129,7 +129,7 @@ class BoxTest extends TestCase
             "The file \"$file\" could not be read:"
         );
 
-        $this->box->importFile('file.php', $file);
+        $this->box->importFile($file, 'file.php');
     }
 
     public function testImportSource()
@@ -236,7 +236,7 @@ class BoxTest extends TestCase
 
         $openssl->createPrivateKeyFile('private.key', 'phpunit');
 
-        $this->box->importFile('main.php', $this->getResource('tests/main-original.php'), true);
+        $this->box->importFile($this->getResource('tests/main-original.php'), 'main.php', true);
         $this->box->setStub($this->box->createStub());
         $this->box->usePrivateKeyFile('private.key', 'phpunit');
 
