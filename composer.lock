@@ -1,5 +1,5 @@
 {
-    "hash": "8b6b4ef7258159469855f3aaa4dc7d73",
+    "hash": "c184cfd6d78096fe27f8c8214de02c16",
     "packages": [
         {
             "package": "justinrainbow/json-schema",
@@ -7,11 +7,11 @@
         },
         {
             "package": "kherge/amend",
-            "version": "1.0.1"
+            "version": "1.0.2"
         },
         {
             "package": "kherge/elf",
-            "version": "1.0.0"
+            "version": "1.0.1"
         },
         {
             "package": "kherge/version",
@@ -23,22 +23,24 @@
         },
         {
             "package": "symfony/console",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.0"
         },
         {
             "package": "symfony/finder",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.0"
         },
         {
             "package": "symfony/process",
-            "version": "v2.1.0-RC1"
+            "version": "v2.1.0"
         }
     ],
-    "packages-dev": null,
+    "packages-dev": [
+
+    ],
     "aliases": [
 
     ],
-    "minimum-stability": "beta",
+    "minimum-stability": "stable",
     "stability-flags": [
 
     ]
