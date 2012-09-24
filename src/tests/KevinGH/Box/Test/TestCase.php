@@ -232,7 +232,7 @@ class TestCase extends PHPUnit_Framework_TestCase
      *
      * @return resource|StreamOutput The memory stream.
      */
-    public function createStream($mode = 'w', $symfony = false)
+    public function createStream($mode = 'w', $symfony = false, $verbose = false)
     {
         $stream = self::$streams[] = fopen('php://memory', $mode, false);
 
