@@ -207,8 +207,8 @@ STUB
     /**
      * Imports the source code after compacting and doing replacements.
      *
-     * @param string  $source   The source code.
      * @param string  $relative The relative file path.
+     * @param string  $source   The source code.
      * @param boolean $main     Is it the main program code?
      */
     public function importSource($relative, $source, $main = false)
@@ -297,7 +297,7 @@ STUB
      * Signs the PHAR using a private key file.
      *
      * @param string $file The private key file.
-     * @param string $pass The passhphrase.
+     * @param string $pass The passphrase.
      *
      * @throws InvalidArgumentException If the private key does not exist.
      * @throws RuntimeException If the public key could not be retrieved.
@@ -355,7 +355,7 @@ STUB
 
         $this->setSignatureAlgorithm(self::OPENSSL, $private);
 
-        if (false === @ file_put_contents($this->name . '.pubkey', $public)) {
+        if (false === @file_put_contents($this->name . '.pubkey', $public)) {
             $error = error_get_last();
 
             throw new RuntimeException(sprintf(

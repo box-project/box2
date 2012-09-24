@@ -136,7 +136,7 @@ class Build extends Command
 
                 $config['key-pass'] = trim($dialog->ask(
                     $output,
-                    '<prefix>SETUP</prefix> <question>Private key phassphrase:</question> '
+                    '<prefix>SETUP</prefix> <question>Private key passphrase:</question> '
                 ));
             }
 
