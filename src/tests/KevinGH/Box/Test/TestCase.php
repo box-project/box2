@@ -227,7 +227,7 @@ class TestCase extends PHPUnit_Framework_TestCase
      * Creates a memory stream.
      *
      * @param string  $mode    The mode.
-     * @param boolean $symonfy Create a Symfony Console output stream?
+     * @param boolean $symfony Create a Symfony Console output stream?
      * @param boolean $verbose Is verbose stream?
      *
      * @return resource|StreamOutput The memory stream.

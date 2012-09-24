@@ -52,8 +52,8 @@ class Configuration extends ArrayObject
      * the values provided in the configuration settings.
      *
      * @param HelperSet $helpers  The helper set.
-     * @param array     $defaults The default settings.
      * @param string    $file     The file path.
+     * @param array     $defaults The default settings.
      */
     public function __construct(HelperSet $helpers, $file, $defaults = array())
     {
