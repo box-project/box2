@@ -166,7 +166,7 @@ a.button span {
 }
 
 code, pre {
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal;
+  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
   color: #222;
   margin-bottom: 30px;
   font-size: 14px;
