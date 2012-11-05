@@ -77,7 +77,7 @@ class Build extends Command
 
             $box->putln('BUILD', "<comment>b</comment> $relative", true);
 
-            $phar->importFile($absolute, $relative);
+            $phar->addFile($absolute, $relative);
 
             $added++;
         }

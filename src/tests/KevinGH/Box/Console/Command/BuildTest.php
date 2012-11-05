@@ -13,6 +13,7 @@ namespace KevinGH\Box\Console\Command;
 
 use KevinGH\Box\Test\CommandTestCase;
 use KevinGH\Box\Test\Dialog;
+use Phar;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class BuildTest extends CommandTestCase
@@ -179,6 +180,27 @@ OUTPUT
 OUTPUT
             ,
             $this->tester->getDisplay()
+        );
+    }
+
+    public function testIssue29()
+    {
+        $this->setupApp();
+
+        $this->tester->execute(array(
+            'command' => self::COMMAND,
+            '--configuration' => 'box-issue-29.json'
+        ));
+
+        $phar = new Phar('issue-29.phar');
+        $phar->extractTo(
+            $dir = $this->dir(),
+            'res/LICENSE'
+        );
+
+        $this->assertEquals(
+            file_get_contents(__DIR__ . '/../../../../../../res/example/res/LICENSE'),
+            file_get_contents($dir . '/res/LICENSE')
         );
     }
 }
