@@ -59,16 +59,16 @@
         },
         {
             "name": "kherge/amend",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kherge/Amend.git",
-                "reference": "2.0.1"
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/kherge/Amend/archive/2.0.1.zip",
-                "reference": "2.0.1",
+                "url": "https://github.com/kherge/Amend/archive/2.0.2.zip",
+                "reference": "2.0.2",
                 "shasum": ""
             },
             "require": {
@@ -79,7 +79,7 @@
                 "kherge/runkit-test-case": "1.*",
                 "symfony/console": "2.1.*"
             },
-            "time": "2012-12-13 05:03:59",
+            "time": "2012-12-13 05:40:45",
             "type": "library",
             "extra": {
                 "branch-alias": {
