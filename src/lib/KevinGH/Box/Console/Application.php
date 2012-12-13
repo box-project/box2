@@ -113,6 +113,7 @@ class Application extends _Application
 
         if (false === strpos($this->getVersion(), 'package_version')) {
             $helperSet->set(new Amend\Helper('@manifest_url@'));
+            $this->add(new Amend\Command('update'));
         }
 
         return $helperSet;
