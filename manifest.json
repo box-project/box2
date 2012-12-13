@@ -19,8 +19,8 @@
     },
     {
         "name": "box.phar",
-        "sha1": "f076b4212a1e8b581ebdcb03a7b76a0f05ae343f",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.5+build.1.phar",
-        "version": "1.0.5+build.1"
+        "sha1": "ae0b258abdb70b1eafcac58ac55603e708d0be00",
+        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.6.phar",
+        "version": "1.0.6"
     }
 ]
