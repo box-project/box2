@@ -21,37 +21,4 @@ use UnexpectedValueException;
 /** {@inheritDoc} */
 class Update extends Command
 {
-    /** {@inheritDoc} */
-    protected $extract = '@update_matcher@';
-
-    /** {@inheritDoc} */
-    protected $match = '@update_matcher@';
-
-    /** {@inheritDoc} */
-    protected $url = '@update_url@';
-
-    /** {@inheritDoc} */
-    public function __construct()
-    {
-        parent::__construct('update');
-    }
-
-    /** {@inheritDoc} */
-    public function execute(InputInterface $input, OutputInterface $output)
-    {
-        $this->integrity = function ($file) use ($output) {
-            try {
-                $phar = new Box($file);
-            } catch (UnexpectedValueException $e) {
-                $output->writeln("<error>The update was corrupted.</error>\n");
-
-                throw $e;
-            }
-            // @codeCoverageIgnoreStart
-        };
-        // @codeCoverageIgnoreEnd
-
-        return parent::execute($input, $output);
-    }
 }
-

@@ -17,6 +17,7 @@
     "main": "bin/box",
     "output": "box.phar",
     "replacements": {
+        "manifest_url": "http://box-project.org/manifest.json",
         "update_matcher": "/box\\-(.+?)\\.phar/",
         "update_url": "https://api.github.com/repos/kherge/Box"
     },

@@ -92,7 +92,7 @@ class Application extends _Application
         }
 
         if (false === strpos($this->getVersion(), 'package_version')) {
-            $commands[] = new Command\Update();
+            $commands[] = new Command\Update('update');
         }
 
         return $commands;
@@ -112,7 +112,7 @@ class Application extends _Application
         }
 
         if (false === strpos($this->getVersion(), 'package_version')) {
-            $helperSet->set(new Amend\Helper);
+            $helperSet->set(new Amend\Helper('@manifest_url@'));
         }
 
         return $helperSet;
