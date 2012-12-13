@@ -22,5 +22,11 @@
         "sha1": "b439196171f71336819e0fb7f8b93a199d8b616b",
         "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.6.phar",
         "version": "1.0.6"
+    },
+    {
+        "name": "box.phar",
+        "sha1": "eb24826b038e4ce7ba35fb77b348dda06fc698ee",
+        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.6+build.1.phar",
+        "version": "1.0.6"
     }
 ]
