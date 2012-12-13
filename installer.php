@@ -26,7 +26,7 @@ class Installer
     /**
      * Sets up the environment and installs the app.
      */
-    public function run()
+    public static function run()
     {
         self::checkRequirements();
         self::downloadApp(self::findCurrent());
