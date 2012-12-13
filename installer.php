@@ -1,162 +1,176 @@
 <?php
 
+Installer::run();
+
 /**
- * The version in name regex.
+ * ?
  *
- * @type string
+ * @author Kevin Herrera <kevin@herrera.io>
  */
-define('REGEX', '/^box\-(.+?)\.phar$/');
-
-/**
- * The download API URL.
- *
- * @type string
- */
-define('URL', 'https://api.github.com/repos/kherge/Box/downloads');
-
-makeErrorsIntoExceptions();
-
-echo "Checking requirements...\n";
-
-checkRequirements();
-
-echo "Downloading Box...\n";
-
-installBox(getLatestURL());
-
-echo "Box has been installed!\n";
-
-/**
- * Checks the PHP installation for missing support.
- */
-function checkRequirements()
+class Installer
 {
-    if (false === version_compare(PHP_VERSION, '5.3.3', '>=')) {
-        error('PHP v5.3.3 or greater is required.');
+    /**
+     * The manifest URL.
+     *
+     * @var string
+     */
+    const MANIFEST = 'http://box-project.org/manifest.json';
+
+    /**
+     * The name of the download file.
+     *
+     * @var string
+     */
+    const NAME = 'box.phar';
+
+    /**
+     * Sets up the environment and installs the app.
+     */
+    public function run()
+    {
+        self::checkRequirements();
+        self::downloadApp(self::findCurrent());
+
+        echo "Done!\n";
     }
 
-    if (false === extension_loaded('phar')) {
-        error('The "phar" extension is required.');
-    }
+    /**
+     * Asserts that something is true.
+     *
+     * @param boolean $result  The result of the assertion.
+     * @param string  $message The message if it fails.
+     * @param boolean $fatal   Is the failure fatal?
+     */
+    private static function assert($result, $message, $fatal = true)
+    {
+        if (false === $result) {
+            self::warn($message);
 
-    $extension = new ReflectionExtension('phar');
-
-    if (false === version_compare($extension->getVersion(), '2.0', '>=')) {
-        error('The PHP "phar" extension v2.0 or greater is required.');
-    }
-
-    if (false === extension_loaded('openssl')) {
-        echo "\nWarning: The \"openssl\" extension is not available.\n";
-        echo "         You will not be able to create or verify PHARs\n";
-        echo "         using OpenSSL signatures.\n\n";
-    }
-
-    if (true == ini_get('phar.readonly')) {
-        echo "\nWarning: The \"phar.readonly\" INI setting is set to \"On\".\n";
-        echo "         You will not be able to create or modifying existing\n";
-        echo "         PHARs.\n\n";
-    }
-}
-
-/**
- * Exits with an error message.
- *
- * @param string $message The message.
- * @param mixed $arg,... A value.
- */
-function error($message)
-{
-    if (func_num_args() > 1) {
-        $message = vsprintf($message, array_slice(func_get_args(), 1));
-    }
-
-    fputs(STDERR, "$message\n");
-
-    exit(1);
-}
-
-/**
- * Finds the latest download URL and returns it.
- *
- * @return string The latest download URL.
- */
-function getLatestURL()
-{
-    $downloads = json_decode(file_get_contents(URL), true);
-
-    $latest = null;
-
-    $url = null;
-
-    foreach ($downloads as $download) {
-        if (preg_match(REGEX, $download['name'])) {
-            $version = new Version(preg_replace(REGEX, '\\1', $download['name']));
-
-            if ((null === $latest) || $version->isGreaterThan($latest)) {
-                $latest = $version;
-
-                $url = $download['html_url'];
+            if ($fatal) {
+                exit(1);
             }
         }
     }
 
-    if (null === $url) {
-        error('No downloads were found.');
+    /**
+     * Checks for certain requirements.
+     */
+    private static function checkRequirements()
+    {
+        echo "Checking requirements...\n";
+
+        self::assert(
+            version_compare(PHP_VERSION, '5.3.3', '>='),
+            '    - PHP v5.3.3 or greater is required.'
+        );
+
+        self::assert(
+            extension_loaded('phar'),
+            '    - The "phar" extension is required.'
+        );
+
+        $extension = new ReflectionExtension('phar');
+
+        self::assert(
+            version_compare($extension->getVersion(), '2.0', '>='),
+            '    - The "phar" extension v2.0 or greater is required.'
+        );
+
+        self::assert(
+            extension_loaded('openssl'),
+            '    - OpenSSL not available, signed PHARs are not supported.',
+            false
+        );
+
+        self::assert(
+            false == ini_get('phar.readonly'),
+            '    - The "phar.readonly" setting is on. PHARs are read-only.',
+            false
+        );
     }
 
-    return $url;
-}
+    /**
+     * Downloads the application.
+     *
+     * @param string $url The download URL.
+     */
+    private static function downloadApp($url)
+    {
+        echo "Downloading...\n";
 
-/**
- * Downloads, verifies, and installs the Box application.
- */
-function installBox($url)
-{
-    unlink($temp = tempnam(sys_get_temp_dir(), 'box'));
+        unlink($temp = tempnam(sys_get_temp_dir(), 'box'));
 
-    mkdir($temp);
+        mkdir($temp);
 
-    $temp = "$temp/box.phar";
-    $in = fopen($url, 'rb');
-    $out = fopen($temp, 'wb');
+        $temp .= DIRECTORY_SEPARATOR . self::NAME;
 
-    while (false === feof($in)) {
-        fwrite($out, fread($in, 4096));
+        self::assert(
+            file_put_contents($temp, file_get_contents($url)),
+            'The app could not be downloaded.'
+        );
+
+        try {
+            $phar = new Phar($temp);
+        } catch (PharException $exception) {
+            self::warn('The download was corrupted: ' . $exception->getMessage());
+
+            exit(1);
+        } catch (UnexpectedValueException $exception) {
+            self::warn('The download was corrupted: ' . $exception->getMessage());
+
+            exit(1);
+        }
+
+        self::assert(
+            rename($temp, self::NAME),
+            "Could not move temporary file here: $temp"
+        );
     }
 
-    fclose($out);
-    fclose($in);
+    /**
+     * Finds the current version of the application.
+     *
+     * @return string The download URL.
+     */
+    private static function findCurrent()
+    {
+        self::assert(
+            $manifest = file_get_contents(self::MANIFEST),
+            'Unable to download the app manifest.'
+        );
 
-    try {
-        $phar = new Phar($temp);
-    } catch (PharException $exception) {
-        error('The download was corrupted: %s', $exception->getMessage());
-    } catch (UnexpectedValueException $exception) {
-        error('The download was corrupted: %s', $exception->getMessage());
+        $manifest = json_decode($manifest, true);
+
+        self::assert(
+            JSON_ERROR_NONE === json_last_error(),
+            'The manifest is corrupt or invalid.'
+        );
+
+        foreach ($manifest as $candidate) {
+            $candidate['version'] = Version::create($candidate['version']);
+
+            if (isset($latest)) {
+                if ($candidate['version']->isGreaterThan($latest['version'])) {
+                    $latest = $candidate;
+                }
+            } else {
+                $latest = $candidate;
+            }
+        }
+
+        return $latest['url'];
     }
 
-    rename($temp, 'box.phar');
+    /**
+     * Prints a message to STDERR with a new line.
+     *
+     * @param string $message The message.
+     */
+    private static function warn($message)
+    {
+        fwrite(STDERR, $message . "\n");
+    }
 }
-
-/**
- * Converts errors into exceptions.
- */
-function makeErrorsIntoExceptions()
-{
-    set_error_handler(function ($code, $message, $file, $line) {
-        throw new ErrorException($message, 0, $code, $file, $line);
-    });
-}
-
-
-/* This file is part of Version.
- *
- * (c) 2012 Kevin Herrera
- *
- * For the full copyright and license information, please
- * view the LICENSE file that was distributed with this
- * source code.
- */
 
 /**
  * Manages a semantic version string.
