@@ -3,8 +3,10 @@
     "chmod": "0755",
     "directories": ["src/lib"],
     "files": [
-        "res/schema.json",
         "src/autoload.php"
+    ],
+    "files-bin": [
+        "res/schema.json"
     ],
     "finder": [
         {
