@@ -3,6 +3,7 @@
 !.travis.yml
 box.phar
 box.phar.pubkey
+composer.lock
 private.key
 !res/example/private.key
 public.key
