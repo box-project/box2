@@ -13,6 +13,7 @@ namespace KevinGH\Box\Test;
 
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Output\StreamOutput;
