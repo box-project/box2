@@ -5,5 +5,7 @@ php:
     - 5.4
 
 before_script:
+    - git config --global user.email test@test.com
+    - git config --global user.name "Test User"
     - wget http://getcomposer.org/composer.phar
     - php composer.phar install
