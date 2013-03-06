@@ -121,6 +121,8 @@ class Installer
             exit(1);
         }
 
+        unset($phar);
+
         self::assert(
             rename($temp, self::NAME),
             "Could not move temporary file here: $temp"
