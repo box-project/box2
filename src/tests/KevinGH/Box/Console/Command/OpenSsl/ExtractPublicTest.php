@@ -27,18 +27,21 @@ class ExtractPublicTest extends CommandTestCase
 
         $openssl = new OpenSsl();
 
-        $openssl->createPrivateKeyFile('private.key', 'phpunit');
+        $private = $this->file();
+        $public = $this->file();
+
+        $openssl->createPrivateKeyFile($private, 'phpunit');
 
         $this->tester->execute(array(
             'command' => self::COMMAND,
-            'private' => 'private.key',
-            '--out' => 'test.key',
+            'private' => $private,
+            '--out' => $public,
             '--prompt' => true
         ), array(
             'verbosity' => OutputInterface::VERBOSITY_VERBOSE
         ));
 
-        $this->assertRegExp('/PUBLIC KEY/', file_get_contents('test.key'));
+        $this->assertRegExp('/PUBLIC KEY/', file_get_contents($public));
     }
 }
 
