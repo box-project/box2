@@ -16,9 +16,9 @@
         "kherge/amend": "2.*",
         "kherge/elf": "1.*",
         "kherge/version": "1.*",
-        "symfony/console": "2.1.*",
-        "symfony/finder": "2.1.*",
-        "symfony/process": "2.1.*"
+        "symfony/console": "~2.1",
+        "symfony/finder": "~2.1",
+        "symfony/process": "~2.1"
     },
 
     "autoload": {
