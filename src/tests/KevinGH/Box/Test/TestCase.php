@@ -158,6 +158,10 @@ class TestCase extends PHPUnit_Framework_TestCase
      */
     public function command($command, $dir = null, $throw = true)
     {
+        if (null === $dir) {
+            $dir = $this->currentDir;
+        }
+
         $process = new Process($command, $dir);
 
         if (0 === $process->run()) {
