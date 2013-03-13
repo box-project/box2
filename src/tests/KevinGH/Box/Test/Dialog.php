@@ -39,7 +39,7 @@ class Dialog extends DialogHelper
     }
 
     /** {@inheritDoc} */
-    public function ask(OutputInterface $output, $question, $default = null)
+    public function ask(OutputInterface $output, $question, $default = null, array $autocomplete = null)
     {
         return $this->value;
     }
