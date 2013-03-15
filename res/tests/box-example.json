@@ -1,6 +1,0 @@
-{
-    "algorithm": "MD5",
-    "alias": "test.phar",
-    "compression": "GZ",
-    "output": "test.phar"
-}

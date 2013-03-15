@@ -1,9 +1,0 @@
-{
-    "alias": "issue-29.phar",
-    "chmod": "0755",
-    "files-bin": ["res/LICENSE"],
-    "output": "issue-29.phar",
-    "replacements": {
-        "name": "world"
-    }
-}
