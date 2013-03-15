@@ -22,7 +22,11 @@
         },
         "chmod": {
             "description": "The permission mode for the new PHAR.",
-            "type": "integer"
+            "type": "string"
+        },
+        "compactors": {
+            "description": "The list of file contents compactor classes to register.",
+            "type": "array"
         },
         "compression": {
             "description": "The compression algorithm to use for the PHAR.",
