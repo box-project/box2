@@ -1,40 +1,48 @@
 {
-    "type": "library",
     "name": "kherge/box",
     "description": "A tool to simplify building PHARs.",
-    "homepage": "http://github.com/kherge/Box",
+    "keywords": ["phar"],
+    "homepage": "http://kherge.github.com/Box",
     "license": "MIT",
     "authors": [
         {
             "name": "Kevin Herrera",
-            "email": "me@kevingh.com"
+            "email": "kevin@herrera.io",
+            "homepage": "http://kevin.herrera.io"
         }
     ],
-
+    "support": {
+        "issues": "https://github.com/kherge/Box/issues"
+    },
     "require": {
         "php": ">=5.3.3",
-        "kherge/amend": "2.*",
-        "kherge/elf": "1.*",
-        "kherge/version": "1.*",
+        "herrera-io/box": "~1.0",
+        "herrera-io/json": "~1.0",
+        "kherge/amend": "~3.0",
+        "phpseclib/phpseclib": "dev-master",
         "symfony/console": "~2.1",
-        "symfony/finder": "~2.1",
-        "symfony/process": "~2.1"
+        "symfony/finder": "~2.1"
     },
-
+    "require-dev": {
+        "herrera-io/phpunit-test-case": "1.*",
+        "mikey179/vfsStream": "1.1.0",
+        "phpunit/phpunit": "3.7.*"
+    },
     "autoload": {
         "psr-0": {
-            "KevinGH\\Box": "src/lib/"
+            "KevinGH\\Box": "src/lib"
         }
     },
-
+    "bin": [
+        "bin/box"
+    ],
     "config": {
+        "bin-dir": "bin",
         "vendor-dir": "src/vendors"
     },
-
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-master": "2.0-dev"
         }
-    },
-    "bin": ["bin/box"]
+    }
 }

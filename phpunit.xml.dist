@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit backupGlobals="true"
          backupStaticAttributes="false"
-         bootstrap="src/tests/load.php"
+         bootstrap="src/vendors/autoload.php"
          colors="true"
          stopOnError="false"
          stopOnFailure="false"
