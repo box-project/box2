@@ -2,17 +2,27 @@
 
 [![Build Status](https://secure.travis-ci.org/kherge/Box.png?branch=master)](http://travis-ci.org/kherge/Box)
 
-Box is a library and command line application for simplifying the PHAR creation process.
+An application for building and managing Phars.
 
 ## Installation
 
 To install, you need to run this command in your shell:
 
-    $ curl -s http://box-project.org/installer.php | php
+```sh
+$ curl -s http://box-project.org/installer.php | php
+```
 
 Updates can later be performed by running Box's update command:
 
-    $ php box.phar update
+```sh
+$ php box.phar update
+```
+
+You may also use Composer:
+
+```sh
+$ composer require kherge/box=~2.0
+```
 
 ## Usage
 
@@ -20,16 +30,20 @@ To build a new PHAR using Box, [configure][configure] your project
 
 **box.json**:
 
-    {
-        "directories": [
-            "/path/to/source",
-            "/path/to/source"
-        ]
-    }
+```json
+{
+    "directories": [
+        "/path/to/source",
+        "/path/to/source"
+    ]
+}
+```
 
 and run
 
-    $ php box.phar build
+```sh
+$ php box.phar build
+```
 
 You can also check out the [example PHAR application][example] ready to be build by Box.
 
