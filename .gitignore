@@ -2,7 +2,7 @@
 !.gitignore
 !.travis.yml
 bin/
-!bin/box
+!bin/box*
 composer.lock
 coverage/
 src/vendors/
