@@ -4,10 +4,13 @@ namespace KevinGH\Box;
 
 use ErrorException;
 use KevinGH\Box\Helper\ConfigurationHelper;
+use KevinGH\Box\Output\OutputVerbose;
 use Symfony\Component\Console\Application as Base;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Automatically sets up the application.
+ * Sets up the application.
  *
  * @author Kevin Herrera <kevin@herrera.io>
  */
@@ -26,6 +29,20 @@ class Application extends Base
         });
 
         parent::__construct($name, $version);
+    }
+
+    /**
+     * @override
+     */
+    public function run(
+        InputInterface $input = null,
+        OutputInterface $output = null
+    ){
+        if (null === $output) {
+            $output = new OutputVerbose();
+        }
+
+        return parent::run($input, $output);
     }
 
     /**
