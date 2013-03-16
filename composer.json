@@ -17,11 +17,13 @@
     "require": {
         "php": ">=5.3.3",
         "herrera-io/box": "~1.0",
+        "herrera-io/file-system-functions": "~1.0",
         "herrera-io/json": "~1.0",
         "kherge/amend": "~3.0",
         "phpseclib/phpseclib": "dev-master",
         "symfony/console": "~2.1",
-        "symfony/finder": "~2.1"
+        "symfony/finder": "~2.1",
+        "symfony/process": "~2.1"
     },
     "require-dev": {
         "herrera-io/phpunit-test-case": "1.*",
