@@ -315,6 +315,50 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('test.html', $results[1]->getBasename());
     }
 
+    public function testGetGitVersion()
+    {
+        $this->setExpectedException(
+            'RuntimeException',
+            'Not a git repository'
+        );
+
+        $this->config->getGitVersion();
+    }
+
+    public function testGitVersionTag()
+    {
+        touch('test');
+        exec('git init');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+        exec('git tag 1.0.0');
+
+        $this->assertEquals('1.0.0', $this->config->getGitVersion());
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
+    public function testGitVersionCommit()
+    {
+        touch('test');
+        exec('git init');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+
+        $this->assertRegExp(
+            '/^[a-f0-9]{7}$/',
+            $this->config->getGitVersion()
+        );
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
     public function testGetVersionPlaceholder()
     {
         $this->assertNull($this->config->getGitVersionPlaceholder());
@@ -352,6 +396,46 @@ class ConfigurationTest extends TestCase
         $this->setConfig(array('metadata' => 123));
 
         $this->assertSame(123, $this->config->getMetadata());
+    }
+
+    public function testGetMimetypeMapping()
+    {
+        $this->assertSame(array(), $this->config->getMimetypeMapping());
+    }
+
+    public function testGetMimetypeMappingSet()
+    {
+        $mimetypes = array('phps' => Phar::PHPS);
+
+        $this->setConfig(array('mimetypes' => $mimetypes));
+
+        $this->assertEquals($mimetypes, $this->config->getMimetypeMapping());
+    }
+
+    public function testGetMungVariables()
+    {
+        $this->assertSame(array(), $this->config->getMungVariables());
+    }
+
+    public function testGetMungVariablesSet()
+    {
+        $mung = array('REQUEST_URI');
+
+        $this->setConfig(array('mung' => $mung));
+
+        $this->assertEquals($mung, $this->config->getMungVariables());
+    }
+
+    public function testGetNotFoundScriptPath()
+    {
+        $this->assertNull($this->config->getNotFoundScriptPath());
+    }
+
+    public function testGetNotFoundScriptPathSet()
+    {
+        $this->setConfig(array('not-found' => 'test.php'));
+
+        $this->assertEquals('test.php', $this->config->getNotFoundScriptPath());
     }
 
     public function testGetOutputPath()
@@ -509,6 +593,18 @@ class ConfigurationTest extends TestCase
         $this->setConfig(array('stub' => 'test.php'));
 
         $this->assertFalse($this->config->isStubGenerated());
+    }
+
+    public function testIsWebPhar()
+    {
+        $this->assertFalse($this->config->isWebPhar());
+    }
+
+    public function testIsWebPharSet()
+    {
+        $this->setConfig(array('web' => true));
+
+        $this->assertTrue($this->config->isWebPhar());
     }
 
     public function testProcessFindersInvalidMethod()

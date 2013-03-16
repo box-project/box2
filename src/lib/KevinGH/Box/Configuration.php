@@ -5,7 +5,9 @@ namespace KevinGH\Box;
 use Herrera\Box\Compactor\CompactorInterface;
 use InvalidArgumentException;
 use Phar;
+use RuntimeException;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Process\Process;
 
 /**
  * Manages the configuration settings.
@@ -85,7 +87,13 @@ class Configuration
     public function getBinaryDirectories()
     {
         if (isset($this->raw->{'directories-bin'})) {
-            return (array) $this->raw->{'directories-bin'};
+            $directories = (array) $this->raw->{'directories-bin'};
+
+            array_walk($directories, function (&$directory) {
+                $directory = canonical_path($directory);
+            });
+
+            return $directories;
         }
 
         return array();
@@ -99,7 +107,13 @@ class Configuration
     public function getBinaryFiles()
     {
         if (isset($this->raw->{'files-bin'})) {
-            return (array) $this->raw->{'files-bin'};
+            $files = (array) $this->raw->{'files-bin'};
+
+            array_walk($files, function (&$file) {
+                $file = canonical_path($file);
+            });
+
+            return $files;
         }
 
         return array();
@@ -202,7 +216,13 @@ class Configuration
     public function getDirectories()
     {
         if (isset($this->raw->directories)) {
-            return (array) $this->raw->directories;
+            $directories = (array) $this->raw->directories;
+
+            array_walk($directories, function (&$directory) {
+                $directory = canonical_path($directory);
+            });
+
+            return $directories;
         }
 
         return array();
@@ -228,7 +248,13 @@ class Configuration
     public function getFiles()
     {
         if (isset($this->raw->files)) {
-            return (array) $this->raw->files;
+            $files = (array) $this->raw->files;
+
+            array_walk($files, function (&$file) {
+                $file = canonical_path($file);
+            });
+
+            return $files;
         }
 
         return array();
@@ -246,6 +272,35 @@ class Configuration
         }
 
         return array();
+    }
+
+    /**
+     * Returns the Git tag name or short commit hash.
+     *
+     * @return string The tag name or short commit hash.
+     *
+     * @throws RuntimeException If the version could not be retrieved.
+     */
+    public function getGitVersion()
+    {
+        $path = dirname($this->file);
+        $process = new Process('git describe --tags HEAD', $path);
+
+        if (0 === $process->run()) {
+            return trim($process->getOutput());
+        }
+
+        $process = new Process('git log --pretty="%h" -n1 HEAD', $path);
+
+        if (0 === $process->run()) {
+            return trim($process->getOutput());
+        }
+
+        throw new RuntimeException(sprintf(
+            'The tag or commit hash could not be retrieved from "%s": %s',
+            $path,
+            $process->getErrorOutput()
+        ));
     }
 
     /**
@@ -281,6 +336,46 @@ class Configuration
     {
         if (isset($this->raw->metadata)) {
             return $this->raw->metadata;
+        }
+    }
+
+    /**
+     * Returns the file extension MIME type mapping.
+     *
+     * @return array The mapping.
+     */
+    public function getMimetypeMapping()
+    {
+        if (isset($this->raw->mimetypes)) {
+            return (array) $this->raw->mimetypes;
+        }
+
+        return array();
+    }
+
+    /**
+     * Returns the list of server variables to modify for execution.
+     *
+     * @return array The list of variables.
+     */
+    public function getMungVariables()
+    {
+        if (isset($this->raw->mung)) {
+            return (array) $this->raw->mung;
+        }
+
+        return array();
+    }
+
+    /**
+     * Returns the file path to the script to execute when a file is not found.
+     *
+     * @return string The file path.
+     */
+    public function getNotFoundScriptPath()
+    {
+        if (isset($this->raw->{'not-found'})) {
+            return $this->raw->{'not-found'};
         }
     }
 
@@ -420,6 +515,20 @@ class Configuration
     }
 
     /**
+     * Checks if the Phar is going to be used for the web.
+     *
+     * @return boolean TRUE if it will be, FALSE if not.
+     */
+    public function isWebPhar()
+    {
+        if (isset($this->raw->web)) {
+            return $this->raw->web;
+        }
+
+        return false;
+    }
+
+    /**
      * Processes the Finders configuration list.
      *
      * @param array $config The configuration.
@@ -443,7 +552,15 @@ class Configuration
                     ));
                 }
 
-                foreach ((array) $arguments as $argument) {
+                $arguments = (array) $arguments;
+
+                if ('in' === $method) {
+                    array_walk($arguments, function (&$argument) {
+                        $argument = canonical_path($argument);
+                    });
+                }
+
+                foreach ($arguments as $argument) {
                     $finder->$method($argument);
                 }
             }
