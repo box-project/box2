@@ -429,6 +429,8 @@ class Configuration
     public function getMainScriptContents()
     {
         if (null !== ($path = $this->getMainScriptPath())) {
+            $path = $this->getBasePath() . DIRECTORY_SEPARATOR . $path;
+
             if (false === ($contents = @file_get_contents($path))){
                 $errors = error_get_last();
 
