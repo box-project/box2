@@ -67,6 +67,21 @@ class ConfigurationTest extends TestCase
         $this->config->getBasePath();
     }
 
+    /**
+     * @depends testGetBasePath
+     */
+    public function testGetBasePathRegex()
+    {
+        $this->assertEquals(
+            '/' . preg_quote(
+                    $this->config->getBasePath() . DIRECTORY_SEPARATOR,
+                    '/'
+                  )
+                . '/',
+            $this->config->getBasePathRegex()
+        );
+    }
+
     public function testGetBinaryDirectories()
     {
         $this->assertSame(array(), $this->config->getBinaryDirectories());
@@ -494,6 +509,32 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('test.php', $this->config->getMainScriptPath());
     }
 
+    public function testGetMainScriptContents()
+    {
+        $this->assertNull($this->config->getMainScriptContents());
+    }
+
+    public function testGetMainScriptContentsSet()
+    {
+        file_put_contents('test.php', "#!/usr/bin/env php\ntest");
+
+        $this->setConfig(array('main' => 'test.php'));
+
+        $this->assertEquals('test', $this->config->getMainScriptContents());
+    }
+
+    public function testGetMainScriptContentsReadError()
+    {
+        $this->setConfig(array('main' => 'test.php'));
+
+        $this->setExpectedException(
+            'RuntimeException',
+            'No such file'
+        );
+
+        $this->config->getMainScriptContents();
+    }
+
     public function testGetMetadata()
     {
         $this->assertNull($this->config->getMetadata());
@@ -548,14 +589,20 @@ class ConfigurationTest extends TestCase
 
     public function testGetOutputPath()
     {
-        $this->assertEquals('default.phar', $this->config->getOutputPath());
+        $this->assertEquals(
+            $this->dir . DIRECTORY_SEPARATOR . 'default.phar',
+            $this->config->getOutputPath()
+        );
     }
 
     public function testGetOutputPathSet()
     {
         $this->setConfig(array('output' => 'test.phar'));
 
-        $this->assertEquals('test.phar', $this->config->getOutputPath());
+        $this->assertEquals(
+            $this->dir . DIRECTORY_SEPARATOR . 'test.phar',
+            $this->config->getOutputPath()
+        );
     }
 
     public function testGetPrivateKeyPassphrase()

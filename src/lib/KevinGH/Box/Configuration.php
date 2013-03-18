@@ -82,6 +82,18 @@ class Configuration
     }
 
     /**
+     * Returns the base path as a regular expression for trimming paths.
+     *
+     * @return string The regular expression.
+     */
+    public function getBasePathRegex()
+    {
+        return '/'
+             . preg_quote($this->getBasePath() . DIRECTORY_SEPARATOR, '/')
+             . '/';
+    }
+
+    /**
      * Returns the list of relative directory paths for binary files.
      *
      * @return array The list of paths.
@@ -408,6 +420,26 @@ class Configuration
     }
 
     /**
+     * Returns the processed contents of the main script file.
+     *
+     * @return string The contents.
+     *
+     * @throws RuntimeException If the file could not be read.
+     */
+    public function getMainScriptContents()
+    {
+        if (null !== ($path = $this->getMainScriptPath())) {
+            if (false === ($contents = @file_get_contents($path))){
+                $errors = error_get_last();
+
+                throw new RuntimeException($errors['message']);
+            }
+
+            return preg_replace('/^#!.*\s*/', '', $contents);
+        }
+    }
+
+    /**
      * Returns the main script file path.
      *
      * @return string The file path.
@@ -478,11 +510,19 @@ class Configuration
      */
     public function getOutputPath()
     {
+        $base = getcwd() . DIRECTORY_SEPARATOR;
+
         if (isset($this->raw->output)) {
-            return $this->raw->output;
+            $path = $this->raw->output;
+
+            if (false === is_absolute_path($path)) {
+                $path = canonical_path($base . $path);
+            }
+
+            return $path;
         }
 
-        return 'default.phar';
+        return $base . 'default.phar';
     }
 
     /**
