@@ -7,6 +7,20 @@ use KevinGH\Box\Output\OutputVerbose;
 
 class OutputVerboseTest extends TestCase
 {
+    public function testIsVerbose()
+    {
+        $output = new OutputVerbose();
+
+        $this->assertFalse($output->isVerbose());
+    }
+
+    public function testIsVerboseEnabled()
+    {
+        $output = new OutputVerbose(OutputVerbose::VERBOSITY_VERBOSE);
+
+        $this->assertTrue($output->isVerbose());
+    }
+
     public function testVerbose()
     {
         $output = $this->getMock(

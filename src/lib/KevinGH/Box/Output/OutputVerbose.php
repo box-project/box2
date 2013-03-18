@@ -13,13 +13,23 @@ use Symfony\Component\Console\Output\OutputInterface;
 class OutputVerbose extends ConsoleOutput
 {
     /**
+     * Checks if the output handler is verbose.
+     *
+     * @return boolean TRUE if verbose, FALSE if not.
+     */
+    public function isVerbose()
+    {
+        return (OutputInterface::VERBOSITY_VERBOSE === $this->getVerbosity());
+    }
+
+    /**
      * Writes the message only when verbosity is set to VERBOSITY_VERBOSE.
      *
      * @see OutputInterface#write
      */
     public function verbose($message, $newline = false, $type = 0)
     {
-        if (OutputInterface::VERBOSITY_VERBOSE === $this->getVerbosity()) {
+        if ($this->isVerbose()) {
             $this->write($message, $newline, $type);
         }
     }
