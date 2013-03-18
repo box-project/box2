@@ -589,6 +589,35 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('test.pem', $this->config->getPrivateKeyPath());
     }
 
+    public function testGetProcessedReplacements()
+    {
+        $this->assertSame(array(), $this->config->getProcessedReplacements());
+    }
+
+    public function testGetProcessedReplacementsSet()
+    {
+        touch('test');
+        exec('git init');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+        exec('git tag 1.0.0');
+
+        $this->setConfig(array(
+            'git-version' => 'git_tag',
+            'replacements' => array('rand' => $rand = rand())
+        ));
+
+        $values = $this->config->getProcessedReplacements();
+
+        $this->assertEquals('1.0.0', $values['@git_tag@']);
+        $this->assertEquals($rand, $values['@rand@']);
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
     public function testGetReplacements()
     {
         $this->assertSame(array(), $this->config->getReplacements());

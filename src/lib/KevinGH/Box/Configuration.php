@@ -511,6 +511,28 @@ class Configuration
     }
 
     /**
+     * Returns the processed list of replacement placeholders and their values.
+     *
+     * @return array The list of replacements.
+     */
+    public function getProcessedReplacements()
+    {
+        $values = $this->getReplacements();
+
+        if (null !== ($git = $this->getGitVersionPlaceholder())) {
+            $values[$git] = $this->getGitVersion();
+        }
+
+        foreach ($values as $key => $value) {
+            unset($values[$key]);
+
+            $values["@$key@"] = $value;
+        }
+
+        return $values;
+    }
+
+    /**
      * Returns the list of replacement placeholders and their values.
      *
      * @return array The list of replacements.
