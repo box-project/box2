@@ -8,14 +8,9 @@ use Symfony\Component\Console\Input\ArrayInput;
 
 class ConfigurableTest extends CommandTestCase
 {
-    /**
-     * @var Configurable
-     */
-    private $command;
-
     public function testConfigure()
     {
-        $definition = $this->command->getDefinition();
+        $definition = $this->getCommand()->getDefinition();
 
         $this->assertTrue($definition->hasOption('configuration'));
     }
@@ -24,22 +19,19 @@ class ConfigurableTest extends CommandTestCase
     {
         file_put_contents('box.json', '{}');
 
+        $command = $this->app->get('test');
         $input = new ArrayInput(array());
-        $input->bind($this->command->getDefinition());
+        $input->bind($command->getDefinition());
 
         $this->assertInstanceOf(
             'KevinGH\\Box\\Configuration',
-            $this->callMethod($this->command, 'getConfig', array($input))
+            $this->callMethod($command, 'getConfig', array($input))
         );
     }
 
-    protected function setUp()
+    protected function getCommand()
     {
-        parent::setUp();
-
-        $this->app->add(new TestConfigurable('test'));
-
-        $this->command = $this->app->get('test');
+        return new TestConfigurable('test');
     }
 }
 
