@@ -2,6 +2,7 @@
 
 namespace KevinGH\Box;
 
+use ArrayIterator;
 use Herrera\Box\Compactor\CompactorInterface;
 use InvalidArgumentException;
 use Phar;
@@ -101,6 +102,22 @@ class Configuration
     }
 
     /**
+     * Returns the iterator for the binary directory paths.
+     *
+     * @return Finder The iterator.
+     */
+    public function getBinaryDirectoriesIterator()
+    {
+        if (array() !== ($directories = $this->getBinaryDirectories())) {
+            return Finder::create()
+                    ->files()
+                    ->filter($this->getBlacklistFilter())
+                    ->ignoreVCS(true)
+                    ->in($directories);
+        }
+    }
+
+    /**
      * Returns the list of relative paths for binary files.
      *
      * @return array The list of paths.
@@ -108,16 +125,31 @@ class Configuration
     public function getBinaryFiles()
     {
         if (isset($this->raw->{'files-bin'})) {
-            $files = (array) $this->raw->{'files-bin'};
+            $base = $this->getBasePath();
+            $files = array();
 
-            array_walk($files, function (&$file) {
-                $file = canonical_path($file);
-            });
+            foreach ((array) $this->raw->{'files-bin'} as $file) {
+                $files[] = new SplFileInfo(
+                    $base . DIRECTORY_SEPARATOR . canonical_path($file)
+                );
+            }
 
             return $files;
         }
 
         return array();
+    }
+
+    /**
+     * Returns an iterator for the binary files.
+     *
+     * @return ArrayIterator The iterator.
+     */
+    public function getBinaryFilesIterator()
+    {
+        if (array() !== ($files = $this->getBinaryFiles())) {
+            return new ArrayIterator($files);
+        }
     }
 
     /**
@@ -142,7 +174,13 @@ class Configuration
     public function getBlacklist()
     {
         if (isset($this->raw->blacklist)) {
-            return (array) $this->raw->blacklist;
+            $blacklist = (array) $this->raw->blacklist;
+
+            array_walk($blacklist, function (&$file) {
+                $file = canonical_path($file);
+            });
+
+            return $blacklist;
         }
 
         return array();
@@ -155,8 +193,11 @@ class Configuration
      */
     public function getBlacklistFilter()
     {
-        $base = '/^' . preg_quote($this->getBasePath(), '/') . '/';
         $blacklist = $this->getBlacklist();
+        $base = '/^'
+              . preg_quote($this->getBasePath()
+              . DIRECTORY_SEPARATOR, '/')
+              . '/';
 
         return function (SplFileInfo $file) use ($base, $blacklist) {
             $path = preg_replace($base, '', $file->getPathname());
@@ -249,6 +290,22 @@ class Configuration
     }
 
     /**
+     * Returns the iterator for the directory paths.
+     *
+     * @return Finder The iterator.
+     */
+    public function getDirectoriesIterator()
+    {
+        if (array() !== ($directories = $this->getDirectories())) {
+            return Finder::create()
+                    ->files()
+                    ->filter($this->getBlacklistFilter())
+                    ->ignoreVCS(true)
+                    ->in($directories);
+        }
+    }
+
+    /**
      * Returns the file mode in octal form.
      *
      * @return integer The file mode.
@@ -268,16 +325,31 @@ class Configuration
     public function getFiles()
     {
         if (isset($this->raw->files)) {
-            $files = (array) $this->raw->files;
+            $base = $this->getBasePath();
+            $files = array();
 
-            array_walk($files, function (&$file) {
-                $file = canonical_path($file);
-            });
+            foreach ((array) $this->raw->files as $file) {
+                $files[] = new SplFileInfo(
+                    $base . DIRECTORY_SEPARATOR . canonical_path($file)
+                );
+            }
 
             return $files;
         }
 
         return array();
+    }
+
+    /**
+     * Returns an iterator for the files.
+     *
+     * @return ArrayIterator The iterator.
+     */
+    public function getFilesIterator()
+    {
+        if (array() !== ($files = $this->getFiles())) {
+            return new ArrayIterator($files);
+        }
     }
 
     /**
@@ -560,9 +632,13 @@ class Configuration
     private function processFinders(array $config)
     {
         $finders = array();
+        $filter = $this->getBlacklistFilter();
 
         foreach ($config as $methods) {
-            $finder = Finder::create()->files()->ignoreVCS(true);
+            $finder = Finder::create()
+                        ->files()
+                        ->filter($filter)
+                        ->ignoreVCS(true);
 
             foreach ($methods as $method => $arguments) {
                 if (false === method_exists($finder, $method)) {

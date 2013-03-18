@@ -86,6 +86,31 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    public function testGetBinaryDirectoriesIterator()
+    {
+        $this->assertNull($this->config->getBinaryDirectoriesIterator());
+    }
+
+    public function testGetBinaryDirectoriesIteratorSet()
+    {
+        mkdir('alpha');
+        touch('alpha/beta.png');
+        touch('alpha/gamma.png');
+
+        $this->setConfig(array(
+            'blacklist' => 'alpha/beta.png',
+            'directories-bin' => $this->dir . DIRECTORY_SEPARATOR . 'alpha'
+        ));
+
+        $iterator = $this->config
+                         ->getBinaryDirectoriesIterator()
+                         ->getIterator();
+
+        foreach ($iterator as $file) {
+            $this->assertEquals('gamma.png', $file->getBasename());
+        }
+    }
+
     public function testGetBinaryFiles()
     {
         $this->assertSame(array(), $this->config->getBinaryFiles());
@@ -96,13 +121,28 @@ class ConfigurationTest extends TestCase
         mkdir($this->dir . DIRECTORY_SEPARATOR . 'test');
 
         $this->setConfig(array(
-            'files-bin' => $this->dir . DIRECTORY_SEPARATOR . 'test'
+            'files-bin' => 'test.png'
         ));
 
-        $this->assertEquals(
-            array($this->dir . DIRECTORY_SEPARATOR . 'test'),
-            $this->config->getBinaryFiles()
-        );
+        foreach ($this->config->getBinaryFiles() as $file) {
+            $this->assertEquals('test.png', $file->getBasename());
+        }
+    }
+
+    public function testGetBinaryFilesIterator()
+    {
+        $this->assertNull($this->config->getBinaryFilesIterator());
+    }
+
+    public function testGetBinaryFilesIteratorSet()
+    {
+        $this->setConfig(array(
+            'files-bin' => 'test.png'
+        ));
+
+        foreach ($this->config->getBinaryFilesIterator() as $file) {
+            $this->assertEquals('test.png', $file->getBasename());
+        }
     }
 
     public function testGetBinaryFinders()
@@ -112,11 +152,13 @@ class ConfigurationTest extends TestCase
 
     public function testGetBinaryFindersSet()
     {
+        touch('bad.jpg');
         touch('test.jpg');
         touch('test.png');
         touch('test.php');
 
         $this->setConfig(array(
+            'blacklist' => array('bad.jpg'),
             'finder-bin' => array(
                 array(
                     'name' => '*.png',
@@ -159,11 +201,14 @@ class ConfigurationTest extends TestCase
 
     public function testGetBlacklistFilter()
     {
+        mkdir('sub');
         touch('alpha.php');
         touch('beta.php');
+        touch('sub/beta.php');
 
         $alpha = new SplFileInfo('alpha.php');
         $beta = new SplFileInfo('beta.php');
+        $sub = new SplFileInfo('sub/alpha.php');
 
         $this->setConfig(array('blacklist' => 'beta.php'));
 
@@ -171,6 +216,7 @@ class ConfigurationTest extends TestCase
 
         $this->assertNull($callable($alpha));
         $this->assertFalse($callable($beta));
+        $this->assertNull($callable($sub));
     }
 
     public function testGetCompactors()
@@ -270,6 +316,31 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(array('test'), $this->config->getDirectories());
     }
 
+    public function testGetDirectoriesIterator()
+    {
+        $this->assertNull($this->config->getDirectoriesIterator());
+    }
+
+    public function testGetDirectoriesIteratorSet()
+    {
+        mkdir('alpha');
+        touch('alpha/beta.php');
+        touch('alpha/gamma.php');
+
+        $this->setConfig(array(
+                'blacklist' => 'alpha/beta.php',
+                'directories' => $this->dir . DIRECTORY_SEPARATOR . 'alpha'
+            ));
+
+        $iterator = $this->config
+                         ->getDirectoriesIterator()
+                         ->getIterator();
+
+        foreach ($iterator as $file) {
+            $this->assertEquals('gamma.php', $file->getBasename());
+        }
+    }
+
     public function testGetFileMode()
     {
         $this->assertNull($this->config->getFileMode());
@@ -289,9 +360,27 @@ class ConfigurationTest extends TestCase
 
     public function testGetFilesSet()
     {
-        $this->setConfig(array('files' => array('test')));
+        $this->setConfig(array('files' => array('test.php')));
 
-        $this->assertEquals(array('test'), $this->config->getFiles());
+        foreach ($this->config->getFiles() as $file) {
+            $this->assertEquals('test.php', $file->getBasename());
+        }
+    }
+
+    public function testGetFilesIterator()
+    {
+        $this->assertNull($this->config->getFilesIterator());
+    }
+
+    public function testGetFilesIteratorSet()
+    {
+        $this->setConfig(array(
+                'files' => 'test.php'
+            ));
+
+        foreach ($this->config->getFilesIterator() as $file) {
+            $this->assertEquals('test.php', $file->getBasename());
+        }
     }
 
     public function testGetFinders()
@@ -301,11 +390,13 @@ class ConfigurationTest extends TestCase
 
     public function testGetFindersSet()
     {
+        touch('bad.php');
         touch('test.html');
         touch('test.txt');
         touch('test.php');
 
         $this->setConfig(array(
+            'blacklist' => array('bad.php'),
             'finder' => array(
                 array(
                     'name' => '*.php',
