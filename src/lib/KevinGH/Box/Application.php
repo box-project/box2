@@ -3,11 +3,9 @@
 namespace KevinGH\Box;
 
 use ErrorException;
+use KevinGH\Box\Command;
 use KevinGH\Box\Helper\ConfigurationHelper;
-use KevinGH\Box\Output\OutputVerbose;
 use Symfony\Component\Console\Application as Base;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Sets up the application.
@@ -34,15 +32,12 @@ class Application extends Base
     /**
      * @override
      */
-    public function run(
-        InputInterface $input = null,
-        OutputInterface $output = null
-    ){
-        if (null === $output) {
-            $output = new OutputVerbose();
-        }
+    protected function getDefaultCommands()
+    {
+        $commands = parent::getDefaultCommands();
+        $commands[] = new Command\Build();
 
-        return parent::run($input, $output);
+        return $commands;
     }
 
     /**
