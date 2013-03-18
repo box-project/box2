@@ -12,9 +12,7 @@ use Symfony\Component\Console\Helper\Helper;
  *
  * @var string
  */
-define('BOX_SCHEMA_FILE', realpath(
-    __DIR__ . '/../../../../../res/schema.json'
-));
+define('BOX_SCHEMA_FILE', BOX_PATH . '/res/schema.json');
 
 /**
  * Manages the acquisition of configuration settings.
