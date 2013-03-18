@@ -5,6 +5,8 @@ namespace KevinGH\Box\Test;
 use Herrera\PHPUnit\TestCase;
 use KevinGH\Box\Helper\ConfigurationHelper;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Tester\CommandTester;
 
 /**
  * Makes it easier to test Box commands.
@@ -25,14 +27,38 @@ abstract class CommandTestCase extends TestCase
      *
      * @var string
      */
-    private $cwd;
+    protected $cwd;
 
     /**
      * The test current working directory.
      *
      * @var string
      */
-    private $dir;
+    protected $dir;
+
+    /**
+     * The name of the command.
+     *
+     * @var string
+     */
+    private $name;
+
+    /**
+     * Returns the command to be tested.
+     *
+     * @return Command The command.
+     */
+    abstract protected function getCommand();
+
+    /**
+     * Returns the tester for the command.
+     *
+     * @return CommandTester The tester.
+     */
+    protected function getTester()
+    {
+        return new CommandTester($this->app->get($this->name));
+    }
 
     /**
      * Restore the current working directory.
@@ -56,5 +82,10 @@ abstract class CommandTestCase extends TestCase
 
         $this->app = new Application();
         $this->app->getHelperSet()->set(new ConfigurationHelper());
+
+        $command = $this->getCommand();
+        $this->name = $command->getName();
+
+        $this->app->add($command);
     }
 }
