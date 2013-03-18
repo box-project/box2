@@ -6,6 +6,7 @@ use Herrera\PHPUnit\TestCase;
 use KevinGH\Box\Helper\ConfigurationHelper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -49,6 +50,39 @@ abstract class CommandTestCase extends TestCase
      * @return Command The command.
      */
     abstract protected function getCommand();
+
+    /**
+     * Returns the output for the tester.
+     *
+     * @param CommandTester $tester The tester.
+     *
+     * @return string The output.
+     */
+    protected function getOutput(CommandTester $tester)
+    {
+        /** @var $output StreamOutput */
+        $output = $tester->getOutput();
+        $stream = $output->getStream();
+        $string = '';
+
+        rewind($stream);
+
+        while (false === feof($stream)) {
+            $string .= fgets($stream);
+        }
+
+        $string = preg_replace(
+            array(
+                '/\x1b(\[|\(|\))[;?0-9]*[0-9A-Za-z]/',
+                '/\x1b(\[|\(|\))[;?0-9]*[0-9A-Za-z]/',
+                '/[\x03|\x1a]/'
+            ),
+            array('', '', ''),
+            $string
+        );
+
+        return str_replace(PHP_EOL, "\n", $string);
+    }
 
     /**
      * Returns the tester for the command.
