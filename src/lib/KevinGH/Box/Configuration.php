@@ -6,6 +6,7 @@ use Herrera\Box\Compactor\CompactorInterface;
 use InvalidArgumentException;
 use Phar;
 use RuntimeException;
+use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Process;
 
@@ -145,6 +146,25 @@ class Configuration
         }
 
         return array();
+    }
+
+    /**
+     * Returns a filter callable for the configured blacklist.
+     *
+     * @return callable The callable.
+     */
+    public function getBlacklistFilter()
+    {
+        $base = '/^' . preg_quote($this->getBasePath(), '/') . '/';
+        $blacklist = $this->getBlacklist();
+
+        return function (SplFileInfo $file) use ($base, $blacklist) {
+            $path = preg_replace($base, '', $file->getPathname());
+
+            if (in_array($path, $blacklist)) {
+                return false;
+            }
+        };
     }
 
     /**

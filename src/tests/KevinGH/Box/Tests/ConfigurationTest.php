@@ -6,6 +6,7 @@ use Herrera\Box\Compactor\CompactorInterface;
 use Herrera\PHPUnit\TestCase;
 use KevinGH\Box\Configuration;
 use Phar;
+use SplFileInfo;
 
 class ConfigurationTest extends TestCase
 {
@@ -154,6 +155,22 @@ class ConfigurationTest extends TestCase
         ));
 
         $this->assertEquals(array('test'), $this->config->getBlacklist());
+    }
+
+    public function testGetBlacklistFilter()
+    {
+        touch('alpha.php');
+        touch('beta.php');
+
+        $alpha = new SplFileInfo('alpha.php');
+        $beta = new SplFileInfo('beta.php');
+
+        $this->setConfig(array('blacklist' => 'beta.php'));
+
+        $callable = $this->config->getBlacklistFilter();
+
+        $this->assertNull($callable($alpha));
+        $this->assertFalse($callable($beta));
     }
 
     public function testGetCompactors()
