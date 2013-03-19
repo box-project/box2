@@ -47,6 +47,7 @@ KEY
         mkdir('one');
         mkdir('two');
         touch('test.phar');
+        touch('test.phar.pubkey');
         touch('one/test.php');
         touch('two/test.png');
         file_put_contents('private.key', $key[0]);
