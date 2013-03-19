@@ -1,12 +1,23 @@
 {
     "alias": "box.phar",
     "chmod": "0755",
+    "compactors": [
+        "Herrera\\Box\\Compactor\\Composer",
+        "Herrera\\Box\\Compactor\\Json"
+    ],
     "directories": ["src/lib"],
     "files": ["res/schema.json"],
     "finder": [
         {
             "name": "*.php",
-            "exclude": ["Tests", "tests"],
+            "exclude": [
+                "mikey179",
+                "phpunit",
+                "phpunit-test-case",
+                "Tests",
+                "tests",
+                "yaml"
+            ],
             "in": "src/vendors"
         }
     ],

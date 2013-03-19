@@ -67,6 +67,21 @@ class ConfigurationTest extends TestCase
         $this->config->getBasePath();
     }
 
+    /**
+     * @depends testGetBasePath
+     */
+    public function testGetBasePathRegex()
+    {
+        $this->assertEquals(
+            '/' . preg_quote(
+                    $this->config->getBasePath() . DIRECTORY_SEPARATOR,
+                    '/'
+                  )
+                . '/',
+            $this->config->getBasePathRegex()
+        );
+    }
+
     public function testGetBinaryDirectories()
     {
         $this->assertSame(array(), $this->config->getBinaryDirectories());
@@ -497,6 +512,32 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('test.php', $this->config->getMainScriptPath());
     }
 
+    public function testGetMainScriptContents()
+    {
+        $this->assertNull($this->config->getMainScriptContents());
+    }
+
+    public function testGetMainScriptContentsSet()
+    {
+        file_put_contents('test.php', "#!/usr/bin/env php\ntest");
+
+        $this->setConfig(array('main' => 'test.php'));
+
+        $this->assertEquals('test', $this->config->getMainScriptContents());
+    }
+
+    public function testGetMainScriptContentsReadError()
+    {
+        $this->setConfig(array('main' => 'test.php'));
+
+        $this->setExpectedException(
+            'RuntimeException',
+            'No such file'
+        );
+
+        $this->config->getMainScriptContents();
+    }
+
     public function testGetMetadata()
     {
         $this->assertNull($this->config->getMetadata());
@@ -551,14 +592,20 @@ class ConfigurationTest extends TestCase
 
     public function testGetOutputPath()
     {
-        $this->assertEquals('default.phar', $this->config->getOutputPath());
+        $this->assertEquals(
+            $this->dir . DIRECTORY_SEPARATOR . 'default.phar',
+            $this->config->getOutputPath()
+        );
     }
 
     public function testGetOutputPathSet()
     {
         $this->setConfig(array('output' => 'test.phar'));
 
-        $this->assertEquals('test.phar', $this->config->getOutputPath());
+        $this->assertEquals(
+            $this->dir . DIRECTORY_SEPARATOR . 'test.phar',
+            $this->config->getOutputPath()
+        );
     }
 
     public function testGetPrivateKeyPassphrase()
@@ -590,6 +637,35 @@ class ConfigurationTest extends TestCase
         $this->setConfig(array('key' => 'test.pem'));
 
         $this->assertEquals('test.pem', $this->config->getPrivateKeyPath());
+    }
+
+    public function testGetProcessedReplacements()
+    {
+        $this->assertSame(array(), $this->config->getProcessedReplacements());
+    }
+
+    public function testGetProcessedReplacementsSet()
+    {
+        touch('test');
+        exec('git init');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+        exec('git tag 1.0.0');
+
+        $this->setConfig(array(
+            'git-version' => 'git_tag',
+            'replacements' => array('rand' => $rand = rand())
+        ));
+
+        $values = $this->config->getProcessedReplacements();
+
+        $this->assertEquals('1.0.0', $values['@git_tag@']);
+        $this->assertEquals($rand, $values['@rand@']);
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
     }
 
     public function testGetReplacements()

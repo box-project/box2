@@ -1,6 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+/**
+ * The project (or Phar) base path.
+ *
+ * @var string
+ */
+define('BOX_PATH', dirname(__DIR__));
+
 if ($uri = Phar::running()) {
     require "$uri/src/vendors/autoload.php";
 } else {
