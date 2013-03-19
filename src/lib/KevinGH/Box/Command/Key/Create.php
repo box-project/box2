@@ -57,11 +57,14 @@ class Create extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $rsa = new Crypt_RSA();
+        $verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
 
-        $output->writeln(sprintf(
-            'Generating private %d bit private key...',
-            $input->getOption('bits')
-        ));
+        if ($verbose) {
+            $output->writeln(sprintf(
+                'Generating %d bit private key...',
+                $input->getOption('bits')
+            ));
+        }
 
         if ($input->getOption('prompt')) {
             /** @var $dialog DialogHelper */
@@ -78,12 +81,16 @@ class Create extends Command
 
         $key = $rsa->createKey($input->getOption('bits'));
 
-        $output->writeln('Writing private key...');
+        if ($verbose) {
+            $output->writeln('Writing private key...');
+        }
 
         file_put_contents($input->getOption('out'), $key['privatekey']);
 
         if (null !== ($public = $input->getOption('public'))) {
-            $output->writeln('Writing public key...');
+            if ($verbose) {
+                $output->writeln('Writing public key...');
+            }
 
             file_put_contents($public, $key['publickey']);
         }
