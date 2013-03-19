@@ -4,6 +4,7 @@ namespace KevinGH\Box\Tests\Command;
 
 use KevinGH\Box\Command\Build;
 use KevinGH\Box\Test\CommandTestCase;
+use Phar;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -107,6 +108,12 @@ OUTPUT
             'Hello, world!',
             exec('php test.phar')
         );
+
+        $phar = new Phar('test.phar');
+
+        $this->assertEquals(array('rand' => $rand), $phar->getMetadata());
+
+        unset($phar);
     }
 
     public function testBuildStubFile()
