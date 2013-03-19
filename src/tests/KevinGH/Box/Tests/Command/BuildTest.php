@@ -55,13 +55,13 @@ KEY
             'chmod' => '0755',
             'compactors' => array('Herrera\\Box\\Compactor\\Composer'),
             'files' => 'test.php',
-            'finder' => array((object) array('in' => 'one')),
+            'finder' => array(array('in' => 'one')),
             'finder-bin' => array(array('in' => 'two')),
             'key' => 'private.key',
             'key-pass' => true,
-            'replacements' => (object) array('name' => 'world'),
+            'replacements' => array('name' => 'world'),
             'main' => 'run.php',
-            'metadata' => (object) array('rand' => $rand = rand()),
+            'metadata' => array('rand' => $rand = rand()),
             'output' => 'test.phar',
             'stub' => true
         )));
@@ -180,12 +180,11 @@ OUTPUT
     public function testBuildCompressed()
     {
         file_put_contents('test.php', '<?php echo "Hello!";');
-        file_put_contents('run.php', '<?php require "test.php";');
         file_put_contents('box.json', json_encode(array(
             'alias' => 'test.phar',
             'compression' => 'GZ',
             'files' => 'test.php',
-            'main' => 'run.php',
+            'main' => 'test.php',
             'output' => 'test.phar',
             'stub' => true
         )));
@@ -205,7 +204,7 @@ OUTPUT
 ? Output path: {$dir}test.phar
 ? Adding files...
   + {$dir}test.php
-? Adding main file: {$dir}run.php
+? Setting main file: {$dir}test.php
 ? Generating new stub...
 ? Compressing...
 * Done.

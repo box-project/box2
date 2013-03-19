@@ -140,18 +140,30 @@ class Build extends Configurable
         }
 
         if (null !== ($main = $this->config->getMainScriptPath())) {
-            $this->putln(
-                '?',
-                'Adding main file: '
-                    . $this->config->getBasePath()
-                    . DIRECTORY_SEPARATOR
-                    . $main
-            );
+            $phar = $this->box->getPhar();
 
-            $this->box->addFromString(
-                $main,
-                $this->config->getMainScriptContents()
-            );
+            if (isset($phar[$main])) {
+                $this->putln(
+                    '?',
+                    'Setting main file: '
+                        . $this->config->getBasePath()
+                        . DIRECTORY_SEPARATOR
+                        . $main
+                );
+            } else {
+                $this->putln(
+                    '?',
+                    'Adding main file: '
+                        . $this->config->getBasePath()
+                        . DIRECTORY_SEPARATOR
+                        . $main
+                );
+
+                $this->box->addFromString(
+                    $main,
+                    $this->config->getMainScriptContents()
+                );
+            }
         }
 
         // set the appropriate stub
