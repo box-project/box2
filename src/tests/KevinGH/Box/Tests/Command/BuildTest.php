@@ -4,6 +4,7 @@ namespace KevinGH\Box\Tests\Command;
 
 use KevinGH\Box\Command\Build;
 use KevinGH\Box\Test\CommandTestCase;
+use KevinGH\Box\Test\FixedResponse;
 use Phar;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -275,23 +276,5 @@ OUTPUT
         parent::setUp();
 
         $this->app->getHelperSet()->set(new FixedResponse('test'));
-    }
-}
-
-class FixedResponse extends DialogHelper
-{
-    private $response;
-
-    public function __construct($response)
-    {
-        $this->response = $response;
-    }
-
-    public function askHiddenResponse(
-        OutputInterface $output,
-        $question,
-        $fallback = true
-    ){
-        return $this->response;
     }
 }
