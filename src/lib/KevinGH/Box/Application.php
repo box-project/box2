@@ -4,7 +4,7 @@ namespace KevinGH\Box;
 
 use ErrorException;
 use KevinGH\Box\Command;
-use KevinGH\Box\Helper\ConfigurationHelper;
+use KevinGH\Box\Helper;
 use Symfony\Component\Console\Application as Base;
 
 /**
@@ -48,7 +48,8 @@ class Application extends Base
     protected function getDefaultHelperSet()
     {
         $helperSet = parent::getDefaultHelperSet();
-        $helperSet->set(new ConfigurationHelper());
+        $helperSet->set(new Helper\ConfigurationHelper());
+        $helperSet->set(new Helper\PhpSecLibHelper());
 
         return $helperSet;
     }

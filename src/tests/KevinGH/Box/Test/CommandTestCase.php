@@ -3,7 +3,7 @@
 namespace KevinGH\Box\Test;
 
 use Herrera\PHPUnit\TestCase;
-use KevinGH\Box\Helper\ConfigurationHelper;
+use KevinGH\Box\Helper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\StreamOutput;
@@ -115,7 +115,8 @@ abstract class CommandTestCase extends TestCase
         chdir($this->dir);
 
         $this->app = new Application();
-        $this->app->getHelperSet()->set(new ConfigurationHelper());
+        $this->app->getHelperSet()->set(new Helper\ConfigurationHelper());
+        $this->app->getHelperSet()->set(new Helper\PhpSecLibHelper());
 
         $command = $this->getCommand();
         $this->name = $command->getName();

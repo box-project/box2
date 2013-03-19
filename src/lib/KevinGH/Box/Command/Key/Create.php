@@ -2,7 +2,7 @@
 
 namespace KevinGH\Box\Command\Key;
 
-use Crypt_RSA;
+use KevinGH\Box\Helper\PhpSecLibHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -56,7 +56,9 @@ class Create extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $rsa = new Crypt_RSA();
+        /** @var $lib PhpSecLibHelper */
+        $lib = $this->getHelper('phpseclib');
+        $rsa = $lib->CryptRSA();
         $verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
 
         if ($verbose) {
