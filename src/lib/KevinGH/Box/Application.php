@@ -38,6 +38,7 @@ class Application extends Base
         $commands[] = new Command\Key\Create();
         $commands[] = new Command\Key\Extract();
         $commands[] = new Command\Build();
+        $commands[] = new Command\Verify();
 
         return $commands;
     }
