@@ -714,11 +714,11 @@ class Configuration
                         ->filter($filter)
                         ->ignoreVCS(true);
 
-            if (isset($methods['in'])) {
+            if (isset($methods->in)) {
                 $base = $this->getBasePath();
-                $methods['in'] = (array) $methods['in'];
+                $methods->in = (array) $methods->in;
 
-                array_walk($methods['in'], function (&$directory) use ($base) {
+                array_walk($methods->in, function (&$directory) use ($base) {
                     $directory = $base . DIRECTORY_SEPARATOR . $directory;
                 });
             }
