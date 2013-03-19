@@ -1,6 +1,6 @@
 # Box
 
-[![Build Status](https://secure.travis-ci.org/kherge/Box.png?branch=master)](http://travis-ci.org/kherge/Box)
+[![Build Status](https://travis-ci.org/kherge/Box.png?branch=1.0)](https://travis-ci.org/kherge/Box)
 
 Box is a library and command line application for simplifying the PHAR creation process.
 
