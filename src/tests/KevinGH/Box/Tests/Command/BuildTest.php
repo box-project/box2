@@ -128,7 +128,29 @@ OUTPUT
         )));
 
         $tester = $this->getTester();
-        $tester->execute(array('command' => 'build'));
+        $tester->execute(
+            array('command' => 'build'),
+            array('verbosity' => OutputInterface::VERBOSITY_VERBOSE)
+        );
+
+        $dir = $this->dir . DIRECTORY_SEPARATOR;
+
+        $this->assertEquals(
+            <<<OUTPUT
+* Building...
+? Output path: {$dir}default.phar
+? Setting replacement values...
+  + @name@: world
+? Adding files...
+  + {$dir}test.php
+? Setting main file: {$dir}test.php
+? Generating new stub...
+* Done.
+
+OUTPUT
+            ,
+            $this->getOutput($tester)
+        );
 
         $this->assertEquals(
             'Hello, world!',
