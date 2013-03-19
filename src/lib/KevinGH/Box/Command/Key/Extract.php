@@ -2,7 +2,7 @@
 
 namespace KevinGH\Box\Command\Key;
 
-use Crypt_RSA;
+use KevinGH\Box\Helper\PhpSecLibHelper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,9 +47,14 @@ class Extract extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $rsa = new Crypt_RSA();
+        /** @var $lib PhpSecLibHelper */
+        $lib = $this->getHelper('phpseclib');
+        $rsa = $lib->CryptRSA();
+        $verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
 
-        $output->writeln('Extracting public key...');
+        if ($verbose) {
+            $output->writeln('Extracting public key...');
+        }
 
         if ($input->getOption('prompt')) {
             /** @var $dialog DialogHelper */
@@ -82,7 +87,9 @@ class Extract extends Command
             return 1;
         }
 
-        $output->writeln('Writing public key...');
+        if ($verbose) {
+            $output->writeln('Writing public key...');
+        }
 
         file_put_contents($input->getOption('out'), $public);
     }
