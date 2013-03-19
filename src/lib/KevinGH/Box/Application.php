@@ -35,6 +35,8 @@ class Application extends Base
     protected function getDefaultCommands()
     {
         $commands = parent::getDefaultCommands();
+        $commands[] = new Command\Key\Create();
+        $commands[] = new Command\Key\Extract();
         $commands[] = new Command\Build();
 
         return $commands;
