@@ -49,7 +49,7 @@ KEY
         touch('one/test.php');
         touch('two/test.png');
         file_put_contents('private.key', $key[0]);
-        file_put_contents('test.php', '<?php echo "Hello, @name@!\n";');
+        file_put_contents('test.php', '<?php echo "Hello, world!\n";');
         file_put_contents('run.php', '<?php require "test.php";');
         file_put_contents('box.json', json_encode(array(
             'alias' => 'test.phar',
@@ -60,7 +60,6 @@ KEY
             'finder-bin' => array(array('in' => 'two')),
             'key' => 'private.key',
             'key-pass' => true,
-            'replacements' => array('name' => 'world'),
             'main' => 'run.php',
             'metadata' => array('rand' => $rand = rand()),
             'output' => 'test.phar',
@@ -82,8 +81,6 @@ KEY
 ? Removing previously built Phar...
 * Building...
 ? Output path: {$dir}test.phar
-? Setting replacement values...
-  + @name@: world
 ? Registering compactors...
   + Herrera\\Box\\Compactor\\Composer
 ? Adding files...
@@ -114,6 +111,28 @@ OUTPUT
         $this->assertEquals(array('rand' => $rand), $phar->getMetadata());
 
         unset($phar);
+    }
+
+    /**
+     * @depends testBuild
+     */
+    public function testBuildReplacements()
+    {
+        file_put_contents('test.php', '<?php echo "Hello, @name@!\n";');
+        file_put_contents('box.json', json_encode(array(
+            'files' => 'test.php',
+            'main' => 'test.php',
+            'replacements' => array('name' => 'world'),
+            'stub' => true
+        )));
+
+        $tester = $this->getTester();
+        $tester->execute(array('command' => 'build'));
+
+        $this->assertEquals(
+            'Hello, world!',
+            exec('php default.phar')
+        );
     }
 
     public function testBuildStubFile()
