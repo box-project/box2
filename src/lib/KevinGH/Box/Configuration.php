@@ -471,6 +471,10 @@ class Configuration
     public function getMetadata()
     {
         if (isset($this->raw->metadata)) {
+            if (is_object($this->raw->metadata)) {
+                return (array) $this->raw->metadata;
+            }
+
             return $this->raw->metadata;
         }
     }
