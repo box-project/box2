@@ -90,9 +90,12 @@ class Configuration
     {
         if (isset($this->raw->{'directories-bin'})) {
             $directories = (array) $this->raw->{'directories-bin'};
+            $base = $this->getBasePath();
 
-            array_walk($directories, function (&$directory) {
-                $directory = canonical_path($directory);
+            array_walk($directories, function (&$directory) use ($base) {
+                $directory = $base
+                           . DIRECTORY_SEPARATOR
+                           . canonical_path($directory);
             });
 
             return $directories;
@@ -200,7 +203,11 @@ class Configuration
               . '/';
 
         return function (SplFileInfo $file) use ($base, $blacklist) {
-            $path = preg_replace($base, '', $file->getPathname());
+            $path = canonical_path(preg_replace(
+                $base,
+                '',
+                $file->getPathname()
+            ));
 
             if (in_array($path, $blacklist)) {
                 return false;
@@ -278,9 +285,12 @@ class Configuration
     {
         if (isset($this->raw->directories)) {
             $directories = (array) $this->raw->directories;
+            $base = $this->getBasePath();
 
-            array_walk($directories, function (&$directory) {
-                $directory = canonical_path($directory);
+            array_walk($directories, function (&$directory) use ($base) {
+                $directory = $base
+                           . DIRECTORY_SEPARATOR
+                           . canonical_path($directory);
             });
 
             return $directories;
@@ -640,6 +650,15 @@ class Configuration
                         ->filter($filter)
                         ->ignoreVCS(true);
 
+            if (isset($methods['in'])) {
+                $base = $this->getBasePath();
+                $methods['in'] = (array) $methods['in'];
+
+                array_walk($methods['in'], function (&$directory) use ($base) {
+                    $directory = $base . DIRECTORY_SEPARATOR . $directory;
+                });
+            }
+
             foreach ($methods as $method => $arguments) {
                 if (false === method_exists($finder, $method)) {
                     throw new InvalidArgumentException(sprintf(
@@ -649,12 +668,6 @@ class Configuration
                 }
 
                 $arguments = (array) $arguments;
-
-                if ('in' === $method) {
-                    array_walk($arguments, function (&$argument) {
-                        $argument = canonical_path($argument);
-                    });
-                }
 
                 foreach ($arguments as $argument) {
                     $finder->$method($argument);

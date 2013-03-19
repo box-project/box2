@@ -77,7 +77,7 @@ class ConfigurationTest extends TestCase
         mkdir($this->dir . DIRECTORY_SEPARATOR . 'test');
 
         $this->setConfig(array(
-            'directories-bin' => $this->dir . DIRECTORY_SEPARATOR . 'test'
+            'directories-bin' => 'test'
         ));
 
         $this->assertEquals(
@@ -99,7 +99,7 @@ class ConfigurationTest extends TestCase
 
         $this->setConfig(array(
             'blacklist' => 'alpha/beta.png',
-            'directories-bin' => $this->dir . DIRECTORY_SEPARATOR . 'alpha'
+            'directories-bin' => 'alpha'
         ));
 
         $iterator = $this->config
@@ -162,11 +162,11 @@ class ConfigurationTest extends TestCase
             'finder-bin' => array(
                 array(
                     'name' => '*.png',
-                    'in' => $this->dir
+                    'in' => '.'
                 ),
                 array(
                     'name' => '*.jpg',
-                    'in' => $this->dir
+                    'in' => '.'
                 )
             )
         ));
@@ -313,7 +313,10 @@ class ConfigurationTest extends TestCase
     {
         $this->setConfig(array('directories' => array('test')));
 
-        $this->assertEquals(array('test'), $this->config->getDirectories());
+        $this->assertEquals(
+            array($this->dir . DIRECTORY_SEPARATOR . 'test'),
+            $this->config->getDirectories()
+        );
     }
 
     public function testGetDirectoriesIterator()
@@ -329,7 +332,7 @@ class ConfigurationTest extends TestCase
 
         $this->setConfig(array(
                 'blacklist' => 'alpha/beta.php',
-                'directories' => $this->dir . DIRECTORY_SEPARATOR . 'alpha'
+                'directories' => 'alpha'
             ));
 
         $iterator = $this->config
@@ -400,11 +403,11 @@ class ConfigurationTest extends TestCase
             'finder' => array(
                 array(
                     'name' => '*.php',
-                    'in' => $this->dir
+                    'in' => '.'
                 ),
                 array(
                     'name' => '*.html',
-                    'in' => $this->dir
+                    'in' => '.'
                 )
             )
         ));
