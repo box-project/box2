@@ -209,6 +209,10 @@ class Build extends Configurable
         if (null !== ($key = $this->config->getPrivateKeyPath())) {
             $this->putln('?', 'Signing using a private key...');
 
+            if (file_exists($path . '.pubkey')) {
+                unlink($path . '.pubkey');
+            }
+
             $passphrase = $this->config->getPrivateKeyPassphrase();
 
             if ($this->config->isPrivateKeyPrompt()) {
