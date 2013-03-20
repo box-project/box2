@@ -43,4 +43,17 @@ class ApplicationTest extends TestCase
 
         $this->assertTrue(isset($exception));
     }
+
+    public function testAppNonRepo()
+    {
+        $app = new Application('Test', '1.2.3');
+        $app->setAutoExit(false);
+
+        restore_error_handler();
+
+        $this->assertInstanceOf(
+            'KevinGH\\Amend\\Command',
+            $app->get('update')
+        );
+    }
 }

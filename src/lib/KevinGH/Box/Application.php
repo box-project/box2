@@ -47,7 +47,7 @@ class Application extends Base
         $commands[] = new Command\Validate();
         $commands[] = new Command\Verify();
 
-        if (Phar::running()) {
+        if (('@' . 'git_tag@') !== $this->getVersion()) {
             $command = new Amend\Command('update');
             $command->setManifestUri('@manifest_url@');
 
@@ -66,7 +66,7 @@ class Application extends Base
         $helperSet->set(new Helper\ConfigurationHelper());
         $helperSet->set(new Helper\PhpSecLibHelper());
 
-        if (Phar::running()) {
+        if (('@' . 'git_tag@') !== $this->getVersion()) {
             $helperSet->set(new Amend\Helper());
         }
 
