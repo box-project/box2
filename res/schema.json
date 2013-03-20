@@ -26,7 +26,7 @@
         },
         "compactors": {
             "description": "The list of file contents compactor classes to register.",
-            "type": "array"
+            "type": ["array", "string"]
         },
         "compression": {
             "description": "The compression algorithm to use for the PHAR.",

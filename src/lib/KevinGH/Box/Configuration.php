@@ -239,7 +239,7 @@ class Configuration
         $compactors = array();
 
         if (isset($this->raw->compactors)) {
-            foreach ($this->raw->compactors as $class) {
+            foreach ((array) $this->raw->compactors as $class) {
                 if (false === class_exists($class)) {
                     throw new InvalidArgumentException(sprintf(
                         'The compactor class "%s" does not exist.',
