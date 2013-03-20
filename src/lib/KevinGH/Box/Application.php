@@ -39,6 +39,7 @@ class Application extends Base
         $commands = parent::getDefaultCommands();
         $commands[] = new Command\Key\Create();
         $commands[] = new Command\Key\Extract();
+        $commands[] = new Command\Add();
         $commands[] = new Command\Build();
         $commands[] = new Command\Extract();
         $commands[] = new Command\Info();
