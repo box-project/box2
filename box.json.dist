@@ -6,7 +6,10 @@
         "Herrera\\Box\\Compactor\\Json"
     ],
     "directories": ["src/lib"],
-    "files": ["res/schema.json"],
+    "files": [
+        "res/schema.json",
+        "src/vendors/herrera-io/phar-update/res/schema.json"
+    ],
     "finder": [
         {
             "name": "*.php",
