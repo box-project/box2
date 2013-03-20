@@ -4,6 +4,7 @@ namespace KevinGH\Box\Command\Key;
 
 use KevinGH\Box\Helper\PhpSecLibHelper;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -23,6 +24,31 @@ class Extract extends Command
     {
         $this->setName('key:extract');
         $this->setDescription('Extracts the public key from a private key.');
+        $this->setHelp(<<<HELP
+The <info>php %command.name%</info> command will extract the public key from an existing
+private key file. <comment>You may need to generate a new private key using
+<info>key:create</info>.</comment>
+
+<comment>
+  You may extract a public key without OpenSSL. However,
+  it may be useless as you will not be able to sign any
+  Phars without the OpenSSL extension enabled. In order to
+  accelerate key extraction, you may enable any of the
+  following extensions: <info>openssl, mcrypt, gmp, bcmath</info>
+</comment>
+
+The <info>--private</info> argument allows you to specifiy the name of the private key
+file. <comment>The default file name for <info>key:create</info> is <info>private.key</info>.</comment>  The private
+key file must contain a PKCS#1 encoded RSA private key.
+
+The <info>--prompt|-p</info> option will cause the command to prompt you for the
+passphrase for the private key. If this option is not used, no passphrase
+will be used.
+
+The <info>--out|-o</info> option allows you to specify the public key file to store the
+PKCS#1 encoded RSA public key.
+HELP
+        );
         $this->addArgument(
             'private',
             InputArgument::REQUIRED,
