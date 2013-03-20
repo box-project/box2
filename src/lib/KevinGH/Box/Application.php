@@ -3,8 +3,10 @@
 namespace KevinGH\Box;
 
 use ErrorException;
+use KevinGH\Amend;
 use KevinGH\Box\Command;
 use KevinGH\Box\Helper;
+use Phar;
 use Symfony\Component\Console\Application as Base;
 
 /**
@@ -43,6 +45,13 @@ class Application extends Base
         $commands[] = new Command\Validate();
         $commands[] = new Command\Verify();
 
+        if (Phar::running()) {
+            $command = new Amend\Command('update');
+            $command->setManifestUri('@manifest_url@');
+
+            $commands[] = $command;
+        }
+
         return $commands;
     }
 
@@ -54,6 +63,10 @@ class Application extends Base
         $helperSet = parent::getDefaultHelperSet();
         $helperSet->set(new Helper\ConfigurationHelper());
         $helperSet->set(new Helper\PhpSecLibHelper());
+
+        if (Phar::running()) {
+            $helperSet->set(new Amend\Helper());
+        }
 
         return $helperSet;
     }
