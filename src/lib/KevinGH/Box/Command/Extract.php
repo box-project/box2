@@ -85,6 +85,8 @@ class Extract extends Command
 
         $phar->extractTo($out, $files, true);
 
+        unset($phar);
+
         if ($verbose) {
             $output->writeln('Done.');
         }
