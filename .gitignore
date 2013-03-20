@@ -1,4 +1,5 @@
 .*
 !.gitignore
+bin/
 coverage/
 src/
