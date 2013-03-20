@@ -42,6 +42,25 @@ OUTPUT
         );
     }
 
+    public function testExecuteNotExist()
+    {
+
+        $tester = $this->getTester();
+        $tester->execute(array(
+                'command' => 'verify',
+                'phar' => 'test.phar'
+            ));
+
+        $this->assertEquals(
+            <<<OUTPUT
+The path "test.phar" is not a file or does not exist.
+
+OUTPUT
+            ,
+            $this->getOutput($tester)
+        );
+    }
+
     public function testExecuteFailed()
     {
         file_put_contents('test.phar', 'bad');

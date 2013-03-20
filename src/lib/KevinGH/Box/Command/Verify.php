@@ -36,9 +36,19 @@ class Verify extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
+        $phar = $input->getArgument('phar');
 
         if ($verbose) {
             $output->writeln('Verifying the Phar...');
+        }
+
+        if (false === is_file($phar)) {
+            $output->writeln(sprintf(
+                '<error>The path "%s" is not a file or does not exist.</error>',
+                $phar
+            ));
+
+            return 1;
         }
 
         try {
