@@ -74,7 +74,6 @@ abstract class CommandTestCase extends TestCase
         $string = preg_replace(
             array(
                 '/\x1b(\[|\(|\))[;?0-9]*[0-9A-Za-z]/',
-                '/\x1b(\[|\(|\))[;?0-9]*[0-9A-Za-z]/',
                 '/[\x03|\x1a]/'
             ),
             array('', '', ''),
