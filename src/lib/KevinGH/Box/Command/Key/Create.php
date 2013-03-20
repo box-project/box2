@@ -25,7 +25,6 @@ class Create extends Command
         $this->setDescription('Creates a private key');
         $this->setHelp(<<<HELP
 The <info>%command.name%</info> command will generate a new PKCS#1 encoded RSA private key.
-
 <comment>
   You may generate a private key without OpenSSL. However,
   it may be useless as you will not be able to sign any
@@ -33,7 +32,6 @@ The <info>%command.name%</info> command will generate a new PKCS#1 encoded RSA p
   accelerate key generation, you may enable any of the
   following extensions: <info>openssl, mcrypt, gmp, bcmath</info>
 </comment>
-
 The <info>--bits|-b</info> option allows you to specify key length.
 It is recommended that a minimum of 2048 bits be used:
 

@@ -16,7 +16,7 @@ class ValidateTest extends CommandTestCase
         $tester = $this->getTester();
         $tester->execute(array(
             'command' => 'validate',
-            'file' => 'test.json'
+            '--configuration' => 'test.json'
         ), array(
             'verbosity' => OutputInterface::VERBOSITY_VERBOSE
         ));
@@ -24,7 +24,6 @@ class ValidateTest extends CommandTestCase
         $this->assertEquals(
             <<<OUTPUT
 Validating the Box configuration file...
-Found: test.json
 The configuration file passed validation.
 
 OUTPUT
@@ -40,7 +39,7 @@ OUTPUT
         $this->assertEquals(1, $tester->execute(array('command' => 'validate')));
         $this->assertEquals(
             <<<OUTPUT
-No configuration file could be found.
+The configuration file failed validation.
 
 OUTPUT
             ,
@@ -85,7 +84,6 @@ OUTPUT
         $this->assertEquals(
             <<<OUTPUT
 Validating the Box configuration file...
-Found: box.json
 The configuration file failed validation.
 
 OUTPUT

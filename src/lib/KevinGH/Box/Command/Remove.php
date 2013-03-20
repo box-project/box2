@@ -22,6 +22,11 @@ class Remove extends Command
     {
         $this->setName('remove');
         $this->setDescription('Removes files from a Phar.');
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> command will remove one or more files from an
+existing Phar, listed as a <info>file</info> argument.
+HELP
+        );
         $this->addArgument(
             'phar',
             InputArgument::REQUIRED,

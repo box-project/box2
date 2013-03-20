@@ -48,6 +48,199 @@ class Build extends Configurable
 
         $this->setName('build');
         $this->setDescription('Builds a new Phar.');
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> will build a new Phar based on a variety of settings.
+<comment>
+  This command relies on a configuration file for loading
+  Phar packaging settings. If a configuration file is not
+  specified through the <info>--configuration|-c</info> option, one of
+  the following files will be used (in order): <info>box.json,
+  box.json.dist</info>
+</comment>
+The configuration file is actually a JSON object saved in a file.
+Note that all settings are optional.
+<comment>
+  {
+    "algorithm": ?,
+    "alias": ?,
+    "base-path": ?,
+    "blacklist": ?,
+    "chmod": ?,
+    "compactors": ?,
+    "compression": ?,
+    "directories": ?,
+    "directories-bin": ?,
+    "files": ?,
+    "files-bin": ?,
+    "finder": ?,
+    "finder-bin": ?,
+    "git-version": ?,
+    "intercept": ?,
+    "key": ?,
+    "key-pass": ?,
+    "main": ?,
+    "metadata": ?,
+    "mimetypes": ?,
+    "mung": ?,
+    "not-found": ?,
+    "output": ?,
+    "replacements": ?,
+    "stub": ?,
+    "web": ?
+  }
+</comment>
+
+The <info>algorithm</info> <comment>(string, integer)</comment> setting is the signing algorithm to
+use when the Phar is built <comment>(Phar::setSignatureAlgorithm())</comment>. It can an
+integer value (the value of the constant), or the name of the Phar
+constant. The following is a list of the signature algorithms listed
+on the help page:
+<comment>
+  - MD5 (Phar::MD5)
+  - SHA1 (Phar::SHA1)
+  - SHA256 (Phar::SHA256)
+  - SHA512 (Phar::SHA512)
+  - OPENSSL (Phar::OPENSSL)
+</comment>
+The <info>alias</info> <comment>(string)</comment> setting is used when generating a new stub to call
+the <comment>Phar::mapPhar()</comment> method. This makes it easier to refer to files in
+the Phar.
+
+The <info>base-path</info> <comment>(string)</comment> setting is used to specify where all of the
+relative file paths should resolve to. This does not, however, alter
+where the built Phar will be stored <comment>(see: <info>output</info>)</comment>.
+
+The <info>blacklist</info> <comment>(string, array)</comment> setting is a list of files that must
+not be added. The files blacklisted are the ones found using the other
+available configuration settings: <info>directories, directories-bin, files,
+files-bin, finder, finder-bin</info>.
+
+The <info>chmod</info> <comment>(string)</comment> setting is used to change the file permissions of
+the newly built Phar. The string contains an octal value: <comment>0755</comment>. You
+must prefix the mode with zero if you specify the mode in decimal.
+
+The <info>compactors</info> <comment>(string, array)</comment> setting is a list of file contents
+compacting classes that must be registered. A file compacting class
+is used to reduce the size of a specific file type. The following is
+a simple example:
+<comment>
+  use Herrera\\Box\\Compactor\\CompactorInterface;
+
+  class MyCompactor implements CompactorInterface
+  {
+      public function compact(\$contents)
+      {
+          return trim(\$contents);
+      }
+
+      public function supports(\$file)
+      {
+          return (bool) preg_match('/\.txt/', \$file);
+      }
+  }
+</comment>
+The following compactors are included with Box:
+<comment>
+  - Herrera\\Box\\Compactor\\Composer
+  - Herrera\\Box\\Compactor\\Json
+</comment>
+The <info>compression</info> <comment>(string, integer)</comment> setting is the compression algorithm
+to use when the Phar is built. The compression affects the individual
+files within the Phar, and not the Phar as a whole <comment>(Phar::compressFiles())</comment>.
+The following is a list of the signature algorithms listed on the help
+page:
+<comment>
+  - BZ2 (Phar::BZ2)
+  - GZ (Phar::GZ)
+  - NONE (Phar::NONE)
+</comment>
+The <info>directories</info> <comment>(string, array)</comment> setting is a list of directories that
+will be recursively included in the Phar. The files will be processed
+by the registered file compacting classes, and have their placeholder
+values replaced. Any files listed in the <info>blacklist</info> setting will not
+be added. The <info>directories-bin</info> <comment>(string, array)</comment> setting also recursively
+adds files, but does not modify any of them, treating them as binary
+files.
+
+The <info>files</info> <comment>(string, array)</comment> setting is a list of files that will
+be included in the Phar. The files will be processed by the registered
+file compacting classes, and have their placeholder values replaced.
+This list is not affected by the <info>blacklist</info> setting. The <info>files-bin</info>
+<comment>(string, array)</comment> setting is also a list of files that will be included,
+but will not be modified, treating them as binary files.
+
+The <info>finder</info> <comment>(array)</comment> setting is a list of JSON objects. Each object key
+is a name, and each value an argument for the methods in the
+<comment>Symfony\\Component\\Finder\\Finder</comment> class. If an array of values is provided
+for a single key, the method will be called once per value in the array.
+The <info>finder-bin</info> <comment>(array)</comment> setting performs the same function, except all
+files found by the finder will be treated as binary files, leaving them
+unmodified.
+
+The <info>git-version</info> <comment>(string)</comment> setting is the name of a placeholder value that
+will be replaced in all non-binary files by the one of the following (in
+order):
+
+  - The git repository's most recent tag.
+  - The git repository's current short commit hash.
+
+The short commit hash will only be used if no tag is available.
+
+The <info>intercept</info> <comment>(boolean)</comment> setting is used when generating a new stub. If
+setting is set to <comment>true</comment>, the <comment>Phar::interceptFileFuncs();</comment> method will be
+called in the stub.
+
+The <info>key</info> <comment>(string)</comment> setting is used to specify the path to the private key
+file. The private key file will be used to sign the Phar using the
+<comment>OPENSSL</comment> signature algorithm. If an absolute path is not provided, the
+path will be relative to the current working directory.
+
+The <info>key-pass</info> <comment>(string, boolean)</comment> setting is used to specify the passphrase
+for the private <info>key</info>. If a <comment>string</comment> is provided, it will be used as is as
+the passphrase. If <comment>true</comment> is provided, you will be prompted for the
+passphrase.
+
+The <info>main</info> <comment>(string)</comment> setting is used to specify the file that will be run
+when the Phar is executed from the command line. If the file was not
+added by any of the other file adding settings, it will be automatically
+added after it has been compacted and had its placeholder values replaced.
+Also, the #! line will be automatically removed if present.
+
+The <info>metadata</info> <comment>(any)</comment> setting can be any value. This value will be stored as
+metadata that can be retrieved from the built Phar <comment>(Phar::getMetadata())</comment>.
+
+The <info>mimetypes</info> <comment>(object)</comment> setting is used when generating a new stub. It is
+a map of file extensions and their mimetypes. To see a list of the default
+mapping, please visit:
+
+  <comment>http://www.php.net/manual/en/phar.webphar.php</comment>
+
+The <info>mung</info> <comment>(array)</comment> setting is used when generating a new stub. It is a list
+of server variables to modify for the Phar. This setting is only useful
+when the <info>web</info> setting is enabled.
+
+The <info>not-server</info> <comment>(string)</comment> setting is used when generating a new stub. It
+specifies the file that will be used when a file is not found inside the
+Phar. This setting is only useful when <info>web</info> setting is enabled.
+
+The <info>output</info> <comment>(string)</comment> setting specifies the file name and path of the newly
+built Phar. If the value of the setting is not an absolute path, the path
+will be relative to the current working directory.
+
+The <info>replacements</info> <comment>(object)</comment> setting is a map of placeholders and their
+values. The placeholders are replaced in all non-binary files with the
+specified values.
+
+The <info>stub</info> <comment>(string, boolean)</comment> setting is used to specify the location of a
+stub file, or if one should be generated. If a path is provided, the stub
+file will be used as is inside the Phar. If <comment>true</comment> is provided, a new stub
+will be generated. If <comment>false (or nothing)</comment> is provided, the default stub
+used by the Phar class will be used.
+
+The <info>web</info> <comment>(boolean)</comment> setting is used when generating a new stub. If <comment>true</comment> is
+provided, <comment>Phar::webPhar()</comment> will be called in the stub.
+HELP
+        );
     }
 
     /**
@@ -225,6 +418,10 @@ class Build extends Configurable
             }
 
             $this->box->signUsingFile($key, $passphrase);
+
+        // set the signature algorithm if no key is used
+        } elseif (null !== ($algorithm = $this->config->getSigningAlgorithm())) {
+            $this->box->getPhar()->setSignatureAlgorithm($algorithm);
         }
 
         unset($this->box);

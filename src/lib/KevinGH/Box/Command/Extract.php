@@ -23,6 +23,18 @@ class Extract extends Command
     {
         $this->setName('extract');
         $this->setDescription('Extracts files from a Phar.');
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> will extract one or more files from a Phar.
+
+If the <info>--pick|-p</info> option is used, only the file or directories requested
+will be extracted from the Phar. If the option is not used, the entire
+contents of the Phar will be extracted.
+
+The <info>output</info> specifies the directory where the extracted contents should
+be placed. By default the directory will be called <comment>name.phar-</comment>contents,
+where <comment>name.phar</comment> is the name of the Phar file.
+HELP
+        );
         $this->addArgument(
             'phar',
             InputArgument::REQUIRED,

@@ -47,6 +47,35 @@ class Add extends Configurable
 
         $this->setName('add');
         $this->setDescription('Adds or replaces files to a Phar.');
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> will add a new file to an existing Phar, or replace
+an existing file with a new one.
+<comment>
+  This command relies on a configuration file for loading
+  Phar packaging settings. If a configuration file is not
+  specified through the <info>--configuration|-c</info> option, one of
+  the following files will be used (in order): <info>box.json,
+  box.json.dist</info>
+</comment>
+If the <info>--binary|-b</info> option is set, the file being added will
+be treated as a binary file. This means that will be added
+to the Phar as is, without any modifications.
+
+If the <info>--main|-m</info> option is set, the file being added will
+be treated as the main file (as defined in the configuration
+file: main). The file will have it's #! line removed, be
+processed by any configured compactors, and have its
+placeholder values replaced before being added to the Phar.
+
+If the <info>--replace|-r</info> option is set, the file in the Phar will be
+replaced if it already exists. If this option is not set and it
+already exists in the Phar, the command will fail.
+
+If the <info>--stub|-s</info> option is set, the file being added will be
+treated as a stub. The new stub will be imported as is into
+the Phar, replacing the current stub.
+HELP
+        );
         $this->addArgument(
             'phar',
             InputArgument::REQUIRED,

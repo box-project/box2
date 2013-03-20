@@ -28,7 +28,6 @@ class Extract extends Command
 The <info>php %command.name%</info> command will extract the public key from an existing
 private key file. <comment>You may need to generate a new private key using
 <info>key:create</info>.</comment>
-
 <comment>
   You may extract a public key without OpenSSL. However,
   it may be useless as you will not be able to sign any
@@ -36,7 +35,6 @@ private key file. <comment>You may need to generate a new private key using
   accelerate key extraction, you may enable any of the
   following extensions: <info>openssl, mcrypt, gmp, bcmath</info>
 </comment>
-
 The <info>--private</info> argument allows you to specifiy the name of the private key
 file. <comment>The default file name for <info>key:create</info> is <info>private.key</info>.</comment>  The private
 key file must contain a PKCS#1 encoded RSA private key.

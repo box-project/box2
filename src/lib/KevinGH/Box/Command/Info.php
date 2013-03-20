@@ -40,6 +40,19 @@ class Info extends Command
         $this->setDescription(
             'Displays information about the Phar extension or file.'
         );
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> command will display information about the Phar extension,
+or the Phar file if specified.
+
+If the <info>phar</info> argument <comment>(the Phar file path)</comment> is provided, information
+about the Phar file itself will be displayed.
+
+If the <info>--list|-l</info> option is used, the contents of the Phar file will
+be listed. By default, the list is shown as an indented tree. You may
+instead choose to view a flat listing, by setting the <info>--mode|-m</info> option
+to <comment>flat</comment>.
+HELP
+        );
         $this->addArgument(
             'phar',
             InputArgument::OPTIONAL,

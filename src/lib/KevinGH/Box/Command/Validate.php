@@ -4,7 +4,6 @@ namespace KevinGH\Box\Command;
 
 use Exception;
 use Herrera\Json\Json;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,15 +13,29 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * @author Kevin Herrera <kevin@herrera.io>
  */
-class Validate extends Command
+class Validate extends Configurable
 {
     /**
      * @override
      */
     protected function configure()
     {
+        parent::configure();
+
         $this->setName('validate');
         $this->setDescription('Validates the configuration file.');
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> command will validate the configuration file
+and report any errors found, if any.
+<comment>
+  This command relies on a configuration file for loading
+  Phar packaging settings. If a configuration file is not
+  specified through the <info>--configuration|-c</info> option, one of
+  the following files will be used (in order): <info>box.json,
+  box.json.dist</info>
+</comment>
+HELP
+        );
         $this->addArgument(
             'file',
             InputArgument::OPTIONAL,
@@ -41,35 +54,12 @@ class Validate extends Command
             $output->writeln('Validating the Box configuration file...');
         }
 
-        if (null === ($file = $input->getArgument('file'))) {
-            $file = 'box.json';
-
-            if (false === file_exists($file)) {
-                $file = 'box.json.dist';
-
-                if (false === file_exists($file)) {
-                    $output->writeln(
-                        '<error>No configuration file could be found.</error>'
-                    );
-
-                    return 1;
-                }
-            }
-        }
-
-        if ($verbose) {
-            $output->writeln("Found: $file");
-        }
-
-        $json = new Json();
-
         try {
-            $json->validate(
-                $json->decodeFile(BOX_SCHEMA_FILE),
-                $json->decodeFile($file)
-            );
+            $this->getConfig($input);
 
-            $output->writeln('The configuration file passed validation.');
+            $output->writeln(
+                '<info>The configuration file passed validation</info>.'
+            );
         } catch (Exception $exception) {
             $output->writeln(
                 '<error>The configuration file failed validation.</error>'

@@ -23,6 +23,10 @@ class Verify extends Command
     {
         $this->setName('verify');
         $this->setDescription('Verifies the Phar signature.');
+        $this->setHelp(<<<HELP
+The <info>%command.name%</info> command will verify the signature of the Phar.
+HELP
+        );
         $this->addArgument(
             'phar',
             InputArgument::REQUIRED,
