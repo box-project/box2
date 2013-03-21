@@ -28,9 +28,7 @@
         </ul>
       </header>
       <section>
-        <p><a href="http://travis-ci.org/kherge/Box"><img src="https://secure.travis-ci.org/kherge/Box.png?branch=master" alt="Build Status"></a></p>
-
-<h2>Installation</h2>
+        <h2>Installation</h2>
 
 <p>To install, you need to run this command in your shell:</p>
 
@@ -42,16 +40,16 @@
 <div class="highlight"><pre><span class="nv">$ </span>php box.phar update
 </pre></div>
 
-<p>You may also use Composer:</p>
+<p>You may also use Composer to install Box:</p>
 
 <div class="highlight"><pre><span class="nv">$ </span>composer require kherge/box<span class="o">=</span>~2.0
 </pre></div>
 
 <h2>Usage</h2>
 
-<p>To build a new PHAR using Box, <a href="https://github.com/kherge/Box/wiki/Configuration">configure</a> your project</p>
+<p>To build a new PHAR using Box, you will need to configure your project,</p>
 
-<p><strong>box.json</strong>:</p>
+<p><strong>box.json</strong></p>
 
 <div class="highlight"><pre><span class="p">{</span>
     <span class="nt">"directories"</span><span class="p">:</span> <span class="p">[</span>
@@ -61,14 +59,21 @@
 <span class="p">}</span>
 </pre></div>
 
-<p>and run</p>
+<p>and run:</p>
 
 <div class="highlight"><pre><span class="nv">$ </span>php box.phar build
 </pre></div>
 
 <p>You can also check out the <a href="https://github.com/kherge/BoxExample">example PHAR application</a> ready to be build by Box.</p>
 
-<p>Please see <a href="https://github.com/kherge/Box/wiki">the wiki</a> for more detailed usage information.</p>
+<h3>Configuration</h3>
+
+<p>To see a list of available configuration settings, you will need to see the help message for the <code>build</code> command.</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>php box.phar <span class="nb">help </span>build
+</pre></div>
+
+<p><a href="http://travis-ci.org/kherge/Box"><img src="https://secure.travis-ci.org/kherge/Box.png?branch=master" alt="Build Status"></a></p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/kherge">kherge</a></p>
