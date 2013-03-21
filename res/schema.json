@@ -20,6 +20,10 @@
             "items": "string",
             "type": ["array", "string"]
         },
+        "bootstrap": {
+            "description": "A file used to load third-party class compactors.",
+            "type": "string"
+        },
         "chmod": {
             "description": "The permission mode for the new PHAR.",
             "type": "string"

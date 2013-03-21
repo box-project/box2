@@ -50,11 +50,13 @@ KEY
         touch('test.phar.pubkey');
         touch('one/test.php');
         touch('two/test.png');
+        touch('bootstrap.php');
         file_put_contents('private.key', $key[0]);
         file_put_contents('test.php', '<?php echo "Hello, world!\n";');
         file_put_contents('run.php', '<?php require "test.php";');
         file_put_contents('box.json', json_encode(array(
             'alias' => 'test.phar',
+            'bootstrap' => 'bootstrap.php',
             'chmod' => '0755',
             'compactors' => array('Herrera\\Box\\Compactor\\Composer'),
             'files' => 'test.php',
@@ -80,6 +82,7 @@ KEY
 
         $this->assertEquals(
             <<<OUTPUT
+? Loading bootstrap file: {$dir}bootstrap.php
 ? Removing previously built Phar...
 * Building...
 ? Output path: {$dir}test.phar

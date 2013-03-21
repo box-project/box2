@@ -44,6 +44,7 @@ CODE
 
         $this->assertEquals(
             <<<OUTPUT
+? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
   + @name@: world
@@ -94,6 +95,7 @@ CODE
 
         $this->assertEquals(
             <<<OUTPUT
+? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
   + @name@: world
@@ -137,6 +139,7 @@ OUTPUT
 
         $this->assertEquals(
             <<<OUTPUT
+? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
   + @name@: world
@@ -188,6 +191,7 @@ CODE
 
         $this->assertEquals(
             <<<OUTPUT
+? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
   + @name@: world
@@ -320,7 +324,10 @@ OUTPUT
 
     private function preparePhar()
     {
+        touch('bootstrap.php');
+
         file_put_contents('box.json', json_encode(array(
+            'bootstrap' => 'bootstrap.php',
             'compactors' => 'Herrera\\Box\\Compactor\\Composer',
             'main' => 'bin/run',
             'replacements' => array('name' => 'world'),

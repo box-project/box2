@@ -234,6 +234,23 @@ class ConfigurationTest extends TestCase
         $this->assertNull($callable($sub));
     }
 
+    public function testGetBootstrapFile()
+    {
+        $this->assertNull($this->config->getBootstrapFile());
+    }
+
+    public function testGetBootstrapFileSet()
+    {
+        $this->setconfig(array(
+            'bootstrap' => 'test.php',
+        ));
+
+        $this->assertEquals(
+            $this->dir . DIRECTORY_SEPARATOR . 'test.php',
+            $this->config->getBootstrapFile()
+        );
+    }
+
     public function testGetCompactors()
     {
         $this->assertSame(array(), $this->config->getCompactors());
@@ -792,6 +809,35 @@ class ConfigurationTest extends TestCase
         $this->setConfig(array('web' => true));
 
         $this->assertTrue($this->config->isWebPhar());
+    }
+
+    public function testLoadBootstrap()
+    {
+        file_put_contents('test.php', <<<CODE
+<?php define('TEST_BOOTSTRAP_FILE_LOADED', true);
+CODE
+        );
+
+        $this->setConfig(array('bootstrap' => 'test.php'));
+
+        $this->config->loadBootstrap();
+
+        $this->assertTrue(defined('TEST_BOOTSTRAP_FILE_LOADED'));
+    }
+
+    public function testLoadBootstrapNotExist()
+    {
+        $this->setConfig(array('bootstrap' => 'test.php'));
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'The bootstrap path "'
+                . $this->dir
+                . DIRECTORY_SEPARATOR
+                . 'test.php" is not a file or does not exist.'
+        );
+
+        $this->config->loadBootstrap();
     }
 
     public function testProcessFindersInvalidMethod()

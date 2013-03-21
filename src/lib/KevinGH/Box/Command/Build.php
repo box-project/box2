@@ -65,6 +65,7 @@ Note that all settings are optional.
     "alias": ?,
     "base-path": ?,
     "blacklist": ?,
+    "bootstrap": ?,
     "chmod": ?,
     "compactors": ?,
     "compression": ?,
@@ -114,6 +115,11 @@ The <info>blacklist</info> <comment>(string, array)</comment> setting is a list 
 not be added. The files blacklisted are the ones found using the other
 available configuration settings: <info>directories, directories-bin, files,
 files-bin, finder, finder-bin</info>.
+
+The <info>bootstrap</info> <comment>(string)</comment> setting allows you to specify a PHP file that
+will be loaded before the <info>build</info> or <info>add</info> commands are used. This is
+useful for loading third-party file contents compacting classes that
+were configured using the <info>compactors</info> setting.
 
 The <info>chmod</info> <comment>(string)</comment> setting is used to change the file permissions of
 the newly built Phar. The string contains an octal value: <comment>0755</comment>. You
@@ -251,6 +257,13 @@ HELP
         $this->output = $output;
         $this->config = $this->getConfig($input);
         $path = $this->config->getOutputPath();
+
+        // load bootstrap file
+        if (null !== ($bootstrap = $this->config->getBootstrapFile())) {
+            $this->putln('?', "Loading bootstrap file: $bootstrap");
+
+            unset($bootstrap);
+        }
 
         // remove any previous work
         if (file_exists($path)) {

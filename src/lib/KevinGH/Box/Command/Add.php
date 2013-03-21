@@ -136,6 +136,13 @@ HELP
         $phar = $input->getArgument('phar');
         $file = $input->getArgument('file');
 
+        // load bootstrap file
+        if (null !== ($bootstrap = $this->config->getBootstrapFile())) {
+            $this->putln('?', "Loading bootstrap file: $bootstrap");
+
+            unset($bootstrap);
+        }
+
         $this->putln('*', 'Adding to the Phar...');
 
         if (false === is_file($phar)) {

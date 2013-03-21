@@ -228,6 +228,28 @@ class Configuration
     }
 
     /**
+     * Returns the bootstrap file path.
+     *
+     * @return string The file path.
+     */
+    public function getBootstrapFile()
+    {
+        if (isset($this->raw->bootstrap)) {
+            $path = $this->raw->bootstrap;
+
+            if (false === is_absolute_path($path)) {
+                $path = canonical_path(
+                    $this->getBasePath()
+                        . DIRECTORY_SEPARATOR
+                        . $path
+                );
+            }
+
+            return $path;
+        }
+    }
+
+    /**
      * Returns the list of file contents compactors.
      *
      * @return CompactorInterface[] The list of compactors.
@@ -696,6 +718,23 @@ class Configuration
         }
 
         return false;
+    }
+
+    /**
+     * Loads the configured bootstrap file if available.
+     */
+    public function loadBootstrap()
+    {
+        if (null !== ($file = $this->getBootstrapFile())) {
+            if (false === file_exists($file)) {
+                throw new InvalidArgumentException(sprintf(
+                    'The bootstrap path "%s" is not a file or does not exist.',
+                    $file
+                ));
+            }
+
+            include $file;
+        }
     }
 
     /**
