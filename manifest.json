@@ -1,38 +1,14 @@
 [
     {
         "name": "box.phar",
-        "sha1": "d73be268425ef6a4e6aeef9bac8d1bbb904637d4",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.4.phar",
-        "version": "1.0.4"
-    },
-    {
-        "name": "box.phar",
-        "sha1": "b439196171f71336819e0fb7f8b93a199d8b616b",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.6.phar",
-        "version": "1.0.6"
-    },
-    {
-        "name": "box.phar",
-        "sha1": "eb24826b038e4ce7ba35fb77b348dda06fc698ee",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.6+build.1.phar",
-        "version": "1.0.6+build.1"
-    },
-    {
-        "name": "box.phar",
-        "sha1": "7947a45787f9e3028a695704100dac6904a3fe06",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.8.phar",
-        "version": "1.0.8"
-    },
-    {
-        "name": "box.phar",
         "sha1": "0809660c1527daae1665806a6b3db157b36f621d",
         "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.9.phar",
         "version": "1.0.9"
     },
     {
         "name": "box.phar",
-        "sha1": "84869ac9663542e810c6208bac276552bf8da0a6",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-2.0.0-alpha.1.phar",
-        "version": "2.0.0-alpha.1"
+        "sha1": "e2178b8497306db6395198fc4bb5a0686ce5dc15",
+        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-2.0.0-alpha.2.phar",
+        "version": "2.0.0-alpha.2"
     }
 ]
