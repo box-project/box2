@@ -7,8 +7,8 @@
     },
     {
         "name": "box.phar",
-        "sha1": "e2178b8497306db6395198fc4bb5a0686ce5dc15",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-2.0.0-alpha.2.phar",
-        "version": "2.0.0-alpha.2"
+        "sha1": "136a1960b44bb53f1ff7f83e8a571c01d51406cf",
+        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-2.0.0-alpha.3.phar",
+        "version": "2.0.0-alpha.3"
     }
 ]
