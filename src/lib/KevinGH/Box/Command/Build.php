@@ -160,20 +160,22 @@ page:
   - GZ (Phar::GZ)
   - NONE (Phar::NONE)
 </comment>
-The <info>directories</info> <comment>(string, array)</comment> setting is a list of directories that
-will be recursively included in the Phar. The files will be processed
-by the registered file compacting classes, and have their placeholder
-values replaced. Any files listed in the <info>blacklist</info> setting will not
-be added. The <info>directories-bin</info> <comment>(string, array)</comment> setting also recursively
-adds files, but does not modify any of them, treating them as binary
-files.
+The <info>directories</info> <comment>(string, array)</comment> setting is a list of directory paths.
+All files ending in <comment>.php</comment> will be automatically compacted, have their
+placeholder values replaced, and added to the Phar. Files listed in
+the <info>blacklist</info> setting will not be added.
 
-The <info>files</info> <comment>(string, array)</comment> setting is a list of files that will
-be included in the Phar. The files will be processed by the registered
-file compacting classes, and have their placeholder values replaced.
-This list is not affected by the <info>blacklist</info> setting. The <info>files-bin</info>
-<comment>(string, array)</comment> setting is also a list of files that will be included,
-but will not be modified, treating them as binary files.
+The <info>directories-bin</info> <comment>(string, array)</comment> setting is similar to <info>directories</info>,
+except all file types are added to the Phar unmodified. This is suitable
+for directories containing images or other binary data.
+
+The <info>files</info> <comment>(string, array)</comment> setting is a list of files paths. Each file
+will be compacted, have their placeholder files replaced, and added to
+the Phar. This setting is not affected by the <info>blacklist</info>.
+
+The <info>files-bin</info> <comment>(string, array)</comment> setting is similar to <info>files</info>, except that
+all files are added to the Phar unmodified. This is suitable for files
+such as images or those that contain binary data.
 
 The <info>finder</info> <comment>(array)</comment> setting is a list of JSON objects. Each object key
 is a name, and each value an argument for the methods in the
