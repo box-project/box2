@@ -28,5 +28,11 @@
         "sha1": "0809660c1527daae1665806a6b3db157b36f621d",
         "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.9.phar",
         "version": "1.0.9"
+    },
+    {
+        "name": "box.phar",
+        "sha1": "84869ac9663542e810c6208bac276552bf8da0a6",
+        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-2.0.0-alpha.1.phar",
+        "version": "2.0.0-alpha.1"
     }
 ]
