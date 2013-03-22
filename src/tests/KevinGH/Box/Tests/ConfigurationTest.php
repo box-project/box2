@@ -625,6 +625,29 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    /**
+     * @depends testGetOutputPathSet
+     */
+    public function testGetOutputPathGitVersion()
+    {
+        touch('test');
+        exec('git init');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+        exec('git tag 1.0.0');
+
+        $this->setConfig(array('output' => 'test-@git-version@.phar'));
+
+        $this->assertEquals(
+            $this->dir . DIRECTORY_SEPARATOR . 'test-1.0.0.phar',
+            $this->config->getOutputPath());
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
     public function testGetPrivateKeyPassphrase()
     {
         $this->assertNull($this->config->getPrivateKeyPassphrase());

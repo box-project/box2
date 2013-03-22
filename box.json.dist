@@ -27,7 +27,7 @@
     ],
     "git-version": "git_tag",
     "main": "bin/box",
-    "output": "box.phar",
+    "output": "box-@git-version@.phar",
     "replacements": {
         "manifest_url": "http://box-project.org/manifest.json"
     },

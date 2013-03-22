@@ -557,10 +557,16 @@ class Configuration
                 $path = canonical_path($base . $path);
             }
 
-            return $path;
+            $path;
+        } else {
+            $path = $base . 'default.phar';
         }
 
-        return $base . 'default.phar';
+        if (false !== strpos($path, '@git-version@')) {
+            $path = str_replace('@git-version@', $this->getGitVersion(), $path);
+        }
+
+        return $path;
     }
 
     /**
