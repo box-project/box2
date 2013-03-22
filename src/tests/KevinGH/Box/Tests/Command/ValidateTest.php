@@ -92,6 +92,31 @@ OUTPUT
         );
     }
 
+    public function testExecuteInvalidVerbose()
+    {
+        file_put_contents('box.json', '{"test": true}');
+
+        $tester = $this->getTester();
+
+        $tester->execute(array(
+            'command' => 'validate'
+        ), array(
+            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+        ));
+
+        $this->assertEquals(
+            <<<OUTPUT
+Validating the Box configuration file...
+The configuration file failed validation.
+
+  - The property test is not defined and the definition does not allow additional properties
+
+OUTPUT
+            ,
+            $this->getOutput($tester)
+        );
+    }
+
     protected function getCommand()
     {
         return new Validate();

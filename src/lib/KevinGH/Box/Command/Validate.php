@@ -3,7 +3,7 @@
 namespace KevinGH\Box\Command;
 
 use Exception;
-use Herrera\Json\Json;
+use Herrera\Json\Exception\JsonException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -66,7 +66,15 @@ HELP
             );
 
             if ($verbose) {
-                throw $exception;
+                if ($exception instanceof JsonException) {
+                    $output->writeln('');
+
+                    foreach ($exception->getErrors() as $error) {
+                        $output->writeln("<comment>  - $error</comment>");
+                    }
+                } else {
+                    throw $exception;
+                }
             }
 
             return 1;
