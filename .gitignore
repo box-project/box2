@@ -1,7 +1,7 @@
 .*
 !.gitignore
 !.travis.yml
-box.phar
+*.phar
 bin/
 !bin/box*
 composer.lock
