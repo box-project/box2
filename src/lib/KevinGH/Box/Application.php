@@ -6,7 +6,6 @@ use ErrorException;
 use KevinGH\Amend;
 use KevinGH\Box\Command;
 use KevinGH\Box\Helper;
-use Phar;
 use Symfony\Component\Console\Application as Base;
 
 /**
