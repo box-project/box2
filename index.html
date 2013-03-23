@@ -28,52 +28,110 @@
         </ul>
       </header>
       <section>
-        <h2>Installation</h2>
+        <h2>What is it?</h2>
 
-<p>To install, you need to run this command in your shell:</p>
+<p>The Box application simplifies the Phar building process. Out of the box (no pun intended), the application can do many great things:</p>
+
+<ul>
+<li>Add, replace, and remove files and stubs in existing Phars.</li>
+<li>Extract a whole Phar, or cherry pick which files you want.</li>
+<li>Retrieve information about the Phar extension, or a Phar file.
+
+<ul>
+<li>List the contents of a Phar.</li>
+</ul>
+</li>
+<li>Verify the signature of an existing Phar.</li>
+<li>Generate RSA (PKCS#1 encoded) private keys for OpenSSL signing.
+
+<ul>
+<li>Extract public keys from existing RSA private keys.</li>
+</ul>
+</li>
+<li>Use Git tags and short commit hashes for versioning.</li>
+</ul><p>Since the application is based on the <a href="https://github.com/herrera-io/php-box">Box library</a>, you get its benefits as well:</p>
+
+<ul>
+<li>On the fly search and replace of placeholders.</li>
+<li>Compact file contents based on file type.</li>
+<li>Generate custom stubs.</li>
+</ul><h2>How do I get started?</h2>
+
+<p>You can use Box in one of two ways:</p>
+
+<h3>As a Phar (Recommended)</h3>
+
+<p>You may download a ready-to-use version of Box as a Phar:</p>
 
 <div class="highlight"><pre><span class="nv">$ </span>curl -s http://box-project.org/installer.php | php
 </pre></div>
 
-<p>Updates can later be performed by running Box's update command:</p>
+<p>The command will check your PHP settings, warn you of any issues, and the download it to the current directory. From there, you may place it anywhere that will make it easier for you to access (such as <code>/usr/local/bin</code>) and chmod it to <code>755</code>. You can even rename it to just <code>box</code> to avoid having to type the <code>.phar</code> extension every time.</p>
 
-<div class="highlight"><pre><span class="nv">$ </span>php box.phar update
+<div class="highlight"><pre><span class="nv">$ </span>box --version
 </pre></div>
 
-<p>You may also use Composer to install Box:</p>
+<p>Whenever a new version of the application is released, you can simply run the <code>update</code> command to get the latest version:</p>
 
-<div class="highlight"><pre><span class="nv">$ </span>composer require kherge/box<span class="o">=</span>~2.0
+<div class="highlight"><pre><span class="nv">$ </span>box update
 </pre></div>
 
-<h2>Usage</h2>
+<h3>As a Composer Dependency</h3>
 
-<p>To build a new PHAR using Box, you will need to configure your project,</p>
+<p>You may also install Box as a dependency for your Composer managed project:</p>
 
-<p><strong>box.json</strong></p>
+<div class="highlight"><pre><span class="nv">$ </span>composer require --dev kherge/box<span class="o">=</span>~2.0
+</pre></div>
+
+<p>(or)</p>
 
 <div class="highlight"><pre><span class="p">{</span>
-    <span class="nt">"directories"</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">"/path/to/source"</span><span class="p">,</span>
-        <span class="s2">"/path/to/source"</span>
-    <span class="p">]</span>
+    <span class="nt">"require-dev"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"kherge/box"</span><span class="p">:</span> <span class="s2">"~2.0"</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 
-<p>and run:</p>
+<blockquote>
+<p>Be aware that using this approach requires additional configuration steps to prevent Box's own dependencies from accidentally being added to your Phar, causing file size bloat. You can find more information about this <a href="https://github.com/kherge/Box/wiki/App%2C-or-Library%3F">issue on the wiki</a>.</p>
+</blockquote>
 
-<div class="highlight"><pre><span class="nv">$ </span>php box.phar build
+<p>Once you have installed the application, you can run the <code>help</code> command to get detailed information about all of the available commands. This should be your go-to place for information about how to use Box. You may also find additional useful information <a href="https://github.com/kherge/Box/wiki">on the wiki</a>. If you happen to come across any information that could prove to be useful to others, the wiki is open for you to contribute.</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>box <span class="nb">help</span>
 </pre></div>
 
-<p>You can also check out the <a href="https://github.com/kherge/BoxExample">example PHAR application</a> ready to be build by Box.</p>
+<h2>Creating a Phar</h2>
 
-<h3>Configuration</h3>
+<p>To get started, you may want to check out the <a href="https://github.com/kherge/BoxExample">example application</a> that is ready to be built by Box. How your project is structued is entirely up to you. All that Box requires is that you have a file called <code>box.json</code> at the root of your project directory. You can find a complete and detailed list of configuration settings available by seeing the help information for the <code>build</code> command:</p>
 
-<p>To see a list of available configuration settings, you will need to see the help message for the <code>build</code> command.</p>
-
-<div class="highlight"><pre><span class="nv">$ </span>php box.phar <span class="nb">help </span>build
+<div class="highlight"><pre><span class="nv">$ </span>box <span class="nb">help </span>build
 </pre></div>
 
-<p><a href="http://travis-ci.org/kherge/Box"><img src="https://secure.travis-ci.org/kherge/Box.png?branch=master" alt="Build Status"></a></p>
+<blockquote>
+<p>You may find example configuration files for popular projects on the wiki.</p>
+</blockquote>
+
+<p>Once you have configured your project using <code>box.json</code> (or <code>box.json.dist</code>), you can simply run the <code>build</code> command in the directory containing <code>box.json</code>:</p>
+
+<div class="highlight"><pre><span class="nv">$ </span>box build -v
+</pre></div>
+
+<blockquote>
+<p>The <code>-v</code> option enabled verbose output. This will provide you with a lot of useful information for debugging your build process. Once you are satisfied with the results, I recommend not using the verbose option. It may considerably slow down the build process.</p>
+</blockquote>
+
+<h2>Contributing</h2>
+
+<p>You can contribute in one of three ways:</p>
+
+<ol>
+<li>File bug reports using the <a href="https://github.com/kherge/Box/issues">issue tracker</a>.</li>
+<li>Answer questions or fix bugs on the issue tracker.</li>
+<li>Contribute new features or update the wiki.</li>
+</ol><blockquote>
+<p>The code contribution process is not very formal. You just need to make sure that you follow the PSR-0, PSR-1, and PSR-2 coding guidelines. Any new code contributions must be accompanied by unit tests where applicable.</p>
+</blockquote>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/kherge">kherge</a></p>
