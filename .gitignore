@@ -1,6 +1,7 @@
 .*
 !.gitignore
 *.phar
+composer.lock
 bin/
 coverage/
 src/
