@@ -6,13 +6,6 @@ use Crypt_RSA;
 use Symfony\Component\Console\Helper\Helper;
 
 /**
- * Force use of internal generator.
- *
- * @var integer
- */
-define('CRYPT_RSA_MODE', 1);
-
-/**
  * A phpseclib helper.
  *
  * @author Kevin Herrera <kevin@herrera.io>
