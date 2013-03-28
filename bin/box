@@ -11,7 +11,7 @@ define('BOX_PATH', dirname(__DIR__));
 if ($uri = Phar::running()) {
     require "$uri/src/vendors/autoload.php";
 } else {
-    load_composer_classloader($_SERVER['argv'][0]);
+    load_composer_classloader(realpath($_SERVER['argv'][0]));
 }
 
 $app = new KevinGH\Box\Application();
