@@ -30,6 +30,9 @@
         "mikey179/vfsStream": "1.1.0",
         "phpunit/phpunit": "3.7.*"
     },
+    "suggest": {
+        "ext-openssl": "To accelerate private key generation."
+    },
     "autoload": {
         "psr-0": {
             "KevinGH\\Box": "src/lib"
