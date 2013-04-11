@@ -69,10 +69,12 @@ class Configuration
     {
         if (isset($this->raw->{'base-path'})) {
             if (false === is_dir($this->raw->{'base-path'})) {
-                throw new InvalidArgumentException(sprintf(
-                    'The base path "%s" is not a directory or does not exist.',
-                    $this->raw->{'base-path'}
-                ));
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'The base path "%s" is not a directory or does not exist.',
+                        $this->raw->{'base-path'}
+                    )
+                );
             }
 
             return realpath($this->raw->{'base-path'});
@@ -104,11 +106,14 @@ class Configuration
             $directories = (array) $this->raw->{'directories-bin'};
             $base = $this->getBasePath();
 
-            array_walk($directories, function (&$directory) use ($base) {
-                $directory = $base
-                           . DIRECTORY_SEPARATOR
-                           . canonical_path($directory);
-            });
+            array_walk(
+                $directories,
+                function (&$directory) use ($base) {
+                    $directory = $base
+                               . DIRECTORY_SEPARATOR
+                               . canonical_path($directory);
+                }
+            );
 
             return $directories;
         }
@@ -130,6 +135,8 @@ class Configuration
                     ->ignoreVCS(true)
                     ->in($directories);
         }
+
+        return null;
     }
 
     /**
@@ -165,6 +172,8 @@ class Configuration
         if (array() !== ($files = $this->getBinaryFiles())) {
             return new ArrayIterator($files);
         }
+
+        return null;
     }
 
     /**
@@ -191,9 +200,12 @@ class Configuration
         if (isset($this->raw->blacklist)) {
             $blacklist = (array) $this->raw->blacklist;
 
-            array_walk($blacklist, function (&$file) {
-                $file = canonical_path($file);
-            });
+            array_walk(
+                $blacklist,
+                function (&$file) {
+                    $file = canonical_path($file);
+                }
+            );
 
             return $blacklist;
         }
@@ -210,20 +222,19 @@ class Configuration
     {
         $blacklist = $this->getBlacklist();
         $base = '/^'
-              . preg_quote($this->getBasePath()
-              . DIRECTORY_SEPARATOR, '/')
+              . preg_quote($this->getBasePath() . DIRECTORY_SEPARATOR, '/')
               . '/';
 
         return function (SplFileInfo $file) use ($base, $blacklist) {
-            $path = canonical_path(preg_replace(
-                $base,
-                '',
-                $file->getPathname()
-            ));
+            $path = canonical_path(
+                preg_replace($base, '', $file->getPathname())
+            );
 
             if (in_array($path, $blacklist)) {
                 return false;
             }
+
+            return null;
         };
     }
 
@@ -239,14 +250,14 @@ class Configuration
 
             if (false === is_absolute_path($path)) {
                 $path = canonical_path(
-                    $this->getBasePath()
-                        . DIRECTORY_SEPARATOR
-                        . $path
+                    $this->getBasePath() . DIRECTORY_SEPARATOR . $path
                 );
             }
 
             return $path;
         }
+
+        return null;
     }
 
     /**
@@ -263,19 +274,23 @@ class Configuration
         if (isset($this->raw->compactors)) {
             foreach ((array) $this->raw->compactors as $class) {
                 if (false === class_exists($class)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'The compactor class "%s" does not exist.',
-                        $class
-                    ));
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            'The compactor class "%s" does not exist.',
+                            $class
+                        )
+                    );
                 }
 
                 $compactor = new $class();
 
                 if (false === ($compactor instanceof CompactorInterface)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'The class "%s" is not a compactor class.',
-                        $class
-                    ));
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            'The class "%s" is not a compactor class.',
+                            $class
+                        )
+                    );
                 }
 
                 $compactors[] = $compactor;
@@ -297,10 +312,12 @@ class Configuration
         if (isset($this->raw->compression)) {
             if (is_string($this->raw->compression)) {
                 if (false === defined('Phar::' . $this->raw->compression)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'The compression algorithm "%s" is not supported.',
-                        $this->raw->compression
-                    ));
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            'The compression algorithm "%s" is not supported.',
+                            $this->raw->compression
+                        )
+                    );
                 }
 
                 return constant('Phar::' . $this->raw->compression);
@@ -308,6 +325,8 @@ class Configuration
 
             return $this->raw->compression;
         }
+
+        return null;
     }
 
     /**
@@ -321,11 +340,14 @@ class Configuration
             $directories = (array) $this->raw->directories;
             $base = $this->getBasePath();
 
-            array_walk($directories, function (&$directory) use ($base) {
-                $directory = $base
-                           . DIRECTORY_SEPARATOR
-                           . canonical_path($directory);
-            });
+            array_walk(
+                $directories,
+                function (&$directory) use ($base) {
+                    $directory = $base
+                               . DIRECTORY_SEPARATOR
+                               . canonical_path($directory);
+                }
+            );
 
             return $directories;
         }
@@ -347,6 +369,8 @@ class Configuration
                     ->ignoreVCS(true)
                     ->in($directories);
         }
+
+        return null;
     }
 
     /**
@@ -359,6 +383,8 @@ class Configuration
         if (isset($this->raw->chmod)) {
             return intval($this->raw->chmod, 8);
         }
+
+        return null;
     }
 
     /**
@@ -394,6 +420,8 @@ class Configuration
         if (array() !== ($files = $this->getFiles())) {
             return new ArrayIterator($files);
         }
+
+        return null;
     }
 
     /**
@@ -432,11 +460,13 @@ class Configuration
             return trim($process->getOutput());
         }
 
-        throw new RuntimeException(sprintf(
-            'The tag or commit hash could not be retrieved from "%s": %s',
-            $path,
-            $process->getErrorOutput()
-        ));
+        throw new RuntimeException(
+            sprintf(
+                'The tag or commit hash could not be retrieved from "%s": %s',
+                $path,
+                $process->getErrorOutput()
+            )
+        );
     }
 
     /**
@@ -449,6 +479,8 @@ class Configuration
         if (isset($this->raw->{'git-version'})) {
             return $this->raw->{'git-version'};
         }
+
+        return null;
     }
 
     /**
@@ -463,7 +495,7 @@ class Configuration
         if (null !== ($path = $this->getMainScriptPath())) {
             $path = $this->getBasePath() . DIRECTORY_SEPARATOR . $path;
 
-            if (false === ($contents = @file_get_contents($path))){
+            if (false === ($contents = @file_get_contents($path))) {
                 $errors = error_get_last();
 
                 throw new RuntimeException($errors['message']);
@@ -471,6 +503,8 @@ class Configuration
 
             return preg_replace('/^#!.*\s*/', '', $contents);
         }
+
+        return null;
     }
 
     /**
@@ -483,6 +517,8 @@ class Configuration
         if (isset($this->raw->main)) {
             return $this->raw->main;
         }
+
+        return null;
     }
 
     /**
@@ -499,6 +535,8 @@ class Configuration
 
             return $this->raw->metadata;
         }
+
+        return null;
     }
 
     /**
@@ -539,6 +577,8 @@ class Configuration
         if (isset($this->raw->{'not-found'})) {
             return $this->raw->{'not-found'};
         }
+
+        return null;
     }
 
     /**
@@ -556,8 +596,6 @@ class Configuration
             if (false === is_absolute_path($path)) {
                 $path = canonical_path($base . $path);
             }
-
-            $path;
         } else {
             $path = $base . 'default.phar';
         }
@@ -580,6 +618,8 @@ class Configuration
             && is_string($this->raw->{'key-pass'})) {
             return $this->raw->{'key-pass'};
         }
+
+        return null;
     }
 
     /**
@@ -592,6 +632,8 @@ class Configuration
         if (isset($this->raw->key)) {
             return $this->raw->key;
         }
+
+        return null;
     }
 
     /**
@@ -642,10 +684,12 @@ class Configuration
         if (isset($this->raw->algorithm)) {
             if (is_string($this->raw->algorithm)) {
                 if (false === defined('Phar::' . $this->raw->algorithm)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'The signing algorithm "%s" is not supported.',
-                        $this->raw->algorithm
-                    ));
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            'The signing algorithm "%s" is not supported.',
+                            $this->raw->algorithm
+                        )
+                    );
                 }
 
                 return constant('Phar::' . $this->raw->algorithm);
@@ -667,6 +711,8 @@ class Configuration
         if (isset($this->raw->stub) && is_string($this->raw->stub)) {
             return $this->raw->stub;
         }
+
+        return null;
     }
 
     /**
@@ -733,12 +779,15 @@ class Configuration
     {
         if (null !== ($file = $this->getBootstrapFile())) {
             if (false === file_exists($file)) {
-                throw new InvalidArgumentException(sprintf(
-                    'The bootstrap path "%s" is not a file or does not exist.',
-                    $file
-                ));
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'The bootstrap path "%s" is not a file or does not exist.',
+                        $file
+                    )
+                );
             }
 
+            /** @noinspection PhpIncludeInspection */
             include $file;
         }
     }
@@ -767,17 +816,22 @@ class Configuration
                 $base = $this->getBasePath();
                 $methods->in = (array) $methods->in;
 
-                array_walk($methods->in, function (&$directory) use ($base) {
-                    $directory = $base . DIRECTORY_SEPARATOR . $directory;
-                });
+                array_walk(
+                    $methods->in,
+                    function (&$directory) use ($base) {
+                        $directory = $base . DIRECTORY_SEPARATOR . $directory;
+                    }
+                );
             }
 
             foreach ($methods as $method => $arguments) {
                 if (false === method_exists($finder, $method)) {
-                    throw new InvalidArgumentException(sprintf(
-                        'The method "Finder::%s" does not exist.',
-                        $method
-                    ));
+                    throw new InvalidArgumentException(
+                        sprintf(
+                            'The method "Finder::%s" does not exist.',
+                            $method
+                        )
+                    );
                 }
 
                 $arguments = (array) $arguments;

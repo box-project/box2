@@ -22,43 +22,44 @@ class VerifyTest extends CommandTestCase
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'verify',
-            'phar' => 'test.phar'
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        $tester->execute(
+            array(
+                'command' => 'verify',
+                'phar' => 'test.phar'
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Verifying the Phar...
 The Phar passed verification.
 {$signature['hash_type']} Signature:
 {$signature['hash']}
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteNotExist()
     {
 
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'verify',
                 'phar' => 'test.phar'
-            ));
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 The path "test.phar" is not a file or does not exist.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteFailed()
@@ -66,19 +67,19 @@ OUTPUT
         file_put_contents('test.phar', 'bad');
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'verify',
-            'phar' => 'test.phar'
-        ));
+        $tester->execute(
+            array(
+                'command' => 'verify',
+                'phar' => 'test.phar'
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 The Phar failed verification.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteFailedVerbose()
@@ -88,25 +89,26 @@ OUTPUT
         $tester = $this->getTester();
 
         try {
-            $tester->execute(array(
-                'command' => 'verify',
-                'phar' => 'test.phar'
-            ), array(
-                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            $tester->execute(
+                array(
+                    'command' => 'verify',
+                    'phar' => 'test.phar'
+                ),
+                array(
+                    'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+                )
+            );
         } catch (UnexpectedValueException $exception) {
         }
 
-        $this->assertTrue(isset($exception));
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Verifying the Phar...
 The Phar failed verification.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertTrue(isset($exception));
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     protected function getCommand()

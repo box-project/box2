@@ -47,7 +47,8 @@ class Add extends Configurable
 
         $this->setName('add');
         $this->setDescription('Adds or replaces files to a Phar.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> will add a new file to an existing Phar, or replace
 an existing file with a new one.
 <comment>
@@ -146,19 +147,23 @@ HELP
         $this->putln('*', 'Adding to the Phar...');
 
         if (false === is_file($phar)) {
-            $output->writeln(sprintf(
-                '<error>The path "%s" is not a file or does not exist.</error>',
-                $phar
-            ));
+            $output->writeln(
+                sprintf(
+                    '<error>The path "%s" is not a file or does not exist.</error>',
+                    $phar
+                )
+            );
 
             return 1;
         }
 
         if (false === is_file($file)) {
-            $output->writeln(sprintf(
-                '<error>The path "%s" is not a file or does not exist.</error>',
-                $file
-            ));
+            $output->writeln(
+                sprintf(
+                    '<error>The path "%s" is not a file or does not exist.</error>',
+                    $file
+                )
+            );
 
             return 1;
         }
@@ -197,15 +202,15 @@ HELP
 
         // add the file
         $phar = $this->box->getPhar();
-        $local = str_replace('\\', '/', canonical_path(
-            $input->getArgument('local')
-        ));
+        $local = str_replace('\\', '/', canonical_path($input->getArgument('local')));
 
         if (isset($phar[$local]) && (false === $input->getOption('replace'))) {
-            $output->writeln(sprintf(
-                '<error>The file "%s" already exists in the Phar.</error>',
-                $local
-            ));
+            $output->writeln(
+                sprintf(
+                    '<error>The file "%s" already exists in the Phar.</error>',
+                    $local
+                )
+            );
 
             return 1;
         }
@@ -240,6 +245,8 @@ HELP
         unset($this->box, $phar);
 
         $this->putln('*', 'Done.');
+
+        return 0;
     }
 
     /**
@@ -264,11 +271,9 @@ HELP
             case '*':
                 $prefix = "<info>$prefix</info>";
                 break;
-
             case '?':
                 $prefix = "<comment>$prefix</comment>";
                 break;
-
             case '+':
                 $prefix = "  <comment>+</comment>";
                 break;

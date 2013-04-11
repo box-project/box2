@@ -24,7 +24,8 @@ class Validate extends Configurable
 
         $this->setName('validate');
         $this->setDescription('Validates the configuration file.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> command will validate the configuration file
 and report any errors found, if any.
 <comment>
@@ -79,5 +80,7 @@ HELP
 
             return 1;
         }
+
+        return 0;
     }
 }

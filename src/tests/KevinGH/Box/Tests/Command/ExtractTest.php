@@ -19,28 +19,29 @@ class ExtractTest extends CommandTestCase
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'extract',
-            'phar' => $rand,
-            '--pick' => 'a/b/c/e.php',
-            '--out' => 'extracted'
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        $tester->execute(
+            array(
+                'command' => 'extract',
+                'phar' => $rand,
+                '--pick' => 'a/b/c/e.php',
+                '--out' => 'extracted'
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
+
+        $expected = <<<OUTPUT
+Extracting files from the Phar...
+Done.
+
+OUTPUT;
 
         $this->assertEquals(
             '<?php echo "Goodbye!";',
             file_get_contents('extracted/a/b/c/e.php')
         );
-        $this->assertEquals(
-            <<<OUTPUT
-Extracting files from the Phar...
-Done.
-
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteAlternate()
@@ -53,12 +54,21 @@ OUTPUT
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'extract',
-            'phar' => $rand
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        $tester->execute(
+            array(
+                'command' => 'extract',
+                'phar' => $rand
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
+
+        $expected = <<<OUTPUT
+Extracting files from the Phar...
+Done.
+
+OUTPUT;
 
         $this->assertEquals(
             '<?php echo "Hello!";',
@@ -68,36 +78,29 @@ OUTPUT
             '<?php echo "Goodbye!";',
             file_get_contents("$rand-contents/a/b/c/e.php")
         );
-        $this->assertEquals(
-            <<<OUTPUT
-Extracting files from the Phar...
-Done.
-
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteNotExist()
     {
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'extract',
                 'phar' => 'test.phar'
-            ), array(
+            ),
+            array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Extracting files from the Phar...
 The path "test.phar" is not a file or does not exist.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     protected function getCommand()

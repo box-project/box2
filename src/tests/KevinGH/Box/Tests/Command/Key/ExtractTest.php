@@ -2,9 +2,7 @@
 
 namespace KevinGH\Box\Tests\Command\Key;
 
-use Crypt_RSA;
 use KevinGH\Box\Command\Key\Extract;
-use KevinGH\Box\Helper\PhpSecLibHelper;
 use KevinGH\Box\Test\CommandTestCase;
 use KevinGH\Box\Test\FixedResponse;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +11,9 @@ class ExtractTest extends CommandTestCase
 {
     public function testExecute()
     {
-        file_put_contents('test.key', <<<KEY
+        file_put_contents(
+            'test.key',
+            <<<KEY
 -----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: DES-EDE3-CBC,FCBE82562DA52F8D
@@ -32,24 +32,25 @@ KEY
         $this->app->getHelperSet()->set(new FixedResponse('test'));
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'key:extract',
-            'private' => 'test.key',
-            '--out' => 'test.pub',
-            '--prompt' => true
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        $tester->execute(
+            array(
+                'command' => 'key:extract',
+                'private' => 'test.key',
+                '--out' => 'test.pub',
+                '--prompt' => true
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Extracting public key...
 Writing public key...
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
 
         $this->assertRegExp('/PUBLIC KEY/', file_get_contents('test.pub'));
     }
@@ -59,11 +60,13 @@ OUTPUT
         file_put_contents('test.key', 'bad');
 
         $tester = $this->getTester();
-        $exit = $tester->execute(array(
-            'command' => 'key:extract',
-            'private' => 'test.key',
-            '--out' => 'test.pub'
-        ));
+        $exit = $tester->execute(
+            array(
+                'command' => 'key:extract',
+                'private' => 'test.key',
+                '--out' => 'test.pub'
+            )
+        );
 
         $this->assertEquals(1, $exit);
         $this->assertEquals(
@@ -74,7 +77,9 @@ OUTPUT
 
     public function testExecuteExtractFail()
     {
-        file_put_contents('test.key', <<<KEY
+        file_put_contents(
+            'test.key',
+            <<<KEY
 -----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: DES-EDE3-CBC,FCBE82562DA52F8D
@@ -94,12 +99,14 @@ KEY
         $this->app->getHelperSet()->set(new MockPhpSecLibHelper());
 
         $tester = $this->getTester();
-        $exit = $tester->execute(array(
-            'command' => 'key:extract',
-            'private' => 'test.key',
-            '--out' => 'test.pub',
-            '--prompt' => true
-        ));
+        $exit = $tester->execute(
+            array(
+                'command' => 'key:extract',
+                'private' => 'test.key',
+                '--out' => 'test.pub',
+                '--prompt' => true
+            )
+        );
 
         $this->assertEquals(1, $exit);
         $this->assertEquals(
@@ -111,21 +118,5 @@ KEY
     protected function getCommand()
     {
         return new Extract();
-    }
-}
-
-class MockPhpSecLibHelper extends PhpSecLibHelper
-{
-    public function CryptRSA()
-    {
-        return new MockCrypt_RSA();
-    }
-}
-
-class MockCrypt_RSA extends Crypt_RSA
-{
-    public function getPublicKey($type = CRYPT_RSA_PUBLIC_FORMAT_PKCS1)
-    {
-        return false;
     }
 }

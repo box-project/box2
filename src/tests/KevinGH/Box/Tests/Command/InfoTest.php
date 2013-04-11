@@ -11,16 +11,16 @@ class InfoTest extends CommandTestCase
     public function testGetInfo()
     {
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'info'
-        ));
+        $tester->execute(
+            array(
+                'command' => 'info'
+            )
+        );
 
         $version = Phar::apiVersion();
         $compression = '  - ' . join("\n  - ", Phar::getSupportedCompression());
         $signatures = '  - ' . join("\n  - ", Phar::getSupportedSignatures());
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 API Version: $version
 
 Supported Compression:
@@ -29,10 +29,9 @@ $compression
 Supported Signatures:
 $signatures
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testGetInfoPhar()
@@ -41,23 +40,19 @@ OUTPUT
         $phar->addFromString('a/b/c/d.php', '<?php echo "Hello!\n";');
 
         $version = $phar->getVersion();
-        $compression = $phar->isCompressed();
         $signature = $phar->getSignature();
 
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'info',
-            'phar' => 'test.phar'
-        ));
+        $tester->execute(
+            array(
+                'command' => 'info',
+                'phar' => 'test.phar'
+            )
+        );
 
-        $version = Phar::apiVersion();
-        $compression = '  - ' . join("\n  - ", Phar::getSupportedCompression());
-        $signatures = '  - ' . join("\n  - ", Phar::getSupportedSignatures());
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 API Version: $version
 
 Compression: None
@@ -66,10 +61,9 @@ Signature: {$signature['hash_type']}
 
 Signature Hash: {$signature['hash']}
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testGetInfoPharList()
@@ -78,24 +72,20 @@ OUTPUT
         $phar->addFromString('a/b/c/d.php', '<?php echo "Hello!\n";');
 
         $version = $phar->getVersion();
-        $compression = $phar->isCompressed();
         $signature = $phar->getSignature();
 
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'info',
-            'phar' => 'test.phar',
-            '--list' => true
-        ));
+        $tester->execute(
+            array(
+                'command' => 'info',
+                'phar' => 'test.phar',
+                '--list' => true
+            )
+        );
 
-        $version = Phar::apiVersion();
-        $compression = '  - ' . join("\n  - ", Phar::getSupportedCompression());
-        $signatures = '  - ' . join("\n  - ", Phar::getSupportedSignatures());
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 API Version: $version
 
 Compression: None
@@ -110,10 +100,9 @@ a/
     c/
       d.php
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testGetInfoPharListFlat()
@@ -122,27 +111,22 @@ OUTPUT
         $phar->addFromString('a/b/c/d.php', '<?php echo "Hello!\n";');
 
         $version = $phar->getVersion();
-        $compression = $phar->isCompressed();
         $signature = $phar->getSignature();
 
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'info',
-            'phar' => 'test.phar',
-            '--mode' => 'flat',
-            '--list' => true
-        ));
-
-        $version = Phar::apiVersion();
-        $compression = '  - ' . join("\n  - ", Phar::getSupportedCompression());
-        $signatures = '  - ' . join("\n  - ", Phar::getSupportedSignatures());
+        $tester->execute(
+            array(
+                'command' => 'info',
+                'phar' => 'test.phar',
+                '--mode' => 'flat',
+                '--list' => true
+            )
+        );
 
         $ds = DIRECTORY_SEPARATOR;
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 API Version: $version
 
 Compression: None
@@ -157,10 +141,9 @@ a{$ds}b
 a{$ds}b{$ds}c
 a{$ds}b{$ds}c{$ds}d.php
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     protected function getCommand()

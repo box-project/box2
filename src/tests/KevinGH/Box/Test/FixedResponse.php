@@ -36,7 +36,7 @@ class FixedResponse extends DialogHelper
         OutputInterface $output,
         $question,
         $fallback = true
-    ){
+    ) {
         return $this->response;
     }
 }

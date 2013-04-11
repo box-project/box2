@@ -22,7 +22,8 @@ class Remove extends Command
     {
         $this->setName('remove');
         $this->setDescription('Removes files from a Phar.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> command will remove one or more files from an
 existing Phar, listed as a <info>file</info> argument.
 HELP
@@ -52,10 +53,12 @@ HELP
         }
 
         if (false === is_file($phar)) {
-            $output->writeln(sprintf(
-                '<error>The path "%s" is not a file or does not exist.</error>',
-                $phar
-            ));
+            $output->writeln(
+                sprintf(
+                    '<error>The path "%s" is not a file or does not exist.</error>',
+                    $phar
+                )
+            );
 
             return 1;
         }
@@ -73,5 +76,7 @@ HELP
         if ($verbose) {
             $output->writeln('Done.');
         }
+
+        return 0;
     }
 }

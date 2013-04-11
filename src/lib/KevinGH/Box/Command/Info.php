@@ -40,7 +40,8 @@ class Info extends Command
         $this->setDescription(
             'Displays information about the Phar extension or file.'
         );
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> command will display information about the Phar extension,
 or the Phar file if specified.
 
@@ -82,14 +83,17 @@ HELP
             $phar = new Phar($file);
             $signature = $phar->getSignature();
 
-            $this->render($output, array(
-                'API Version' => $phar->getVersion(),
-                'Compression' => $phar->isCompressed()
-                               ? self::$algorithms[$phar->isCompressed()]
-                               : 'None',
-                'Signature' => $signature['hash_type'],
-                'Signature Hash' => $signature['hash']
-            ));
+            $this->render(
+                $output,
+                array(
+                    'API Version' => $phar->getVersion(),
+                    'Compression' => $phar->isCompressed()
+                                   ? self::$algorithms[$phar->isCompressed()]
+                                   : 'None',
+                    'Signature' => $signature['hash_type'],
+                    'Signature Hash' => $signature['hash']
+                )
+            );
 
             if ($input->getOption('list')) {
                 $output->writeln('');
@@ -105,11 +109,14 @@ HELP
 
             unset($phar);
         } else {
-            $this->render($output, array(
-                'API Version' => Phar::apiVersion(),
-                'Supported Compression' => Phar::getSupportedCompression(),
-                'Supported Signatures' => Phar::getSupportedSignatures()
-            ));
+            $this->render(
+                $output,
+                array(
+                    'API Version' => Phar::apiVersion(),
+                    'Supported Compression' => Phar::getSupportedCompression(),
+                    'Supported Signatures' => Phar::getSupportedSignatures()
+                )
+            );
         }
     }
 
@@ -126,7 +133,7 @@ HELP
         Traversable $list,
         $indent,
         $base
-    ){
+    ) {
         foreach ($list as $item) {
             /** @var $item SplFileInfo */
 

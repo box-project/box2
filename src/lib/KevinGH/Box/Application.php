@@ -21,11 +21,15 @@ class Application extends Base
     public function __construct($name = 'Box', $version = '@git_tag@')
     {
         // convert errors to exceptions
-        set_error_handler(function ($code, $message, $file, $line) {
-            if (error_reporting() & $code) {
-                throw new ErrorException($message, 0, $code, $file, $line);
+        set_error_handler(
+            function ($code, $message, $file, $line) {
+                if (error_reporting() & $code) {
+                    throw new ErrorException($message, 0, $code, $file, $line);
+                }
+                // @codeCoverageIgnoreStart
             }
-        });
+            // @codeCoverageIgnoreEnd
+        );
 
         parent::__construct($name, $version);
     }

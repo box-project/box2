@@ -2,7 +2,6 @@
 
 namespace KevinGH\Box\Tests\Command;
 
-use KevinGH\Box\Command\Configurable;
 use KevinGH\Box\Test\CommandTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 
@@ -33,8 +32,4 @@ class ConfigurableTest extends CommandTestCase
     {
         return new TestConfigurable('test');
     }
-}
-
-class TestConfigurable extends Configurable
-{
 }

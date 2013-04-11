@@ -23,7 +23,8 @@ class Extract extends Command
     {
         $this->setName('extract');
         $this->setDescription('Extracts files from a Phar.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> will extract one or more files from a Phar.
 
 If the <info>--pick|-p</info> option is used, only the file or directories requested
@@ -67,10 +68,12 @@ HELP
         }
 
         if (false === is_file($phar)) {
-            $output->writeln(sprintf(
+            $output->writeln(
+                sprintf(
                     '<error>The path "%s" is not a file or does not exist.</error>',
                     $phar
-                ));
+                )
+            );
 
             return 1;
         }
@@ -86,13 +89,16 @@ HELP
         if ($files) {
             $files = (array) $files;
 
-            array_walk($files, function (&$file) {
-                $file = str_replace(
-                    '\\',
-                    '/',
-                    canonical_path($file)
-                );
-            });
+            array_walk(
+                $files,
+                function (&$file) {
+                    $file = str_replace(
+                        '\\',
+                        '/',
+                        canonical_path($file)
+                    );
+                }
+            );
         }
 
         $phar->extractTo($out, $files, true);
@@ -102,5 +108,7 @@ HELP
         if ($verbose) {
             $output->writeln('Done.');
         }
+
+        return 0;
     }
 }

@@ -14,37 +14,35 @@ class ValidateTest extends CommandTestCase
         file_put_contents('test.json', '{}');
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'validate',
-            '--configuration' => 'test.json'
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        $tester->execute(
+            array(
+                'command' => 'validate',
+                '--configuration' => 'test.json'
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Validating the Box configuration file...
 The configuration file passed validation.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteNotFound()
     {
         $tester = $this->getTester();
-
-        $this->assertEquals(1, $tester->execute(array('command' => 'validate')));
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 The configuration file failed validation.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals(1, $tester->execute(array('command' => 'validate')));
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteFailed()
@@ -53,16 +51,13 @@ OUTPUT
 
         $tester = $this->getTester();
         $exit = $tester->execute(array('command' => 'validate'));
-
-        $this->assertEquals(1, $exit);
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 The configuration file failed validation.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals(1, $exit);
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteFailedVerbose()
@@ -72,24 +67,25 @@ OUTPUT
         $tester = $this->getTester();
 
         try {
-            $tester->execute(array(
-                'command' => 'validate'
-            ), array(
-                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            $tester->execute(
+                array(
+                    'command' => 'validate'
+                ),
+                array(
+                    'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+                )
+            );
         } catch (Exception $exception) {
         }
 
-        $this->assertTrue(isset($exception));
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Validating the Box configuration file...
 The configuration file failed validation.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertTrue(isset($exception));
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     public function testExecuteInvalidVerbose()
@@ -98,23 +94,24 @@ OUTPUT
 
         $tester = $this->getTester();
 
-        $tester->execute(array(
-            'command' => 'validate'
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        $tester->execute(
+            array(
+                'command' => 'validate'
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Validating the Box configuration file...
 The configuration file failed validation.
 
   - The property test is not defined and the definition does not allow additional properties
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     protected function getCommand()

@@ -23,7 +23,8 @@ class Create extends Command
     {
         $this->setName('key:create');
         $this->setDescription('Creates a private key');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> command will generate a new PKCS#1 encoded RSA private key.
 <comment>
   You may generate a private key without OpenSSL. However,
@@ -85,24 +86,25 @@ HELP
     {
         /** @var $lib PhpSecLibHelper */
         $lib = $this->getHelper('phpseclib');
-        $rsa = $lib->CryptRSA();
+        $rsa = $lib->cryptRSA();
         $verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
 
         if ($verbose) {
-            $output->writeln(sprintf(
-                'Generating %d bit private key...',
-                $input->getOption('bits')
-            ));
+            $output->writeln(
+                sprintf(
+                    'Generating %d bit private key...',
+                    $input->getOption('bits')
+                )
+            );
         }
 
         if ($input->getOption('prompt')) {
             /** @var $dialog DialogHelper */
             $dialog = $this->getHelper('dialog');
 
-            $rsa->setPassword($dialog->askHiddenResponse(
-                $output,
-                'Private key passphrase: '
-            ));
+            $rsa->setPassword(
+                $dialog->askHiddenResponse($output, 'Private key passphrase: ')
+            );
         }
 
         $rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PKCS1);

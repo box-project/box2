@@ -24,7 +24,8 @@ class Extract extends Command
     {
         $this->setName('key:extract');
         $this->setDescription('Extracts the public key from a private key.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>php %command.name%</info> command will extract the public key from an existing
 private key file. <comment>You may need to generate a new private key using
 <info>key:create</info>.</comment>
@@ -73,7 +74,7 @@ HELP
     {
         /** @var $lib PhpSecLibHelper */
         $lib = $this->getHelper('phpseclib');
-        $rsa = $lib->CryptRSA();
+        $rsa = $lib->cryptRSA();
         $verbose = (OutputInterface::VERBOSITY_VERBOSE === $output->getVerbosity());
 
         if ($verbose) {
@@ -84,16 +85,17 @@ HELP
             /** @var $dialog DialogHelper */
             $dialog = $this->getHelper('dialog');
 
-            $rsa->setPassword($dialog->askHiddenResponse(
-                $output,
-                'Private key passphrase: '
-            ));
+            $rsa->setPassword(
+                $dialog->askHiddenResponse($output, 'Private key passphrase: ')
+            );
         }
 
-        if (false === $rsa->loadKey(
+        $result = $rsa->loadKey(
             file_get_contents($input->getArgument('private')),
             CRYPT_RSA_PRIVATE_FORMAT_PKCS1
-        )){
+        );
+
+        if (false === $result) {
             $output->writeln(
                 '<error>The private key could not be parsed.</error>'
             );
@@ -116,5 +118,7 @@ HELP
         }
 
         file_put_contents($input->getOption('out'), $public);
+
+        return 0;
     }
 }

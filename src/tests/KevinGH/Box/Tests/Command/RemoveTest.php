@@ -20,27 +20,28 @@ class RemoveTest extends CommandTestCase
         unset($phar);
 
         $tester = $this->getTester();
-        $tester->execute(array(
-            'command' => 'remove',
-            'phar' => 'test.phar',
-            'file' => array(
-                'b.php',
-                'd.php',
-                'x.php'
+        $tester->execute(
+            array(
+                'command' => 'remove',
+                'phar' => 'test.phar',
+                'file' => array(
+                    'b.php',
+                    'd.php',
+                    'x.php'
+                )
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
             )
-        ), array(
-            'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-        ));
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Removing files from the Phar...
 Done.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
 
         $phar = new Phar('test.phar');
 
@@ -53,23 +54,24 @@ OUTPUT
     public function testExecuteNotExist()
     {
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'remove',
                 'phar' => 'test.phar',
                 'file' => array('b.php')
-            ), array(
+            ),
+            array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            )
+        );
 
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 Removing files from the Phar...
 The path "test.phar" is not a file or does not exist.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
     }
 
     protected function getCommand()

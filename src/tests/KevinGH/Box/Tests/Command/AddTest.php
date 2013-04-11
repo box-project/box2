@@ -18,7 +18,9 @@ class AddTest extends CommandTestCase
     {
         $this->preparePhar();
 
-        file_put_contents('goodbye.php', <<<CODE
+        file_put_contents(
+            'goodbye.php',
+            <<<CODE
 <?php
 
 /**
@@ -29,21 +31,21 @@ CODE
         );
 
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'add',
                 'phar' => 'test.phar',
                 'file' => 'goodbye.php',
                 'local' => 'src/hello.php',
                 '--replace' => true
-            ), array(
+            ),
+            array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            )
+        );
 
         $dir = $this->dir . DIRECTORY_SEPARATOR;
-        $ds = DIRECTORY_SEPARATOR;
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 ? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
@@ -53,10 +55,9 @@ CODE
 ? Adding file: {$dir}goodbye.php
 * Done.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
 
         $this->assertEquals(
             'Goodbye, world!',
@@ -68,7 +69,9 @@ OUTPUT
     {
         $this->preparePhar();
 
-        file_put_contents('goodbye.php', <<<CODE
+        file_put_contents(
+            'goodbye.php',
+            <<<CODE
 <?php
 
 /**
@@ -79,22 +82,22 @@ CODE
         );
 
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'add',
                 'phar' => 'test.phar',
                 'file' => 'goodbye.php',
                 'local' => 'src/hello.php',
                 '--binary' => true,
                 '--replace' => true
-            ), array(
+            ),
+            array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            )
+        );
 
         $dir = $this->dir . DIRECTORY_SEPARATOR;
-        $ds = DIRECTORY_SEPARATOR;
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 ? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
@@ -104,10 +107,9 @@ CODE
 ? Adding binary file: {$dir}goodbye.php
 * Done.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
 
         $this->assertEquals(
             'Goodbye, @name@!',
@@ -125,20 +127,20 @@ OUTPUT
         );
 
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'add',
                 'phar' => 'test.phar',
                 'file' => 'stub.php',
                 '--stub' => true
-            ), array(
+            ),
+            array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            )
+        );
 
         $dir = $this->dir . DIRECTORY_SEPARATOR;
-        $ds = DIRECTORY_SEPARATOR;
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 ? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
@@ -148,11 +150,9 @@ OUTPUT
 ? Using stub file: {$dir}stub.php
 * Done.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
 
+        $this->assertEquals($expected, $this->getOutput($tester));
         $this->assertEquals(
             'Hello, stub!',
             trim(exec('php test.phar'))
@@ -163,7 +163,9 @@ OUTPUT
     {
         $this->preparePhar();
 
-        file_put_contents('main.php', <<<CODE
+        file_put_contents(
+            'main.php',
+            <<<CODE
 #!/usr/bin/env php
 <?php
 
@@ -175,22 +177,22 @@ CODE
         );
 
         $tester = $this->getTester();
-        $tester->execute(array(
+        $tester->execute(
+            array(
                 'command' => 'add',
                 'phar' => 'test.phar',
                 'file' => 'main.php',
                 'local' => 'bin/run',
                 '--main' => true,
                 '--replace' => true
-            ), array(
+            ),
+            array(
                 'verbosity' => OutputInterface::VERBOSITY_VERBOSE
-            ));
+            )
+        );
 
         $dir = $this->dir . DIRECTORY_SEPARATOR;
-        $ds = DIRECTORY_SEPARATOR;
-
-        $this->assertEquals(
-            <<<OUTPUT
+        $expected = <<<OUTPUT
 ? Loading bootstrap file: {$dir}bootstrap.php
 * Adding to the Phar...
 ? Setting replacement values...
@@ -200,11 +202,9 @@ CODE
 ? Adding main file: {$dir}main.php
 * Done.
 
-OUTPUT
-            ,
-            $this->getOutput($tester)
-        );
+OUTPUT;
 
+        $this->assertEquals($expected, $this->getOutput($tester));
         $this->assertEquals(
             'Sup, world!',
             trim(exec('php test.phar'))
@@ -214,11 +214,13 @@ OUTPUT
     public function testExecuteMissingLocal()
     {
         $tester = $this->getTester();
-        $exit = $tester->execute(array(
-            'command' => 'add',
-            'phar' => 'test.phar',
-            'file' => 'test.php'
-        ));
+        $exit = $tester->execute(
+            array(
+                'command' => 'add',
+                'phar' => 'test.phar',
+                'file' => 'test.php'
+            )
+        );
 
         $this->assertEquals(1, $exit);
         $this->assertEquals(
@@ -232,12 +234,14 @@ OUTPUT
         file_put_contents('box.json', '{}');
 
         $tester = $this->getTester();
-        $exit = $tester->execute(array(
-            'command' => 'add',
-            'phar' => 'test.phar',
-            'file' => 'test.php',
-            'local' => 'test.php'
-        ));
+        $exit = $tester->execute(
+            array(
+                'command' => 'add',
+                'phar' => 'test.phar',
+                'file' => 'test.php',
+                'local' => 'test.php'
+            )
+        );
 
         $this->assertEquals(1, $exit);
         $this->assertEquals(
@@ -252,12 +256,14 @@ OUTPUT
         touch('test.phar');
 
         $tester = $this->getTester();
-        $exit = $tester->execute(array(
-            'command' => 'add',
-            'phar' => 'test.phar',
-            'file' => 'test.php',
-            'local' => 'test.php'
-        ));
+        $exit = $tester->execute(
+            array(
+                'command' => 'add',
+                'phar' => 'test.phar',
+                'file' => 'test.php',
+                'local' => 'test.php'
+            )
+        );
 
         $this->assertEquals(1, $exit);
         $this->assertEquals(
@@ -273,12 +279,14 @@ OUTPUT
         touch('test.php');
 
         $tester = $this->getTester();
-        $exit = $tester->execute(array(
-            'command' => 'add',
-            'phar' => 'test.phar',
-            'file' => 'test.php',
-            'local' => 'src/hello.php'
-        ));
+        $exit = $tester->execute(
+            array(
+                'command' => 'add',
+                'phar' => 'test.phar',
+                'file' => 'test.php',
+                'local' => 'src/hello.php'
+            )
+        );
 
         $this->assertEquals(1, $exit);
         $this->assertEquals(
@@ -299,18 +307,21 @@ OUTPUT
         $tester = $this->getTester();
 
         try {
-            $tester->execute(array(
-                'command' => 'add',
-                'phar' => 'test.phar',
-                'file' => 'vfs://test/test.php',
-                'local' => 'bin/run',
-                '--main' => true,
-                '--replace' => true
-            ));
+            $tester->execute(
+                array(
+                    'command' => 'add',
+                    'phar' => 'test.phar',
+                    'file' => 'vfs://test/test.php',
+                    'local' => 'bin/run',
+                    '--main' => true,
+                    '--replace' => true
+                )
+            );
         } catch (RuntimeException $exception) {
         }
 
         $this->assertTrue(isset($exception));
+        /** @noinspection PhpUndefinedVariableInspection */
         $this->assertRegExp(
             '/failed to open stream/',
             $exception->getMessage()
@@ -326,13 +337,18 @@ OUTPUT
     {
         touch('bootstrap.php');
 
-        file_put_contents('box.json', json_encode(array(
-            'bootstrap' => 'bootstrap.php',
-            'compactors' => 'Herrera\\Box\\Compactor\\Composer',
-            'main' => 'bin/run',
-            'replacements' => array('name' => 'world'),
-            'stub' => true
-        )));
+        file_put_contents(
+            'box.json',
+            json_encode(
+                array(
+                    'bootstrap' => 'bootstrap.php',
+                    'compactors' => 'Herrera\\Box\\Compactor\\Composer',
+                    'main' => 'bin/run',
+                    'replacements' => array('name' => 'world'),
+                    'stub' => true
+                )
+            )
+        );
 
         $box = Box::create('test.phar');
         $box->addCompactor(new Composer());

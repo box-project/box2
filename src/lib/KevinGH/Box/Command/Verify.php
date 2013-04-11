@@ -23,7 +23,8 @@ class Verify extends Command
     {
         $this->setName('verify');
         $this->setDescription('Verifies the Phar signature.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> command will verify the signature of the Phar.
 HELP
         );
@@ -47,10 +48,12 @@ HELP
         }
 
         if (false === is_file($phar)) {
-            $output->writeln(sprintf(
-                '<error>The path "%s" is not a file or does not exist.</error>',
-                $phar
-            ));
+            $output->writeln(
+                sprintf(
+                    '<error>The path "%s" is not a file or does not exist.</error>',
+                    $phar
+                )
+            );
 
             return 1;
         }
@@ -75,5 +78,7 @@ HELP
 
             return 1;
         }
+
+        return 0;
     }
 }

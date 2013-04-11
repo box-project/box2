@@ -2,7 +2,6 @@
 
 namespace KevinGH\Box\Tests;
 
-use Herrera\Box\Compactor\CompactorInterface;
 use Herrera\PHPUnit\TestCase;
 use KevinGH\Box\Configuration;
 use Phar;
@@ -40,9 +39,11 @@ class ConfigurationTest extends TestCase
     {
         mkdir($this->dir . DIRECTORY_SEPARATOR . 'test');
 
-        $this->setConfig(array(
-            'base-path' => $this->dir . DIRECTORY_SEPARATOR . 'test'
-        ));
+        $this->setConfig(
+            array(
+                'base-path' => $this->dir . DIRECTORY_SEPARATOR . 'test'
+            )
+        );
 
         $this->assertEquals(
             $this->dir . DIRECTORY_SEPARATOR . 'test',
@@ -52,16 +53,15 @@ class ConfigurationTest extends TestCase
 
     public function testGetBasePathNotExist()
     {
-        $this->setConfig(array(
-            'base-path' => $this->dir . DIRECTORY_SEPARATOR . 'test'
-        ));
+        $this->setConfig(
+            array(
+                'base-path' => $this->dir . DIRECTORY_SEPARATOR . 'test'
+            )
+        );
 
         $this->setExpectedException(
             'InvalidArgumentException',
-            'The base path "'
-                . $this->dir
-                . DIRECTORY_SEPARATOR
-                . 'test" is not a directory or does not exist.'
+            'The base path "' . $this->dir . DIRECTORY_SEPARATOR . 'test" is not a directory or does not exist.'
         );
 
         $this->config->getBasePath();
@@ -73,11 +73,7 @@ class ConfigurationTest extends TestCase
     public function testGetBasePathRegex()
     {
         $this->assertEquals(
-            '/' . preg_quote(
-                    $this->config->getBasePath() . DIRECTORY_SEPARATOR,
-                    '/'
-                  )
-                . '/',
+            '/' . preg_quote($this->config->getBasePath() . DIRECTORY_SEPARATOR, '/') . '/',
             $this->config->getBasePathRegex()
         );
     }
@@ -91,9 +87,7 @@ class ConfigurationTest extends TestCase
     {
         mkdir($this->dir . DIRECTORY_SEPARATOR . 'test');
 
-        $this->setConfig(array(
-            'directories-bin' => 'test'
-        ));
+        $this->setConfig(array('directories-bin' => 'test'));
 
         $this->assertEquals(
             array($this->dir . DIRECTORY_SEPARATOR . 'test'),
@@ -112,16 +106,19 @@ class ConfigurationTest extends TestCase
         touch('alpha/beta.png');
         touch('alpha/gamma.png');
 
-        $this->setConfig(array(
-            'blacklist' => 'alpha/beta.png',
-            'directories-bin' => 'alpha'
-        ));
+        $this->setConfig(
+            array(
+                'blacklist' => 'alpha/beta.png',
+                'directories-bin' => 'alpha'
+            )
+        );
 
         $iterator = $this->config
                          ->getBinaryDirectoriesIterator()
                          ->getIterator();
 
         foreach ($iterator as $file) {
+            /** @var $file SplFileInfo */
             $this->assertEquals('gamma.png', $file->getBasename());
         }
     }
@@ -135,11 +132,10 @@ class ConfigurationTest extends TestCase
     {
         mkdir($this->dir . DIRECTORY_SEPARATOR . 'test');
 
-        $this->setConfig(array(
-            'files-bin' => 'test.png'
-        ));
+        $this->setConfig(array('files-bin' => 'test.png'));
 
         foreach ($this->config->getBinaryFiles() as $file) {
+            /** @var $file SplFileInfo */
             $this->assertEquals('test.png', $file->getBasename());
         }
     }
@@ -151,11 +147,10 @@ class ConfigurationTest extends TestCase
 
     public function testGetBinaryFilesIteratorSet()
     {
-        $this->setConfig(array(
-            'files-bin' => 'test.png'
-        ));
+        $this->setConfig(array('files-bin' => 'test.png'));
 
         foreach ($this->config->getBinaryFilesIterator() as $file) {
+            /** @var $file SplFileInfo */
             $this->assertEquals('test.png', $file->getBasename());
         }
     }
@@ -172,19 +167,21 @@ class ConfigurationTest extends TestCase
         touch('test.png');
         touch('test.php');
 
-        $this->setConfig(array(
-            'blacklist' => array('bad.jpg'),
-            'finder-bin' => array(
-                array(
-                    'name' => '*.png',
-                    'in' => '.'
-                ),
-                array(
-                    'name' => '*.jpg',
-                    'in' => '.'
+        $this->setConfig(
+            array(
+                'blacklist' => array('bad.jpg'),
+                'finder-bin' => array(
+                    array(
+                        'name' => '*.png',
+                        'in' => '.'
+                    ),
+                    array(
+                        'name' => '*.jpg',
+                        'in' => '.'
+                    )
                 )
             )
-        ));
+        );
 
         /** @var $results \SplFileInfo[] */
         $results = array();
@@ -207,9 +204,7 @@ class ConfigurationTest extends TestCase
 
     public function testGetBlacklistSet()
     {
-        $this->setConfig(array(
-            'blacklist' => array('test')
-        ));
+        $this->setConfig(array('blacklist' => array('test')));
 
         $this->assertEquals(array('test'), $this->config->getBlacklist());
     }
@@ -241,9 +236,7 @@ class ConfigurationTest extends TestCase
 
     public function testGetBootstrapFileSet()
     {
-        $this->setconfig(array(
-            'bootstrap' => 'test.php',
-        ));
+        $this->setconfig(array('bootstrap' => 'test.php'));
 
         $this->assertEquals(
             $this->dir . DIRECTORY_SEPARATOR . 'test.php',
@@ -258,12 +251,14 @@ class ConfigurationTest extends TestCase
 
     public function testGetCompactorsSet()
     {
-        $this->setConfig(array(
-            'compactors' => array(
-                'Herrera\\Box\\Compactor\\Composer',
-                __NAMESPACE__ . '\\TestCompactor'
+        $this->setConfig(
+            array(
+                'compactors' => array(
+                    'Herrera\\Box\\Compactor\\Composer',
+                    __NAMESPACE__ . '\\TestCompactor'
+                )
             )
-        ));
+        );
 
         $compactors = $this->config->getCompactors();
 
@@ -291,15 +286,13 @@ class ConfigurationTest extends TestCase
 
     public function testGetCompactorsInvalidClass()
     {
-        $this->setConfig(array('compactors' => array(
-            __NAMESPACE__ . '\\InvalidCompactor'
-        )));
+        $this->setConfig(
+            array('compactors' => array(__NAMESPACE__ . '\\InvalidCompactor'))
+        );
 
         $this->setExpectedException(
             'InvalidArgumentException',
-            'The class "'
-                . __NAMESPACE__
-                . '\\InvalidCompactor" is not a compactor class.'
+            'The class "' . __NAMESPACE__ . '\\InvalidCompactor" is not a compactor class.'
         );
 
         $this->config->getCompactors();
@@ -362,16 +355,19 @@ class ConfigurationTest extends TestCase
         touch('alpha/beta.php');
         touch('alpha/gamma.php');
 
-        $this->setConfig(array(
+        $this->setConfig(
+            array(
                 'blacklist' => 'alpha/beta.php',
                 'directories' => 'alpha'
-            ));
+            )
+        );
 
         $iterator = $this->config
                          ->getDirectoriesIterator()
                          ->getIterator();
 
         foreach ($iterator as $file) {
+            /** @var $file SplFileInfo */
             $this->assertEquals('gamma.php', $file->getBasename());
         }
     }
@@ -398,6 +394,7 @@ class ConfigurationTest extends TestCase
         $this->setConfig(array('files' => array('test.php')));
 
         foreach ($this->config->getFiles() as $file) {
+            /** @var $file SplFileInfo */
             $this->assertEquals('test.php', $file->getBasename());
         }
     }
@@ -409,11 +406,10 @@ class ConfigurationTest extends TestCase
 
     public function testGetFilesIteratorSet()
     {
-        $this->setConfig(array(
-                'files' => 'test.php'
-            ));
+        $this->setConfig(array('files' => 'test.php'));
 
         foreach ($this->config->getFilesIterator() as $file) {
+            /** @var $file SplFileInfo */
             $this->assertEquals('test.php', $file->getBasename());
         }
     }
@@ -430,19 +426,21 @@ class ConfigurationTest extends TestCase
         touch('test.txt');
         touch('test.php');
 
-        $this->setConfig(array(
-            'blacklist' => array('bad.php'),
-            'finder' => array(
-                array(
-                    'name' => '*.php',
-                    'in' => '.'
-                ),
-                array(
-                    'name' => '*.html',
-                    'in' => '.'
+        $this->setConfig(
+            array(
+                'blacklist' => array('bad.php'),
+                'finder' => array(
+                    array(
+                        'name' => '*.php',
+                        'in' => '.'
+                    ),
+                    array(
+                        'name' => '*.html',
+                        'in' => '.'
+                    )
                 )
             )
-        ));
+        );
 
         /** @var $results \SplFileInfo[] */
         $results = array();
@@ -640,7 +638,8 @@ class ConfigurationTest extends TestCase
 
         $this->assertEquals(
             $this->dir . DIRECTORY_SEPARATOR . 'test-1.0.0.phar',
-            $this->config->getOutputPath());
+            $this->config->getOutputPath()
+        );
 
         // some process does not release the git files
         if (false !== strpos(strtolower(PHP_OS), 'win')) {
@@ -692,10 +691,12 @@ class ConfigurationTest extends TestCase
         exec('git commit -m "Adding test file."');
         exec('git tag 1.0.0');
 
-        $this->setConfig(array(
-            'git-version' => 'git_tag',
-            'replacements' => array('rand' => $rand = rand())
-        ));
+        $this->setConfig(
+            array(
+                'git-version' => 'git_tag',
+                'replacements' => array('rand' => $rand = rand())
+            )
+        );
 
         $values = $this->config->getProcessedReplacements();
 
@@ -836,7 +837,9 @@ class ConfigurationTest extends TestCase
 
     public function testLoadBootstrap()
     {
-        file_put_contents('test.php', <<<CODE
+        file_put_contents(
+            'test.php',
+            <<<CODE
 <?php define('TEST_BOOTSTRAP_FILE_LOADED', true);
 CODE
         );
@@ -854,10 +857,7 @@ CODE
 
         $this->setExpectedException(
             'InvalidArgumentException',
-            'The bootstrap path "'
-                . $this->dir
-                . DIRECTORY_SEPARATOR
-                . 'test.php" is not a file or does not exist.'
+            'The bootstrap path "' . $this->dir . DIRECTORY_SEPARATOR . 'test.php" is not a file or does not exist.'
         );
 
         $this->config->loadBootstrap();
@@ -865,9 +865,9 @@ CODE
 
     public function testProcessFindersInvalidMethod()
     {
-        $this->setConfig(array('finder' => array(
-            array('invalidMethod' => 'whargarbl')
-        )));
+        $this->setConfig(
+            array('finder' => array(array('invalidMethod' => 'whargarbl')))
+        );
 
         $this->setExpectedException(
             'InvalidArgumentException',
@@ -898,20 +898,5 @@ CODE
     private function setConfig(array $config)
     {
         $this->setPropertyValue($this->config, 'raw', (object) $config);
-    }
-}
-
-class InvalidCompactor
-{
-}
-
-class TestCompactor implements CompactorInterface
-{
-    public function compact($contents)
-    {
-    }
-
-    public function supports($file)
-    {
     }
 }

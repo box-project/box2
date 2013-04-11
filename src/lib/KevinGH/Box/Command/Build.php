@@ -48,7 +48,8 @@ class Build extends Configurable
 
         $this->setName('build');
         $this->setDescription('Builds a new Phar.');
-        $this->setHelp(<<<HELP
+        $this->setHelp(
+            <<<HELP
 The <info>%command.name%</info> will build a new Phar based on a variety of settings.
 <comment>
   This command relies on a configuration file for loading
@@ -353,18 +354,12 @@ HELP
             if (isset($phar[$main])) {
                 $this->putln(
                     '?',
-                    'Setting main file: '
-                        . $this->config->getBasePath()
-                        . DIRECTORY_SEPARATOR
-                        . $main
+                    'Setting main file: ' . $this->config->getBasePath() . DIRECTORY_SEPARATOR . $main
                 );
             } else {
                 $this->putln(
                     '?',
-                    'Adding main file: '
-                        . $this->config->getBasePath()
-                        . DIRECTORY_SEPARATOR
-                        . $main
+                    'Adding main file: ' . $this->config->getBasePath() . DIRECTORY_SEPARATOR . $main
                 );
 
                 $this->box->addFromString(
@@ -434,7 +429,7 @@ HELP
 
             $this->box->signUsingFile($key, $passphrase);
 
-        // set the signature algorithm if no key is used
+            // set the signature algorithm if no key is used
         } elseif (null !== ($algorithm = $this->config->getSigningAlgorithm())) {
             $this->box->getPhar()->setSignatureAlgorithm($algorithm);
         }
@@ -462,7 +457,7 @@ HELP
         Traversable $iterator = null,
         $message = null,
         $binary = false
-    ){
+    ) {
         if ($iterator) {
             if ($message) {
                 $this->putln('?', $message);
@@ -511,11 +506,9 @@ HELP
             case '*':
                 $prefix = "<info>$prefix</info>";
                 break;
-
             case '?':
                 $prefix = "<comment>$prefix</comment>";
                 break;
-
             case '+':
                 $prefix = "  <comment>+</comment>";
                 break;

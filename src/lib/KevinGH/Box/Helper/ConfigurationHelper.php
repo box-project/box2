@@ -62,9 +62,9 @@ class ConfigurationHelper extends Helper
     {
         if (false === file_exists(self::FILE_NAME)) {
             if (false === file_exists(self::FILE_NAME . '.dist')) {
-                throw new RuntimeException(sprintf(
-                    'The configuration file could not be found.'
-                ));
+                throw new RuntimeException(
+                    sprintf('The configuration file could not be found.')
+                );
             }
 
             return realpath(self::FILE_NAME . '.dist');

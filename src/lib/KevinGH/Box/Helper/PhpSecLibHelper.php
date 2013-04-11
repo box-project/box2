@@ -17,7 +17,7 @@ class PhpSecLibHelper extends Helper
      *
      * @return Crypt_RSA The instance.
      */
-    public function CryptRSA()
+    public function cryptRSA()
     {
         return new Crypt_RSA();
     }
