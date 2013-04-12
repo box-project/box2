@@ -515,7 +515,7 @@ class Configuration
     public function getMainScriptPath()
     {
         if (isset($this->raw->main)) {
-            return $this->raw->main;
+            return canonical_path($this->raw->main);
         }
 
         return null;
@@ -819,7 +819,9 @@ class Configuration
                 array_walk(
                     $methods->in,
                     function (&$directory) use ($base) {
-                        $directory = $base . DIRECTORY_SEPARATOR . $directory;
+                        $directory = canonical_path(
+                            $base . DIRECTORY_SEPARATOR . $directory
+                        );
                     }
                 );
             }
