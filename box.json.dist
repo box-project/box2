@@ -2,8 +2,8 @@
     "alias": "box.phar",
     "chmod": "0755",
     "compactors": [
-        "Herrera\\Box\\Compactor\\Composer",
-        "Herrera\\Box\\Compactor\\Json"
+        "Herrera\\Box\\Compactor\\Json",
+        "Herrera\\Box\\Compactor\\Php"
     ],
     "directories": ["src/lib"],
     "files": [
