@@ -389,8 +389,24 @@ class ConfigurationTest extends TestCase
         $this->assertSame(array(), $this->config->getFiles());
     }
 
+    public function testGetFilesNotExist()
+    {
+        $this->setConfig(array('files' => array('test.php')));
+
+        $this->setExpectedException(
+            'RuntimeException',
+            'The file "'
+                . $this->dir . DIRECTORY_SEPARATOR
+                . 'test.php" does not exist or is not a file.'
+        );
+
+        $this->config->getFiles();
+    }
+
     public function testGetFilesSet()
     {
+        touch('test.php');
+
         $this->setConfig(array('files' => array('test.php')));
 
         foreach ($this->config->getFiles() as $file) {
@@ -406,6 +422,8 @@ class ConfigurationTest extends TestCase
 
     public function testGetFilesIteratorSet()
     {
+        touch('test.php');
+
         $this->setConfig(array('files' => 'test.php'));
 
         foreach ($this->config->getFilesIterator() as $file) {

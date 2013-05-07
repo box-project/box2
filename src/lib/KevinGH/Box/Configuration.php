@@ -391,6 +391,8 @@ class Configuration
      * Returns the list of relative file paths.
      *
      * @return array The list of paths.
+     *
+     * @throws RuntimeException If one of the files does not exist.
      */
     public function getFiles()
     {
@@ -399,9 +401,18 @@ class Configuration
             $files = array();
 
             foreach ((array) $this->raw->files as $file) {
-                $files[] = new SplFileInfo(
-                    $base . DIRECTORY_SEPARATOR . canonical_path($file)
+                $file = new SplFileInfo(
+                    $path = $base . DIRECTORY_SEPARATOR . canonical_path($file)
                 );
+
+                if (false === $file->isFile()) {
+                    throw new RuntimeException(sprintf(
+                        'The file "%s" does not exist or is not a file.',
+                        $path
+                    ));
+                }
+
+                $files[] = $file;
             }
 
             return $files;
