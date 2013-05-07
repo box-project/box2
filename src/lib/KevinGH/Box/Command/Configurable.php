@@ -4,7 +4,6 @@ namespace KevinGH\Box\Command;
 
 use KevinGH\Box\Configuration;
 use KevinGH\Box\Helper\ConfigurationHelper;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -13,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * @author Kevin Herrera <kevin@herrera.io>
  */
-abstract class Configurable extends Command
+abstract class Configurable extends AbstractCommand
 {
     /**
      * @override
