@@ -32,13 +32,6 @@ class Add extends Configurable
     private $config;
 
     /**
-     * The output handler.
-     *
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
      * @override
      */
     protected function configure()
@@ -133,7 +126,6 @@ HELP
         }
 
         $this->config = $this->getConfig($input);
-        $this->output = $output;
         $phar = $input->getArgument('phar');
         $file = $input->getArgument('file');
 

@@ -33,13 +33,6 @@ class Build extends Configurable
     private $config;
 
     /**
-     * The output handler.
-     *
-     * @var OutputInterface
-     */
-    private $output;
-
-    /**
      * @override
      */
     protected function configure()
@@ -257,7 +250,6 @@ HELP
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->output = $output;
         $this->config = $this->getConfig($input);
         $path = $this->config->getOutputPath();
 
