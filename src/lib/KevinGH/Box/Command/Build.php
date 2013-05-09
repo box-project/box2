@@ -335,6 +335,8 @@ HELP
         }
 
         // start adding files
+        $this->box->getPhar()->startBuffering();
+
         $this->add(
             $this->config->getFilesIterator(),
             'Adding files...'
@@ -429,6 +431,8 @@ HELP
 
             $this->box->getPhar()->compressFiles($algorithm);
         }
+
+        $this->box->getPhar()->stopBuffering();
 
         // sign using private key, if applicable
         if (file_exists($path . '.pubkey')) {
