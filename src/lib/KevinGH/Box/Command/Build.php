@@ -376,12 +376,12 @@ HELP
                     ->web($this->config->isWebPhar())
                     ->generate()
             );
-        } elseif (null !== ($path = $this->config->getStubPath())) {
-            $path = $this->config->getBasePath() . DIRECTORY_SEPARATOR . $path;
+        } elseif (null !== ($stub = $this->config->getStubPath())) {
+            $stub = $this->config->getBasePath() . DIRECTORY_SEPARATOR . $stub;
 
-            $this->putln('?', "Using stub file: $path");
+            $this->putln('?', "Using stub file: $stub");
 
-            $this->box->setStubUsingFile($path);
+            $this->box->setStubUsingFile($stub);
         } else {
             $this->putln('?', 'Using default stub.');
         }
