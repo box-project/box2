@@ -5,6 +5,7 @@
         "Herrera\\Box\\Compactor\\Json",
         "Herrera\\Box\\Compactor\\Php"
     ],
+    "compression": "GZ",
     "directories": ["src/lib"],
     "files": [
         "LICENSE",
