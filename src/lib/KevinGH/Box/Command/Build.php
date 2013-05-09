@@ -5,6 +5,7 @@ namespace KevinGH\Box\Command;
 use Herrera\Box\Box;
 use Herrera\Box\StubGenerator;
 use KevinGH\Box\Configuration;
+use RuntimeException;
 use SplFileInfo;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -444,6 +445,8 @@ HELP
      * @param Traversable $iterator The iterator.
      * @param string      $message  The message to announce.
      * @param boolean     $binary   Should the adding be binary-safe?
+     *
+     * @throws RuntimeException If a file is not readable.
      */
     private function add(
         Traversable $iterator = null,
@@ -460,8 +463,16 @@ HELP
             $baseRegex = $this->config->getBasePathRegex();
 
             if ($this->isVerbose()) {
+                /** @var $file SplFileInfo */
                 foreach ($iterator as $file) {
-                    /** @var $file SplFileInfo */
+                    if (false === $file->isReadable()) {
+                        throw new RuntimeException(
+                            sprintf(
+                                'The file "%s" is not readable.',
+                                $file->getPathname()
+                            )
+                        );
+                    }
 
                     $this->putln('+', $file);
 

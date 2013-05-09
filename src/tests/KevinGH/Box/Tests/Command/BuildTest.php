@@ -9,6 +9,8 @@ use Phar;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamWrapper;
 
 class BuildTest extends CommandTestCase
 {
@@ -121,6 +123,33 @@ OUTPUT;
         $this->assertEquals(array('rand' => $rand), $phar->getMetadata());
 
         unset($phar);
+    }
+
+    public function testBuildNotReadable()
+    {
+        touch('test.php');
+        chmod('test.php', 0000);
+
+        file_put_contents(
+            'box.json',
+            json_encode(
+                array(
+                    'files' => 'test.php'
+                )
+            )
+        );
+
+        $tester = $this->getTester();
+
+        $this->setExpectedException(
+            'RuntimeException',
+            'The file "' . $this->dir . DIRECTORY_SEPARATOR . 'test.php" is not readable.'
+        );
+
+        $tester->execute(
+            array('command' => 'build'),
+            array('verbosity' => OutputInterface::VERBOSITY_VERBOSE)
+        );
     }
 
     /**
