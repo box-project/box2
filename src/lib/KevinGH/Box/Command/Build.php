@@ -44,7 +44,7 @@ class Build extends Configurable
         $this->setDescription('Builds a new Phar.');
         $this->setHelp(
             <<<HELP
-The <info>%command.name%</info> will build a new Phar based on a variety of settings.
+The <info>%command.name%</info> command will build a new Phar based on a variety of settings.
 <comment>
   This command relies on a configuration file for loading
   Phar packaging settings. If a configuration file is not
@@ -52,7 +52,7 @@ The <info>%command.name%</info> will build a new Phar based on a variety of sett
   the following files will be used (in order): <info>box.json,
   box.json.dist</info>
 </comment>
-The configuration file is actually a JSON object saved in a file.
+The configuration file is actually a JSON object saved to a file.
 Note that all settings are optional.
 <comment>
   {
@@ -86,6 +86,8 @@ Note that all settings are optional.
   }
 </comment>
 
+
+
 The <info>algorithm</info> <comment>(string, integer)</comment> setting is the signing algorithm to
 use when the Phar is built <comment>(Phar::setSignatureAlgorithm())</comment>. It can an
 integer value (the value of the constant), or the name of the Phar
@@ -104,13 +106,35 @@ the Phar.
 
 The <info>base-path</info> <comment>(string)</comment> setting is used to specify where all of the
 relative file paths should resolve to. This does not, however, alter
-where the built Phar will be stored <comment>(see: <info>output</info>)</comment>.
+where the built Phar will be stored <comment>(see: <info>output</info>)</comment>. By default, the
+base path is the directory containing the configuration file.
 
 The <info>blacklist</info> <comment>(string, array)</comment> setting is a list of files that must
 not be added. The files blacklisted are the ones found using the other
 available configuration settings: <info>directories, directories-bin, files,
-files-bin, finder, finder-bin</info>.
+files-bin, finder, finder-bin</info>. Note that directory separators are
+automatically corrected to the platform specific version.
 
+Assuming that the base directory path is <comment>/home/user/project</comment>:
+<comment>
+  {
+      "blacklist": [
+          "path/to/file/1"
+          "path/to/file/2"
+      ],
+      "directories": ["src"]
+  }
+</comment>
+The following files will be blacklisted:
+<comment>
+  - /home/user/project/src/path/to/file/1
+  - /home/user/project/src/path/to/file/2
+</comment>
+But not these files:
+<comment>
+  - /home/user/project/src/another/path/to/file/1
+  - /home/user/project/src/another/path/to/file/2
+</comment>
 The <info>bootstrap</info> <comment>(string)</comment> setting allows you to specify a PHP file that
 will be loaded before the <info>build</info> or <info>add</info> commands are used. This is
 useful for loading third-party file contents compacting classes that
@@ -155,18 +179,19 @@ page:
   - GZ (Phar::GZ)
   - NONE (Phar::NONE)
 </comment>
-The <info>directories</info> <comment>(string, array)</comment> setting is a list of directory paths.
-All files ending in <comment>.php</comment> will be automatically compacted, have their
-placeholder values replaced, and added to the Phar. Files listed in
-the <info>blacklist</info> setting will not be added.
+The <info>directories</info> <comment>(string, array)</comment> setting is a list of directory paths
+relative to <info>base-path</info>. All files ending in <comment>.php</comment> will be automatically
+compacted, have their placeholder values replaced, and added to the
+Phar. Files listed in the <info>blacklist</info> setting will not be added.
 
 The <info>directories-bin</info> <comment>(string, array)</comment> setting is similar to <info>directories</info>,
 except all file types are added to the Phar unmodified. This is suitable
 for directories containing images or other binary data.
 
-The <info>files</info> <comment>(string, array)</comment> setting is a list of files paths. Each file
-will be compacted, have their placeholder files replaced, and added to
-the Phar. This setting is not affected by the <info>blacklist</info>.
+The <info>files</info> <comment>(string, array)</comment> setting is a list of files paths relative to
+<info>base-path</info>. Each file will be compacted, have their placeholder files
+replaced, and added to the Phar. This setting is not affected by the
+<info>blacklist</info> setting.
 
 The <info>files-bin</info> <comment>(string, array)</comment> setting is similar to <info>files</info>, except that
 all files are added to the Phar unmodified. This is suitable for files
@@ -176,6 +201,9 @@ The <info>finder</info> <comment>(array)</comment> setting is a list of JSON obj
 is a name, and each value an argument for the methods in the
 <comment>Symfony\\Component\\Finder\\Finder</comment> class. If an array of values is provided
 for a single key, the method will be called once per value in the array.
+Note that the paths specified for the "in" method are relative to
+<info>base-path</info>.
+
 The <info>finder-bin</info> <comment>(array)</comment> setting performs the same function, except all
 files found by the finder will be treated as binary files, leaving them
 unmodified.
@@ -203,11 +231,12 @@ for the private <info>key</info>. If a <comment>string</comment> is provided, it
 the passphrase. If <comment>true</comment> is provided, you will be prompted for the
 passphrase.
 
-The <info>main</info> <comment>(string)</comment> setting is used to specify the file that will be run
-when the Phar is executed from the command line. If the file was not
-added by any of the other file adding settings, it will be automatically
-added after it has been compacted and had its placeholder values replaced.
-Also, the #! line will be automatically removed if present.
+The <info>main</info> <comment>(string)</comment> setting is used to specify the file (relative to
+<info>base-path</info>) that will be run when the Phar is executed from the command
+line. If the file was not added by any of the other file adding settings,
+it will be automatically added after it has been compacted and had its
+placeholder values replaced. Also, the #! line will be automatically
+removed if present.
 
 The <info>metadata</info> <comment>(any)</comment> setting can be any value. This value will be stored as
 metadata that can be retrieved from the built Phar <comment>(Phar::getMetadata())</comment>.
