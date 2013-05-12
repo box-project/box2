@@ -207,7 +207,16 @@ Note that the paths specified for the "in" method are relative to
 The <info>finder-bin</info> <comment>(array)</comment> setting performs the same function, except all
 files found by the finder will be treated as binary files, leaving them
 unmodified.
+<comment>
+It may be useful to know that Box imports files in the following order:
 
+ - finder
+ - finder-bin
+ - directories
+ - directories-bin
+ - files
+ - files-bin
+</comment>
 The <info>git-version</info> <comment>(string)</comment> setting is the name of a placeholder value that
 will be replaced in all non-binary files by the one of the following (in
 order):
