@@ -335,27 +335,6 @@ HELP
         }
 
         // start adding files
-        $this->box->getPhar()->startBuffering();
-
-        $this->add(
-            $this->config->getFilesIterator(),
-            'Adding files...'
-        );
-        $this->add(
-            $this->config->getBinaryFilesIterator(),
-            'Adding binary files...',
-            true
-        );
-        $this->add(
-            $this->config->getDirectoriesIterator(),
-            'Adding directories...'
-        );
-        $this->add(
-            $this->config->getBinaryDirectoriesIterator(),
-            'Adding binary directories...',
-            true
-        );
-
         if (array() !== ($iterators = $this->config->getFinders())) {
             $this->putln('?', 'Adding Finder files...');
 
@@ -371,6 +350,28 @@ HELP
                 $this->add($iterator, null, true);
             }
         }
+
+        $this->add(
+            $this->config->getDirectoriesIterator(),
+            'Adding directories...'
+        );
+
+        $this->add(
+            $this->config->getBinaryDirectoriesIterator(),
+            'Adding binary directories...',
+            true
+        );
+
+        $this->add(
+            $this->config->getFilesIterator(),
+            'Adding files...'
+        );
+
+        $this->add(
+            $this->config->getBinaryFilesIterator(),
+            'Adding binary files...',
+            true
+        );
 
         if (null !== ($main = $this->config->getMainScriptPath())) {
             $phar = $this->box->getPhar();
