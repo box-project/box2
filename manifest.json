@@ -2,13 +2,13 @@
     {
         "name": "box.phar",
         "sha1": "0809660c1527daae1665806a6b3db157b36f621d",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-1.0.9.phar",
+        "url": "https://bitbucket.org/kherge/php-box/downloads/box-1.0.9.phar",
         "version": "1.0.9"
     },
     {
         "name": "box.phar",
-        "sha1": "5e432f743e1b8f73fe70b0427b4237f367349844",
-        "url": "https://bitbucket.org/kherge/box-downloads/downloads/box-2.0.0-rc.1.phar",
-        "version": "2.0.0-rc.1"
+        "sha1": "6182f0e4d749dd07a031717131c705840bb7681a",
+        "url": "https://bitbucket.org/kherge/php-box/downloads/box-2.0.0-rc.2.phar",
+        "version": "2.0.0-rc.2"
     }
 ]
