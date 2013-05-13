@@ -12,6 +12,7 @@
         }
     ],
     "support": {
+        "forum": "https://groups.google.com/d/forum/herrera-io-users",
         "issues": "https://github.com/kherge/Box/issues"
     },
     "require": {
