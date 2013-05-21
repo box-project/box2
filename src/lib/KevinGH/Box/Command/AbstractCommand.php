@@ -58,6 +58,7 @@ abstract class AbstractCommand extends Command
             case '?':
                 $prefix = "<comment>$prefix</comment>";
                 break;
+            case '-':
             case '+':
                 $prefix = "  <comment>$prefix</comment>";
                 break;
