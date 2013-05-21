@@ -9,6 +9,7 @@ use Phar;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\Process\PhpExecutableFinder;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamWrapper;
 
@@ -46,6 +47,9 @@ KEY
     {
         $key = $this->getPrivateKey();
 
+        $php = new PhpExecutableFinder();
+        $php = '#!' . $php->find();
+
         mkdir('one');
         mkdir('two');
         touch('test.phar');
@@ -72,6 +76,7 @@ KEY
                     'main' => 'run.php',
                     'metadata' => array('rand' => $rand = rand()),
                     'output' => 'test.phar',
+                    'shebang' => $php,
                     'stub' => true
                 )
             )
@@ -104,6 +109,7 @@ KEY
   + {$dir}test.php
 ? Adding main file: {$dir}run.php
 ? Generating new stub...
+  - Shebang: $php
 ? Setting metadata...
 ? Signing using a private key...
 ? Setting file permissions...

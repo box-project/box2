@@ -488,6 +488,8 @@ class ConfigurationTest extends TestCase
     {
         touch('test');
         exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
         exec('git add test');
         exec('git commit -m "Adding test file."');
         exec('git tag 1.0.0');
@@ -504,6 +506,8 @@ class ConfigurationTest extends TestCase
     {
         touch('test');
         exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
         exec('git add test');
         exec('git commit -m "Adding test file."');
 
@@ -648,6 +652,8 @@ class ConfigurationTest extends TestCase
     {
         touch('test');
         exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
         exec('git add test');
         exec('git commit -m "Adding test file."');
         exec('git tag 1.0.0');
@@ -705,6 +711,8 @@ class ConfigurationTest extends TestCase
     {
         touch('test');
         exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
         exec('git add test');
         exec('git commit -m "Adding test file."');
         exec('git tag 1.0.0');
@@ -739,6 +747,30 @@ class ConfigurationTest extends TestCase
         $this->setConfig(array('replacements' => (object) $replacements));
 
         $this->assertEquals($replacements, $this->config->getReplacements());
+    }
+
+    public function testGetShebang()
+    {
+        $this->assertNull($this->config->getShebang());
+    }
+
+    public function testGetShebangSet()
+    {
+        $this->setConfig(array('shebang' => '#!/bin/php'));
+
+        $this->assertEquals('#!/bin/php', $this->config->getShebang());
+    }
+
+    public function testGetShebangInvalid()
+    {
+        $this->setConfig(array('shebang' => '/bin/php'));
+
+        $this->setExpectedException(
+            'InvalidArgumentException',
+            'The shebang line must start with "#!": /bin/php'
+        );
+
+        $this->config->getShebang();
     }
 
     public function testGetSigningAlgorithm()

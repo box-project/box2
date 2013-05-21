@@ -108,6 +108,10 @@
             "description": "A list of replacement names and their values.",
             "type": "object"
         },
+        "shebang": {
+            "description": "The shebang line to use for the generated stub.",
+            "type": "string"
+        },
         "stub": {
             "description": "The relative file path to the stub file, or the flag to use the default stub.",
             "type": ["boolean", "string"]

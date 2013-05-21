@@ -81,6 +81,7 @@ Note that all settings are optional.
     "not-found": ?,
     "output": ?,
     "replacements": ?,
+    "shebang": ?,
     "stub": ?,
     "web": ?
   }
@@ -272,6 +273,11 @@ The <info>replacements</info> <comment>(object)</comment> setting is a map of pl
 values. The placeholders are replaced in all non-binary files with the
 specified values.
 
+The <info>shebang</info> <comment>(string)</comment> setting is used to specify the shebang line used
+when generating a new stub. By default, this line is used:
+
+  <comment>#!/usr/bin/env php</comment>
+
 The <info>stub</info> <comment>(string, boolean)</comment> setting is used to specify the location of a
 stub file, or if one should be generated. If a path is provided, the stub
 file will be used as is inside the Phar. If <comment>true</comment> is provided, a new stub
@@ -407,17 +413,22 @@ HELP
         if (true === $this->config->isStubGenerated()) {
             $this->putln('?', 'Generating new stub...');
 
-            $this->box->getPhar()->setStub(
-                StubGenerator::create()
-                    ->alias($this->config->getAlias())
-                    ->index($this->config->getMainScriptPath())
-                    ->intercept($this->config->isInterceptFileFuncs())
-                    ->mimetypes($this->config->getMimetypeMapping())
-                    ->mung($this->config->getMungVariables())
-                    ->notFound($this->config->getNotFoundScriptPath())
-                    ->web($this->config->isWebPhar())
-                    ->generate()
-            );
+            $stub = StubGenerator::create()
+                ->alias($this->config->getAlias())
+                ->index($this->config->getMainScriptPath())
+                ->intercept($this->config->isInterceptFileFuncs())
+                ->mimetypes($this->config->getMimetypeMapping())
+                ->mung($this->config->getMungVariables())
+                ->notFound($this->config->getNotFoundScriptPath())
+                ->web($this->config->isWebPhar());
+
+            if (null !== ($shebang = $this->config->getShebang())) {
+                $this->putln('-', 'Shebang: ' . $shebang);
+
+                $stub->shebang($shebang);
+            }
+
+            $this->box->getPhar()->setStub($stub->generate());
         } elseif (null !== ($stub = $this->config->getStubPath())) {
             $stub = $this->config->getBasePath() . DIRECTORY_SEPARATOR . $stub;
 

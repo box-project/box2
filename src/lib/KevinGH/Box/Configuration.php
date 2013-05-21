@@ -684,6 +684,33 @@ class Configuration
     }
 
     /**
+     * Returns the shebang line.
+     *
+     * @return string The shebang line.
+     *
+     * @throws InvalidArgumentException If the shebang line is no valid.
+     */
+    public function getShebang()
+    {
+        if (isset($this->raw->shebang)) {
+            $shebang = trim($this->raw->shebang);
+
+            if ('#!' !== substr($shebang, 0, 2)) {
+                throw new InvalidArgumentException(
+                    sprintf(
+                        'The shebang line must start with "#!": %s',
+                        $shebang
+                    )
+                );
+            }
+
+            return $shebang;
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the Phar signing algorithm.
      *
      * @return integer The signing algorithm.
