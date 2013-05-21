@@ -7,8 +7,8 @@
     },
     {
         "name": "box.phar",
-        "sha1": "6182f0e4d749dd07a031717131c705840bb7681a",
-        "url": "https://bitbucket.org/kherge/php-box/downloads/box-2.0.0-rc.2.phar",
-        "version": "2.0.0-rc.2"
+        "sha1": "ddcc4c6ca8bc7143c517ab88dfba524900b3a1f0",
+        "url": "https://bitbucket.org/kherge/php-box/downloads/box-2.0.0.phar",
+        "version": "2.0.0"
     }
 ]
