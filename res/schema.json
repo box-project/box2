@@ -11,6 +11,14 @@
             "description": "The internal PHAR alias used for I/O streams.",
             "type": "string"
         },
+        "banner": {
+            "description": "The header comment for the generated stub.",
+            "type": "string"
+        },
+        "banner-file": {
+            "description": "The header comment file for the generated stub.",
+            "type": "string"
+        },
         "base-path": {
             "description": "The base path where relative paths are resolved to.",
             "type": "string"

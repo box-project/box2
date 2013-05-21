@@ -740,6 +740,57 @@ class Configuration
     }
 
     /**
+     * Returns the stub banner comment.
+     *
+     * @return string The stub banner comment.
+     */
+    public function getStubBanner()
+    {
+        if (isset($this->raw->{'banner'})) {
+            return $this->raw->{'banner'};
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the stub banner comment from the file.
+     *
+     * @return string The stub banner comment.
+     *
+     * @throws RuntimeException If the comment file could not be read.
+     */
+    public function getStubBannerFromFile()
+    {
+        if (null !== ($path = $this->getStubBannerPath())) {
+            $path = $this->getBasePath() . DIRECTORY_SEPARATOR . $path;
+
+            if (false === ($contents = @file_get_contents($path))) {
+                $errors = error_get_last();
+
+                throw new RuntimeException($errors['message']);
+            }
+
+            return $contents;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the path to the stub banner comment file.
+     *
+     * @return string The stub header comment file path.
+     */
+    public function getStubBannerPath()
+    {
+        if (isset($this->raw->{'banner-file'})) {
+            return canonical_path($this->raw->{'banner-file'});
+        }
+        return null;
+    }
+
+    /**
      * Returns the Phar stub file path.
      *
      * @return string The file path.

@@ -65,6 +65,7 @@ KEY
             json_encode(
                 array(
                     'alias' => 'test.phar',
+                    'banner' => 'custom banner',
                     'bootstrap' => 'bootstrap.php',
                     'chmod' => '0755',
                     'compactors' => array('Herrera\\Box\\Compactor\\Composer'),
@@ -109,7 +110,8 @@ KEY
   + {$dir}test.php
 ? Adding main file: {$dir}run.php
 ? Generating new stub...
-  - Shebang: $php
+  - Using custom shebang line: $php
+  - Using custom banner.
 ? Setting metadata...
 ? Signing using a private key...
 ? Setting file permissions...
@@ -123,6 +125,12 @@ OUTPUT;
             'Hello, world!',
             exec('php test.phar')
         );
+
+        $pharContents = file_get_contents('test.phar');
+        $php = preg_quote($php, '/');
+
+        $this->assertSame(1, preg_match("/$php/", $pharContents));
+        $this->assertSame(1, preg_match('/custom banner/', $pharContents));
 
         $phar = new Phar('test.phar');
 
@@ -201,6 +209,55 @@ OUTPUT;
         $this->assertEquals(
             'Hello, world!',
             exec('php default.phar')
+        );
+    }
+
+    public function testBuildStubBannerFile()
+    {
+        file_put_contents('banner', 'custom banner');
+        file_put_contents('test.php', '<?php echo "Hello!";');
+        file_put_contents(
+            'box.json',
+            json_encode(
+                array(
+                    'alias' => 'test.phar',
+                    'banner-file' => 'banner',
+                    'files' => 'test.php',
+                    'main' => 'test.php',
+                    'output' => 'test.phar',
+                    'stub' => true
+                )
+            )
+        );
+
+        $tester = $this->getTester();
+        $tester->execute(
+            array(
+                'command' => 'build'
+            ),
+            array(
+                'verbosity' => OutputInterface::VERBOSITY_VERBOSE
+            )
+        );
+
+        $dir = $this->dir . DIRECTORY_SEPARATOR;
+        $expected = <<<OUTPUT
+* Building...
+? Output path: {$dir}test.phar
+? Adding files...
+  + {$dir}test.php
+? Setting main file: {$dir}test.php
+? Generating new stub...
+  - Using custom banner from file: {$dir}banner
+* Done.
+
+OUTPUT;
+
+        $this->assertEquals($expected, $this->getOutput($tester));
+
+        $this->assertEquals(
+            'Hello!',
+            exec('php test.phar')
         );
     }
 

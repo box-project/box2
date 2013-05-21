@@ -804,6 +804,75 @@ class ConfigurationTest extends TestCase
         $this->config->getSigningAlgorithm();
     }
 
+    public function testGetStubBanner()
+    {
+        $this->assertNull($this->config->getStubBanner());
+    }
+
+    public function testGetStubBannerSet()
+    {
+        $comment = <<<COMMENT
+This is a
+
+multiline
+
+comment.
+COMMENT;
+
+        $this->setConfig(array('banner' => $comment));
+
+        $this->assertEquals($comment, $this->config->getStubBanner());
+    }
+
+    public function testGetStubBannerFromFile()
+    {
+        $this->assertNull($this->config->getStubBannerFromFile());
+    }
+
+    public function testGetStubBannerFromFileSet()
+    {
+        $comment = <<<COMMENT
+This is a
+
+multiline
+
+comment.
+COMMENT;
+
+        file_put_contents('banner', $comment);
+
+        $this->setConfig(array('banner-file' => 'banner'));
+
+        $this->assertEquals($comment, $this->config->getStubBannerFromFile());
+    }
+
+    public function testGetStubBannerFromFileReadError()
+    {
+        $this->setConfig(array('banner-file' => '/does/not/exist'));
+
+        $this->setExpectedException(
+            'RuntimeException',
+            'No such file or directory'
+        );
+
+        $this->config->getStubBannerFromFile();
+    }
+
+    public function testGetStubBannerPath()
+    {
+        $this->assertNull($this->config->getStubBannerPath());
+    }
+
+    public function testGetStubBannerPathSet()
+    {
+        $this->setConfig(array('banner-file' => '/path/to/file'));
+
+        $this->assertEquals(
+            '/path/to/file',
+            $this->config->getStubBannerPath()
+        );
+    }
+
     public function testGetStubPath()
     {
         $this->assertNull($this->config->getStubPath());

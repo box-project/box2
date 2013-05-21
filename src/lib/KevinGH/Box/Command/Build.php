@@ -58,6 +58,8 @@ Note that all settings are optional.
   {
     "algorithm": ?,
     "alias": ?,
+    "banner": ?,
+    "banner-file": ?,
     "base-path": ?,
     "blacklist": ?,
     "bootstrap": ?,
@@ -104,6 +106,15 @@ on the help page:
 The <info>alias</info> <comment>(string)</comment> setting is used when generating a new stub to call
 the <comment>Phar::mapPhar()</comment> method. This makes it easier to refer to files in
 the Phar.
+
+The <info>banner</info> <comment>(string)</comment> setting is the banner comment that will be used when
+a new stub is generated. The value of this setting must not already be
+enclosed within a comment block, as it will be automatically done for
+you.
+
+The <info>banner-file</info> <comment>(string)</comment> setting is like <info>stub-banner</info>, except it is a
+path to the file that will contain the comment. Like <info>stub-banner</info>, the
+comment must not already be enclosed in a comment block.
 
 The <info>base-path</info> <comment>(string)</comment> setting is used to specify where all of the
 relative file paths should resolve to. This does not, however, alter
@@ -423,9 +434,25 @@ HELP
                 ->web($this->config->isWebPhar());
 
             if (null !== ($shebang = $this->config->getShebang())) {
-                $this->putln('-', 'Shebang: ' . $shebang);
+                $this->putln('-', 'Using custom shebang line: ' . $shebang);
 
                 $stub->shebang($shebang);
+            }
+
+            if (null !== ($banner = $this->config->getStubBanner())) {
+                $this->putln('-', 'Using custom banner.');
+
+                $stub->banner($banner);
+            } elseif (null !== ($banner = $this->config->getStubBannerFromFile())) {
+                $this->putln(
+                    '-',
+                    'Using custom banner from file: '
+                        . $this->config->getBasePath()
+                        . DIRECTORY_SEPARATOR
+                        . $this->config->getStubBannerPath()
+                );
+
+                $stub->banner($banner);
             }
 
             $this->box->getPhar()->setStub($stub->generate());
