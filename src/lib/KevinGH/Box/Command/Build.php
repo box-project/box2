@@ -272,7 +272,7 @@ The <info>mung</info> <comment>(array)</comment> setting is used when generating
 of server variables to modify for the Phar. This setting is only useful
 when the <info>web</info> setting is enabled.
 
-The <info>not-server</info> <comment>(string)</comment> setting is used when generating a new stub. It
+The <info>not-found</info> <comment>(string)</comment> setting is used when generating a new stub. It
 specifies the file that will be used when a file is not found inside the
 Phar. This setting is only useful when <info>web</info> setting is enabled.
 
