@@ -34,7 +34,31 @@ class ApplicationTest extends TestCase
             $string
         );
 
-        $this->assertEquals('Box version @git_tag@', $string);
+        $this->assertEquals('Box (repo)', $string);
+
+        $app->setVersion('1.2.3');
+
+        rewind($stream);
+
+        $app->run($input, $output);
+
+        rewind($stream);
+
+        $string = trim(fgets($stream));
+        $string = preg_replace(
+            array(
+                '/\x1b(\[|\(|\))[;?0-9]*[0-9A-Za-z]/',
+                '/\x1b(\[|\(|\))[;?0-9]*[0-9A-Za-z]/',
+                '/[\x03|\x1a]/'
+            ),
+            array('', '', ''),
+            $string
+        );
+
+        $this->assertEquals(
+            'Box version 1.2.3 build @git-commit@',
+            $string
+        );
 
         try {
             trigger_error('Test.', E_USER_WARNING);

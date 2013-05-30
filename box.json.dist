@@ -28,7 +28,8 @@
             "in": "src/vendors"
         }
     ],
-    "git-version": "git_tag",
+    "git-commit": "git-commit",
+    "git-version": "git-version",
     "main": "bin/box",
     "output": "box-@git-version@.phar",
     "replacements": {
