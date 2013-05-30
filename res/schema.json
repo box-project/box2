@@ -72,6 +72,18 @@
             "description": "(binary safe) A list of Finder configuration settings.",
             "type": "array"
         },
+        "git-commit": {
+            "description": "The replacement name for the current Git full commit hash.",
+            "type": "string"
+        },
+        "git-commit-short": {
+            "description": "The replacement name for the current Git short commit hash.",
+            "type": "string"
+        },
+        "git-tag": {
+            "description": "The replacement name for the current Git tag.",
+            "type": "string"
+        },
         "git-version": {
             "description": "The replacement name for the current Git tag or commit hash.",
             "type": "string"

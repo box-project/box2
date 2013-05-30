@@ -229,6 +229,27 @@ It may be useful to know that Box imports files in the following order:
  - files
  - files-bin
 </comment>
+The <info>git-commit</info> <comment>(string)</comment> setting is the name of a placeholder value that
+will be replaced in all non-binary files by the current Git commit hash
+of the repository.
+
+Example: <comment>e558e335f1d165bc24d43fdf903cdadd3c3cbd03</comment>
+
+The <info>git-commit-short</info> <comment>(string)</comment> setting is the name of a placeholder value
+that will be replaced in all non-binary files by the current Git short
+commit hash of the repository.
+
+Example: <comment>e558e33</comment>
+
+The <info>git-tag</info> <comment>(string)</comment> setting is the name of a placeholder value that will
+be replaced in all non-binary files by the current Git tag of the
+repository.
+
+Examples:
+<comment>
+ - 2.0.0
+ - 2.0.0-2-ge558e33
+</comment>
 The <info>git-version</info> <comment>(string)</comment> setting is the name of a placeholder value that
 will be replaced in all non-binary files by the one of the following (in
 order):

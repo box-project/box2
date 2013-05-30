@@ -450,6 +450,75 @@ class Configuration
     }
 
     /**
+     * Returns the Git commit hash.
+     *
+     * @param boolean $short Use the short version?
+     *
+     * @return string The commit hash.
+     */
+    public function getGitHash($short = false)
+    {
+        return $this->runGitCommand(
+            sprintf(
+                'git log --pretty="%s" -n1 HEAD',
+                $short ? '%h' : '%H'
+            )
+        );
+    }
+
+    /**
+     * Returns the Git commit hash placeholder.
+     *
+     * @return string The placeholder.
+     */
+    public function getGitShortHashPlaceholder()
+    {
+        if (isset($this->raw->{'git-commit-short'})) {
+            return $this->raw->{'git-commit-short'};
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the Git commit hash placeholder.
+     *
+     * @return string The placeholder.
+     */
+    public function getGitHashPlaceholder()
+    {
+        if (isset($this->raw->{'git-commit'})) {
+            return $this->raw->{'git-commit'};
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the most recent Git tag.
+     *
+     * @return string The tag.
+     */
+    public function getGitTag()
+    {
+        return $this->runGitCommand('git describe --tags HEAD');
+    }
+
+    /**
+     * Returns the Git tag placeholder.
+     *
+     * @return string The placeholder.
+     */
+    public function getGitTagPlaceholder()
+    {
+        if (isset($this->raw->{'git-tag'})) {
+            return $this->raw->{'git-tag'};
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the Git tag name or short commit hash.
      *
      * @return string The tag name or short commit hash.
@@ -458,30 +527,27 @@ class Configuration
      */
     public function getGitVersion()
     {
-        $path = dirname($this->file);
-        $process = new Process('git describe --tags HEAD', $path);
-
-        if (0 === $process->run()) {
-            return trim($process->getOutput());
+        try {
+            return $this->getGitTag();
+        } catch (RuntimeException $exception) {
+            try {
+                return $this->getGitHash(true);
+            } catch (RuntimeException $exception) {
+                throw new RuntimeException(
+                    sprintf(
+                        'The tag or commit hash could not be retrieved from "%s": %s',
+                        dirname($this->file),
+                        $exception->getMessage()
+                    ),
+                    0,
+                    $exception
+                );
+            }
         }
-
-        $process = new Process('git log --pretty="%h" -n1 HEAD', $path);
-
-        if (0 === $process->run()) {
-            return trim($process->getOutput());
-        }
-
-        throw new RuntimeException(
-            sprintf(
-                'The tag or commit hash could not be retrieved from "%s": %s',
-                $path,
-                $process->getErrorOutput()
-            )
-        );
     }
 
     /**
-     * Returns the git version placeholder.
+     * Returns the Git version placeholder.
      *
      * @return string The placeholder.
      */
@@ -655,6 +721,18 @@ class Configuration
     public function getProcessedReplacements()
     {
         $values = $this->getReplacements();
+
+        if (null !== ($git = $this->getGitHashPlaceholder())) {
+            $values[$git] = $this->getGitHash();
+        }
+
+        if (null !== ($git = $this->getGitShortHashPlaceholder())) {
+            $values[$git] = $this->getGitHash(true);
+        }
+
+        if (null !== ($git = $this->getGitTagPlaceholder())) {
+            $values[$git] = $this->getGitTag();
+        }
 
         if (null !== ($git = $this->getGitVersionPlaceholder())) {
             $values[$git] = $this->getGitVersion();
@@ -936,5 +1014,32 @@ class Configuration
         }
 
         return $finders;
+    }
+
+    /**
+     * Runs a Git command on the repository.
+     *
+     * @param string $command The command.
+     *
+     * @return string The trimmed output from the command.
+     *
+     * @throws RuntimeException If the command failed.
+     */
+    private function runGitCommand($command)
+    {
+        $path = dirname($this->file);
+        $process = new Process($command, $path);
+
+        if (0 === $process->run()) {
+            return trim($process->getOutput());
+        }
+
+        throw new RuntimeException(
+            sprintf(
+                'The tag or commit hash could not be retrieved from "%s": %s',
+                $path,
+                $process->getErrorOutput()
+            )
+        );
     }
 }

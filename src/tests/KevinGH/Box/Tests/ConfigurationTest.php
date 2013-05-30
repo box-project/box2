@@ -474,6 +474,109 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('test.html', $results[1]->getBasename());
     }
 
+    public function testGetGitHash()
+    {
+        touch('test');
+        exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+
+        $this->assertRegExp(
+            '/^[a-f0-9]{40}$/',
+            $this->config->getGitHash()
+        );
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
+    public function testGetGitHashShort()
+    {
+        touch('test');
+        exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+
+        $this->assertRegExp(
+            '/^[a-f0-9]{7}$/',
+            $this->config->getGitHash(true)
+        );
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
+    public function testGetGitHashPlaceholder()
+    {
+        $this->assertNull($this->config->getGitHashPlaceholder());
+    }
+
+    public function testGetGitHashPlaceholderSet()
+    {
+        $this->setConfig(array('git-commit' => 'git_commit'));
+
+        $this->assertEquals(
+            'git_commit',
+            $this->config->getGitHashPlaceholder()
+        );
+    }
+
+    public function testGetGitShortHashPlaceholder()
+    {
+        $this->assertNull($this->config->getGitShortHashPlaceholder());
+    }
+
+    public function testGetGitShortHashPlaceholderSet()
+    {
+        $this->setConfig(array('git-commit-short' => 'git_commit_short'));
+
+        $this->assertEquals(
+            'git_commit_short',
+            $this->config->getGitShortHashPlaceholder()
+        );
+    }
+
+    public function testGitTag()
+    {
+        touch('test');
+        exec('git init');
+        exec('git config user.name "Test User"');
+        exec('git config user.email test@test.test');
+        exec('git add test');
+        exec('git commit -m "Adding test file."');
+        exec('git tag 1.0.0');
+
+        $this->assertEquals('1.0.0', $this->config->getGitTag());
+
+        // some process does not release the git files
+        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+            exec('rd /S /Q .git');
+        }
+    }
+
+    public function testGetGitTagPlaceholder()
+    {
+        $this->assertNull($this->config->getGitTagPlaceholder());
+    }
+
+    public function testGetGitTagPlaceholderSet()
+    {
+        $this->setConfig(array('git-tag' => '@git-tag@'));
+
+        $this->assertEquals(
+            '@git-tag@',
+            $this->config->getGitTagPlaceholder()
+        );
+    }
+
     public function testGetGitVersion()
     {
         $this->setExpectedException(
@@ -719,14 +822,20 @@ class ConfigurationTest extends TestCase
 
         $this->setConfig(
             array(
-                'git-version' => 'git_tag',
+                'git-commit' => 'git_commit',
+                'git-commit-short' => 'git_commit_short',
+                'git-tag' => 'git_tag',
+                'git-version' => 'git_version',
                 'replacements' => array('rand' => $rand = rand())
             )
         );
 
         $values = $this->config->getProcessedReplacements();
 
+        $this->assertRegExp('/^[a-f0-9]{40}$/', $values['@git_commit@']);
+        $this->assertRegExp('/^[a-f0-9]{7}$/', $values['@git_commit_short@']);
         $this->assertEquals('1.0.0', $values['@git_tag@']);
+        $this->assertEquals('1.0.0', $values['@git_version@']);
         $this->assertEquals($rand, $values['@rand@']);
 
         // some process does not release the git files
