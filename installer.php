@@ -1,44 +1,772 @@
 <?php
 
-Installer::run();
+namespace
 
-class Installer{
-    const MANIFEST = 'http://box-project.org/manifest.json';
-    const NAME = 'box.phar';
-    public static function run(){self::checkRequirements();self::downloadApp(self::findCurrent());echo "Done!\n";}
-    private static function assert($result,$message,$fatal = true){if(false === $result){self::warn($message);if($fatal){exit(1);}}}
-    private static function checkRequirements(){echo "Checking requirements...\n";self::assert(version_compare(PHP_VERSION, '5.3.3', '>='),'    - PHP v5.3.3 or greater is required.');self::assert(extension_loaded('phar'),'    - The "phar" extension is required.');$extension = new ReflectionExtension('phar');self::assert(version_compare($extension->getVersion(), '2.0', '>='),'    - The "phar" extension v2.0 or greater is required.');self::assert(extension_loaded('openssl'),'    - OpenSSL not available, signed PHARs are not supported.',false);self::assert(false == ini_get('phar.readonly'),'    - The "phar.readonly" setting is on. PHARs are read-only.',false);}
-    private static function downloadApp($url){echo "Downloading...\n";unlink($temp = tempnam(sys_get_temp_dir(), 'box'));mkdir($temp);$temp .= DIRECTORY_SEPARATOR . self::NAME;self::assert(file_put_contents($temp, file_get_contents($url)),'The app could not be downloaded.');try{$phar = new Phar($temp);}catch(PharException $exception){self::warn('The download was corrupted: ' . $exception->getMessage());exit(1);}catch(UnexpectedValueException $exception){self::warn('The download was corrupted: ' . $exception->getMessage());exit(1);}unset($phar);self::assert(rename($temp, self::NAME),"Could not move temporary file here: $temp");}
-    private static function findCurrent(){self::assert($manifest = file_get_contents(self::MANIFEST),'Unable to download the app manifest.');$manifest = json_decode($manifest, true);self::assert(JSON_ERROR_NONE === json_last_error(),'The manifest is corrupt or invalid.');foreach ($manifest as $candidate){$candidate['version'] = Version::create($candidate['version']);if(isset($latest)){if($candidate['version']->isGreaterThan($latest['version'])){$latest = $candidate;}}else{$latest = $candidate;}}return $latest['url'];}
-    private static function warn($message){fwrite(STDERR, $message . "\n");}
+{
+    use Herrera\Version\Comparator;
+    use Herrera\Version\Dumper;
+    use Herrera\Version\Parser;
+
+    $n = PHP_EOL;
+
+    set_error_handler(
+        function ($code, $message, $file, $line) use ($n) {
+            if ($code & error_reporting()) {
+                echo "$n{$n}Error: $message$n$n";
+                exit(1);
+            }
+        }
+    );
+
+    echo "Box Installer$n";
+    echo "=============$n$n";
+
+    echo "Enivornment Check$n";
+    echo "-----------------$n$n";
+
+    echo "\"-\" indicates success.$n";
+    echo "\"*\" indicates error.$n$n";
+
+    // check version
+    check(
+        'You have a supported version of PHP (>= 5.3.3).',
+        'You need PHP 5.3.3 or greater.',
+        function () {
+            return version_compare(PHP_VERSION, '5.3.3', '>=');
+        }
+    );
+
+    // check phar extension
+    check(
+        'You have the "phar" extension installed.',
+        'You need to have the "phar" extension installed.',
+        function () {
+            return extension_loaded('phar');
+        }
+    );
+
+    // check phar extension version
+    check(
+        'You have a supported version of the "phar" extension.',
+        'You need a newer version of the "phar" extension (>=2.0).',
+        function () {
+            $phar = new ReflectionExtension('phar');
+
+            return version_compare($phar->getVersion(), '2.0', '>=');
+        }
+    );
+
+    // check openssl extension
+    check(
+        'You have the "openssl" extension installed.',
+        'Notice: The "openssl" extension will be needed to sign with private keys.',
+        function () {
+            return extension_loaded('openssl');
+        },
+        false
+    );
+
+    // check phar readonly setting
+    check(
+        'The "phar.readonly" setting is off.',
+        'Notice: The "phar.readonly" setting needs to be off to create Phars.',
+        function () {
+            return (false == ini_get('phar.readonly'));
+        },
+        false
+    );
+
+    // check detect unicode setting
+    check(
+        'The "detect_unicode" setting is off.',
+        'The "detect_unicode" setting needs to be off.',
+        function () {
+            return (false == ini_get('detect_unicode'));
+        }
+    );
+
+    // check suhosin setting
+    if (extension_loaded('suhosin') || defined('SUHOSIN_PATCH')) {
+        check(
+            'The "phar" stream wrapper is allowed by suhosin.',
+            'The "phar" stream wrapper is blocked by suhosin.',
+            function () {
+                $white = ini_get('suhosin.executor.include.whitelist');
+                $black = ini_get('suhosin.executor.include.blacklist');
+
+                if ((false === stripos($white, 'phar'))
+                    || (false !== stripos($black, 'phar'))) {
+                    return false;
+                }
+
+                return true;
+            }
+        );
+    }
+
+    // check allow url open setting
+    check(
+        'The "allow_url_fopen" setting is on.',
+        'The "allow_url_fopen" setting needs to be on.',
+        function () {
+            return (true == ini_get('allow_url_fopen'));
+        }
+    );
+
+    // check ioncube loader version
+    if (extension_loaded('ionCube_loader')) {
+        check(
+            'You have a supported version of ionCube Loader.',
+            'Your version of the ionCube Loader is not compatible with Phars.',
+            function () {
+                return (40009 > ioncube_loader_version());
+            }
+        );
+    }
+
+    // check apc cli caching
+    check(
+        'The "apc.enable_cli" setting is off.',
+        'Notice: The "apc.enable_cli" is on and may cause problems with Phars.',
+        function () {
+            return (false == ini_get('apc.enable_cli'));
+        },
+        false
+    );
+
+    echo "{$n}Everything seems good!$n$n";
+
+    echo "Download$n";
+    echo "--------$n$n";
+
+    // Retrieve manifest
+    echo " - Downloading manifest...$n";
+
+    $manifest = file_get_contents('http://box-project.org/manifest.json');
+
+    echo " - Reading manifest...$n";
+
+    $manifest = json_decode($manifest);
+    $current = null;
+
+    foreach ($manifest as $item) {
+        $item->version = Parser::toVersion($item->version);
+
+        if ($current
+            && (Comparator::isGreaterThan($item->version, $current->version))) {
+            $current = $item;
+        }
+    }
+
+    if (!$item) {
+        echo " x No application download was found.$n";
+    }
+
+    echo " - Downloading Box v", Dumper::toString($item->version), "...$n";
+
+    file_put_contents($item->name, file_get_contents($item->url));
+
+    echo " - Checking file checksum...$n";
+
+    if ($item->sha1 !== sha1_file($item->name)) {
+        unlink($item->name);
+
+        echo " x The download was corrupted.$n";
+    }
+
+    echo " - Checking if valid Phar...$n";
+
+    try {
+        new Phar($item->name);
+    } catch (Exception $e) {
+        echo " x The Phar is not valid.\n\n";
+
+        throw $e;
+    }
+
+    echo " - Making Box executable...$n";
+
+    @chmod($item->name, 0755);
+
+    echo "{$n}Box installed!$n";
+
+    /**
+     * Checks a condition, outputs a message, and exits if failed.
+     *
+     * @param string   $success   The success message.
+     * @param string   $failure   The failure message.
+     * @param callable $condition The condition to check.
+     * @param boolean  $exit      Exit on failure?
+     */
+    function check($success, $failure, $condition, $exit = true)
+    {
+        global $n;
+
+        if ($condition()) {
+            echo ' - ', $success, $n;
+        } else {
+            echo ' * ', $failure, $n;
+
+            if ($exit) {
+                exit(1);
+            }
+        }
+    }
 }
 
-class Version{
-    const REGEX = '/^\d+\.\d+\.\d+(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/';
-    private $build;
-    private $major = 0;
-    private $minor = 0;
-    private $patch = 0;
-    private $pre;
-    public function __construct($string = ''){if(false === empty($string)){$this->parseString($string);}}
-    public function __toString(){$string = sprintf('%d.%d.%d',$this->major,$this->minor,$this->patch);if ($this->pre) {$string .= '-' . join('.', $this->pre);}if ($this->build) {$string .= '+' . join('.', $this->build);}return $string;}
-    public function compareTo($version){$major = $version->getMajor();$minor = $version->getMinor();$patch = $version->getPatch();$pre = $version->getPreRelease();$build = $version->getBuild();switch (true) {case ($this->major < $major):return 1;case ($this->major > $major):return -1;case ($this->minor > $minor):return -1;case ($this->minor < $minor):return 1;case ($this->patch > $patch):return -1;case ($this->patch < $patch):return 1;}if ($pre || $this->pre) {if (empty($this->pre) && $pre) {return -1;}if ($this->pre && empty($pre)) {return 1;}if (0 !== ($weight = $this->precedence($this->pre, $pre))) {return $weight;}}if ($build || $this->build) {if ((null === $this->build) && $build) {return 1;}if ($this->build && (null === $build)) {return -1;}return $this->precedence($this->build, $build);}return 0;}
-    public static function create($string = ''){return new static($string);}
-    public function isEqualTo(Version $version){return ((string)$this == (string)$version);}
-    public function isGreaterThan(Version $version){return (0 > $this->compareTo($version));}
-    public function isLessThan(Version $version){return (0 < $this->compareTo($version));}
-    public function isStable(){return empty($this->pre);}
-    public static function isValid($string){return (bool) preg_match(static::REGEX, $string);}
-    public function getBuild(){return $this->build;}
-    public function getPreRelease(){return $this->pre;}
-    public function getMajor(){return $this->major;}
-    public function getMinor(){return $this->minor;}
-    public function getPatch(){return $this->patch;}
-    public function setBuild($build){$this->build = array_values((array)$build);array_walk($this->build,function (&$v) {if (preg_match('/^[0-9]+$/', $v)) {$v = (int)$v;}});}
-    public function setPreRelease($pre){$this->pre = array_values((array)$pre);array_walk($this->pre,function (&$v) {if (preg_match('/^[0-9]+$/', $v)) {$v = (int)$v;}});}
-    public function setMajor($major){$this->major = (int)$major;}
-    public function setMinor($minor){$this->minor = (int)$minor;}
-    public function setPatch($patch){$this->patch = (int)$patch;}
-    protected function parseString($string){$this->build = null;$this->major = 0;$this->minor = 0;$this->patch = 0;$this->pre = null;if (false === static::isValid($string)) {throw new InvalidArgumentException(sprintf('The version string "%s" is invalid.', $string));}if (false !== strpos($string, '+')) {list($string, $build) = explode('+', $string);$this->setBuild(explode('.', $build));}if (false !== strpos($string, '-')) {list($string, $pre) = explode('-', $string);$this->setPreRelease(explode('.', $pre));}$version = explode('.', $string);$this->major = (int)$version[0];if (isset($version[1])) {$this->minor = (int)$version[1];}if (isset($version[2])) {$this->patch = (int)$version[2];}}
-    protected function precedence($a, $b){if (count($a) > count($b)) {$l = -1;$r = 1;$x = $a;$y = $b;} else {$l = 1;$r = -1;$x = $b;$y = $a;}foreach (array_keys($x) as $i) {if (false === isset($y[$i])) {return $l;}if ($x[$i] === $y[$i]) {continue;}$xi = is_integer($x[$i]);$yi = is_integer($y[$i]);if ($xi && $yi) {return ($x[$i] > $y[$i]) ? $l : $r;} elseif ((false === $xi) && (false === $yi)) {return (max($x[$i], $y[$i]) == $x[$i]) ? $l : $r;} else {return $xi ? $r : $l;}}return 0;}
+namespace Herrera\Version\Exception
+
+{
+    use Exception;
+
+    /**
+     * Throw if an invalid version string representation is used.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class InvalidStringRepresentationException extends VersionException
+    {
+        /**
+         * The invalid string representation.
+         *
+         * @var string
+         */
+        private $version;
+
+        /**
+         * Sets the invalid string representation.
+         *
+         * @param string $version The string representation.
+         */
+        public function __construct($version)
+        {
+            parent::__construct(
+                sprintf(
+                    'The version string representation "%s" is invalid.',
+                    $version
+                )
+            );
+
+            $this->version = $version;
+        }
+
+        /**
+         * Returns the invalid string representation.
+         *
+         * @return string The invalid string representation.
+         */
+        public function getVersion()
+        {
+            return $this->version;
+        }
+    }
+
+    /**
+     * The base library exception class.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class VersionException extends Exception
+    {
+    }
+}
+
+namespace Herrera\Version
+
+{
+    use Herrera\Version\Exception\InvalidStringRepresentationException;
+
+    /**
+     * Compares two Version instances.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class Comparator
+    {
+        /**
+         * The version is equal to another.
+         */
+        const EQUAL_TO = 0;
+
+        /**
+         * The version is greater than another.
+         */
+        const GREATER_THAN = 1;
+
+        /**
+         * The version is less than another.
+         */
+        const LESS_THAN = -1;
+
+        /**
+         * Compares one version with another.
+         *
+         * @param Version $left The left version to compare.
+         * @param Version $right The right version to compare.
+         *
+         * @return integer Returns Comparator::EQUAL_TO if the two versions are
+         * equal. If the left version is less than the right
+         * version, Comparator::LESS_THAN is returned. If the left
+         * version is greater than the right version,
+         * Comparator::GREATER_THAN is returned.
+         */
+        public static function compareTo(Version $left, Version $right)
+        {
+            switch (true) {
+                case ($left->getMajor() < $right->getMajor()):
+                    return self::LESS_THAN;
+                case ($left->getMajor() > $right->getMajor()):
+                    return self::GREATER_THAN;
+                case ($left->getMinor() > $right->getMinor()):
+                    return self::GREATER_THAN;
+                case ($left->getMinor() < $right->getMinor()):
+                    return self::LESS_THAN;
+                case ($left->getPatch() > $right->getPatch()):
+                    return self::GREATER_THAN;
+                case ($left->getPatch() < $right->getPatch()):
+                    return self::LESS_THAN;
+                // @codeCoverageIgnoreStart
+            }
+            // @codeCoverageIgnoreEnd
+
+            return self::compareIdentifiers(
+                $left->getPreRelease(),
+                $right->getPreRelease()
+            );
+        }
+
+        /**
+         * Checks if the left version is equal to the right.
+         *
+         * @param Version $left The left version to compare.
+         * @param Version $right The right version to compare.
+         *
+         * @return boolean TRUE if the left version is equal to the right, FALSE
+         * if not.
+         */
+        public static function isEqualTo(Version $left, Version $right)
+        {
+            return (self::EQUAL_TO === self::compareTo($left, $right));
+        }
+
+        /**
+         * Checks if the left version is greater than the right.
+         *
+         * @param Version $left The left version to compare.
+         * @param Version $right The right version to compare.
+         *
+         * @return boolean TRUE if the left version is greater than the right,
+         * FALSE if not.
+         */
+        public static function isGreaterThan(Version $left, Version $right)
+        {
+            return (self::GREATER_THAN === self::compareTo($left, $right));
+        }
+
+        /**
+         * Checks if the left version is less than the right.
+         *
+         * @param Version $left The left version to compare.
+         * @param Version $right The right version to compare.
+         *
+         * @return boolean TRUE if the left version is less than the right,
+         * FALSE if not.
+         */
+        public static function isLessThan(Version $left, Version $right)
+        {
+            return (self::LESS_THAN === self::compareTo($left, $right));
+        }
+
+        /**
+         * Compares the identifier components of the left and right versions.
+         *
+         * @param array $left The left identifiers.
+         * @param array $right The right identifiers.
+         *
+         * @return integer Returns Comparator::EQUAL_TO if the two identifiers are
+         * equal. If the left identifiers is less than the right
+         * identifiers, Comparator::LESS_THAN is returned. If the
+         * left identifiers is greater than the right identifiers,
+         * Comparator::GREATER_THAN is returned.
+         */
+        public static function compareIdentifiers(array $left, array $right)
+        {
+            if ($left && empty($right)) {
+                return self::LESS_THAN;
+            } elseif (empty($left) && $right) {
+                return self::GREATER_THAN;
+            }
+
+            $l = $left;
+            $r = $right;
+            $x = self::GREATER_THAN;
+            $y = self::LESS_THAN;
+
+            if (count($l) < count($r)) {
+                $l = $right;
+                $r = $left;
+                $x = self::LESS_THAN;
+                $y = self::GREATER_THAN;
+            }
+
+            foreach (array_keys($l) as $i) {
+                if (!isset($r[$i])) {
+                    return $x;
+                }
+
+                if ($l[$i] === $r[$i]) {
+                    continue;
+                }
+
+                if (true === ($li = (false != preg_match('/^\d+$/', $l[$i])))) {
+                    $l[$i] = intval($l[$i]);
+                }
+
+                if (true === ($ri = (false != preg_match('/^\d+$/', $r[$i])))) {
+                    $r[$i] = intval($r[$i]);
+                }
+
+                if ($li && $ri) {
+                    return ($l[$i] > $r[$i]) ? $x : $y;
+                } elseif (!$li && $ri) {
+                    return $x;
+                } elseif ($li && !$ri) {
+                    return $y;
+                }
+
+                return strcmp($l[$i], $r[$i]);
+            }
+
+            return self::EQUAL_TO;
+        }
+    }
+
+    /**
+     * Dumps the Version instance to a variety of formats.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class Dumper
+    {
+        /**
+         * Returns the components of a Version instance.
+         *
+         * @param Version $version A version.
+         *
+         * @return array The components.
+         */
+        public static function toComponents(Version $version)
+        {
+            return array(
+                Parser::MAJOR => $version->getMajor(),
+                Parser::MINOR => $version->getMinor(),
+                Parser::PATCH => $version->getPatch(),
+                Parser::PRE_RELEASE => $version->getPreRelease(),
+                Parser::BUILD => $version->getBuild()
+            );
+        }
+
+        /**
+         * Returns the string representation of a Version instance.
+         *
+         * @param Version $version A version.
+         *
+         * @return string The string representation.
+         */
+        public static function toString(Version $version)
+        {
+            return sprintf(
+                '%d.%d.%d%s%s',
+                $version->getMajor(),
+                $version->getMinor(),
+                $version->getPatch(),
+                $version->getPreRelease()
+                    ? '-' . join('.', $version->getPreRelease())
+                    : '',
+                $version->getBuild()
+                    ? '+' . join('.', $version->getBuild())
+                    : ''
+            );
+        }
+    }
+
+    /**
+     * Parses the string representation of a version number.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class Parser
+    {
+        /**
+         * The build metadata component.
+         */
+        const BUILD = 'build';
+
+        /**
+         * The major version number component.
+         */
+        const MAJOR = 'major';
+
+        /**
+         * The minor version number component.
+         */
+        const MINOR = 'minor';
+
+        /**
+         * The patch version number component.
+         */
+        const PATCH = 'patch';
+
+        /**
+         * The pre-release version number component.
+         */
+        const PRE_RELEASE = 'pre';
+
+        /**
+         * Returns a Version builder for the string representation.
+         *
+         * @param string $version The string representation.
+         *
+         * @return Builder A Version builder.
+         */
+        public static function toBuilder($version)
+        {
+            return Builder::create()->importComponents(
+                self::toComponents($version)
+            );
+        }
+
+        /**
+         * Returns the components of the string representation.
+         *
+         * @param string $version The string representation.
+         *
+         * @return array The components of the version.
+         *
+         * @throws InvalidStringRepresentationException If the string representation
+         * is invalid.
+         */
+        public static function toComponents($version)
+        {
+            if (!Validator::isVersion($version)) {
+                throw new InvalidStringRepresentationException($version);
+            }
+
+            if (false !== strpos($version, '+')) {
+                list($version, $build) = explode('+', $version);
+
+                $build = explode('.', $build);
+            }
+
+            if (false !== strpos($version, '-')) {
+                list($version, $pre) = explode('-', $version);
+
+                $pre = explode('.', $pre);
+            }
+
+            list(
+                $major,
+                $minor,
+                $patch
+                ) = explode('.', $version);
+
+            return array(
+                self::MAJOR => intval($major),
+                self::MINOR => intval($minor),
+                self::PATCH => intval($patch),
+                self::PRE_RELEASE => isset($pre) ? $pre : array(),
+                self::BUILD => isset($build) ? $build : array(),
+            );
+        }
+
+        /**
+         * Returns a Version instance for the string representation.
+         *
+         * @param string $version The string representation.
+         *
+         * @return Version A Version instance.
+         */
+        public static function toVersion($version)
+        {
+            $components = self::toComponents($version);
+
+            return new Version(
+                $components['major'],
+                $components['minor'],
+                $components['patch'],
+                $components['pre'],
+                $components['build']
+            );
+        }
+    }
+
+    /**
+     * Validates version information.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class Validator
+    {
+        /**
+         * The regular expression for a valid identifier.
+         */
+        const IDENTIFIER_REGEX = '/^[0-9A-Za-z\-]+$/';
+
+        /**
+         * The regular expression for a valid semantic version number.
+         */
+        const VERSION_REGEX = '/^\d+\.\d+\.\d+(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?$/';
+
+        /**
+         * Checks if a identifier is valid.
+         *
+         * @param string $identifier A identifier.
+         *
+         * @return boolean TRUE if the identifier is valid, FALSE If not.
+         */
+        public static function isIdentifier($identifier)
+        {
+            return (true == preg_match(self::IDENTIFIER_REGEX, $identifier));
+        }
+
+        /**
+         * Checks if a number is a valid version number.
+         *
+         * @param integer $number A number.
+         *
+         * @return boolean TRUE if the number is valid, FALSE If not.
+         */
+        public static function isNumber($number)
+        {
+            return (true == preg_match('/^\d+$/', $number));
+        }
+
+        /**
+         * Checks if the string representation of a version number is valid.
+         *
+         * @param string $version The string representation.
+         *
+         * @return boolean TRUE if the string representation is valid, FALSE if not.
+         */
+        public static function isVersion($version)
+        {
+            return (true == preg_match(self::VERSION_REGEX, $version));
+        }
+    }
+
+    /**
+     * Stores and returns the version information.
+     *
+     * @author Kevin Herrera <kevin@herrera.io>
+     */
+    class Version
+    {
+        /**
+         * The build metadata identifiers.
+         *
+         * @var array
+         */
+        protected $build;
+
+        /**
+         * The major version number.
+         *
+         * @var integer
+         */
+        protected $major;
+
+        /**
+         * The minor version number.
+         *
+         * @var integer
+         */
+        protected $minor;
+
+        /**
+         * The patch version number.
+         *
+         * @var integer
+         */
+        protected $patch;
+
+        /**
+         * The pre-release version identifiers.
+         *
+         * @var array
+         */
+        protected $preRelease;
+
+        /**
+         * Sets the version information.
+         *
+         * @param integer $major The major version number.
+         * @param integer $minor The minor version number.
+         * @param integer $patch The patch version number.
+         * @param array $pre The pre-release version identifiers.
+         * @param array $build The build metadata identifiers.
+         */
+        public function __construct(
+            $major = 0,
+            $minor = 0,
+            $patch = 0,
+            array $pre = array(),
+            array $build = array()
+        ) {
+            $this->build = $build;
+            $this->major = $major;
+            $this->minor = $minor;
+            $this->patch = $patch;
+            $this->preRelease = $pre;
+        }
+
+        /**
+         * Returns the build metadata identifiers.
+         *
+         * @return array The build metadata identifiers.
+         */
+        public function getBuild()
+        {
+            return $this->build;
+        }
+
+        /**
+         * Returns the major version number.
+         *
+         * @return integer The major version number.
+         */
+        public function getMajor()
+        {
+            return $this->major;
+        }
+
+        /**
+         * Returns the minor version number.
+         *
+         * @return integer The minor version number.
+         */
+        public function getMinor()
+        {
+            return $this->minor;
+        }
+
+        /**
+         * Returns the patch version number.
+         *
+         * @return integer The patch version number.
+         */
+        public function getPatch()
+        {
+            return $this->patch;
+        }
+
+        /**
+         * Returns the pre-release version identifiers.
+         *
+         * @return array The pre-release version identifiers.
+         */
+        public function getPreRelease()
+        {
+            return $this->preRelease;
+        }
+    }
 }
