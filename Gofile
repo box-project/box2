@@ -1,0 +1,26 @@
+<?php
+
+use Symfony\Component\Console\Input\InputInterface as In;
+use Symfony\Component\Console\Input\InputOption as Option;
+use Symfony\Component\Console\Output\OutputInterface as Out;
+
+task(
+    'test',
+    'Runs the project unit tests',
+    function (In $in, Out $out) {
+        $coverage = $in->getOption('coverage')
+            ? ' --coverage-html coverage'
+            : '';
+
+        passthru("bin/phpunit --verbose$coverage", $exit);
+
+        return $exit;
+    }
+);
+
+option(
+    'coverage',
+    'c',
+    Option::VALUE_NONE,
+    'Generate HTML code coverage report'
+);
