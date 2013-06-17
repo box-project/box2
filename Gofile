@@ -1,8 +1,21 @@
 <?php
 
 use Symfony\Component\Console\Input\InputInterface as In;
-use Symfony\Component\Console\Input\InputOption as Option;
 use Symfony\Component\Console\Output\OutputInterface as Out;
+
+task(
+    'build',
+    'Builds a new phar',
+    function (In $in, Out $out) {
+        $verbose = (Out::VERBOSITY_VERBOSE === $out->getVerbosity())
+            ? ' --verbose'
+            : '';
+
+        passthru("bin/box build --ansi$verbose", $exit);
+
+        return $exit;
+    }
+);
 
 task(
     'test',
@@ -21,6 +34,6 @@ task(
 option(
     'coverage',
     'c',
-    Option::VALUE_NONE,
+    OPT_NO_VALUE,
     'Generate HTML code coverage report'
 );
