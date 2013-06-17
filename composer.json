@@ -21,6 +21,7 @@
         "herrera-io/file-system-functions": "~1.0",
         "herrera-io/json": "~1.0",
         "kherge/amend": "~3.0",
+        "justinrainbow/json-schema": "1.3.1",
         "phpseclib/phpseclib": "dev-master",
         "symfony/console": "~2.1",
         "symfony/finder": "~2.1",
