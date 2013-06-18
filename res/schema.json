@@ -25,7 +25,9 @@
         },
         "blacklist": {
             "description": "A list of relative file paths to skip.",
-            "items": "string",
+            "items": {
+                "type": "string"
+            },
             "type": ["array", "string"]
         },
         "bootstrap": {
@@ -46,22 +48,30 @@
         },
         "directories": {
             "description": "A list of relative directory paths to search for scripts.",
-            "items": "string",
+            "items": {
+                "type": "string"
+            },
             "type": ["array", "string"]
         },
         "directories-bin": {
             "description": "(binary safe) A list of relative directory paths to search for files.",
-            "items": "string",
+            "items": {
+                "type": "string"
+            },
             "type": ["array", "string"]
         },
         "files": {
             "description": "A list of relative file paths to include.",
-            "items": "string",
+            "items": {
+                "type": "string"
+            },
             "type": ["array", "string"]
         },
         "files-bin": {
             "description": "(binary safe) A list of relative file paths to include.",
-            "items": "string",
+            "items": {
+                "type": "string"
+            },
             "type": ["array", "string"]
         },
         "finder": {
