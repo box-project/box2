@@ -28,7 +28,15 @@
             "items": {
                 "type": "string"
             },
-            "type": ["array", "string"]
+            "type": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string"
+            ]
         },
         "bootstrap": {
             "description": "A file used to load third-party class compactors.",
@@ -40,7 +48,15 @@
         },
         "compactors": {
             "description": "The list of file contents compactor classes to register.",
-            "type": ["array", "string"]
+            "type": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string"
+            ]
         },
         "compression": {
             "description": "The compression algorithm to use for the PHAR.",
@@ -51,28 +67,60 @@
             "items": {
                 "type": "string"
             },
-            "type": ["array", "string"]
+            "type": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string"
+            ]
         },
         "directories-bin": {
             "description": "(binary safe) A list of relative directory paths to search for files.",
             "items": {
                 "type": "string"
             },
-            "type": ["array", "string"]
+            "type": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string"
+            ]
         },
         "files": {
             "description": "A list of relative file paths to include.",
             "items": {
                 "type": "string"
             },
-            "type": ["array", "string"]
+            "type": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string"
+            ]
         },
         "files-bin": {
             "description": "(binary safe) A list of relative file paths to include.",
             "items": {
                 "type": "string"
             },
-            "type": ["array", "string"]
+            "type": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "string"
+            ]
         },
         "finder": {
             "description": "A list of Finder configuration settings.",
