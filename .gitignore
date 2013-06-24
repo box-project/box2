@@ -1,9 +1,8 @@
-.*
-!.gitignore
-!.travis.yml
-*.phar
-bin/
-!bin/box*
-composer.lock
-coverage/
-src/vendors/
+/.idea/
+/bin/
+/coverage/
+/src/vendors/
+
+/*.iml
+/*.phar
+/composer.lock
