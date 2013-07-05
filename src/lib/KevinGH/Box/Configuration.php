@@ -406,10 +406,12 @@ class Configuration
                 );
 
                 if (false === $file->isFile()) {
-                    throw new RuntimeException(sprintf(
-                        'The file "%s" does not exist or is not a file.',
-                        $path
-                    ));
+                    throw new RuntimeException(
+                        sprintf(
+                            'The file "%s" does not exist or is not a file.',
+                            $path
+                        )
+                    );
                 }
 
                 $files[] = $file;
@@ -596,6 +598,20 @@ class Configuration
         }
 
         return null;
+    }
+
+    /**
+     * Returns the internal file path mapping.
+     *
+     * @return array The mapping.
+     */
+    public function getMap()
+    {
+        if (isset($this->raw->map)) {
+            return (array) $this->raw->map;
+        }
+
+        return array();
     }
 
     /**

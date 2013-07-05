@@ -162,6 +162,10 @@
             "description": "The file path to the main script.",
             "type": "string"
         },
+        "map": {
+            "description": "The mapping of file system paths to phar paths.",
+            "type": "object"
+        },
         "metadata": {
             "description": "Extra PHAR metadata.",
             "type": "any"

@@ -678,6 +678,18 @@ class ConfigurationTest extends TestCase
         $this->config->getMainScriptContents();
     }
 
+    public function testGetMap()
+    {
+        $this->assertSame(array(), $this->config->getMap());
+    }
+
+    public function testGetMapSet()
+    {
+        $this->setConfig(array('map' => array('a' => 'b')));
+
+        $this->assertEquals(array('a' => 'b'), $this->config->getMap());
+    }
+
     public function testGetMetadata()
     {
         $this->assertNull($this->config->getMetadata());
