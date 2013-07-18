@@ -608,7 +608,13 @@ class Configuration
     public function getMap()
     {
         if (isset($this->raw->map)) {
-            return (array) $this->raw->map;
+            $map = array();
+
+            foreach ((array) $this->raw->map as $match => $replace) {
+                $map[canonical_path($match)] = canonical_path($replace);
+            }
+
+            return $map;
         }
 
         return array();
