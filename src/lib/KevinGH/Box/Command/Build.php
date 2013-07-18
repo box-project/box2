@@ -280,6 +280,35 @@ it will be automatically added after it has been compacted and had its
 placeholder values replaced. Also, the #! line will be automatically
 removed if present.
 
+The <info>map</info> <comment>(object)</comment> setting is used to map a path of a file or directory
+being added, to a different one inside the phar. The key is a simple
+string that will be matched against, while the value is the new path
+to replace it with.
+
+<comment>
+  {
+    "map": {
+      "my/test/path": "src/Test"
+    }
+  }
+</comment>
+
+(with the files)
+
+<comment>
+  1. my/test/path/file.php
+  2. my/test/path/some/other.php
+  3. my/test/another.php
+</comment>
+
+(will be stored as)
+
+<comment>
+  1. src/Test/file.php
+  2. src/Test/some/other.php
+  3. my/test/another.php
+</comment>
+
 The <info>metadata</info> <comment>(any)</comment> setting can be any value. This value will be stored as
 metadata that can be retrieved from the built Phar <comment>(Phar::getMetadata())</comment>.
 
@@ -563,10 +592,29 @@ HELP
             $box = $binary ? $this->box->getPhar() : $this->box;
             $base = $this->config->getBasePath();
             $baseRegex = $this->config->getBasePathRegex();
+            $map = $this->config->getMap();
 
-            if ($this->isVerbose()) {
-                /** @var $file SplFileInfo */
-                foreach ($iterator as $file) {
+            /** @var $file SplFileInfo */
+            foreach ($iterator as $file) {
+                $relative = preg_replace($baseRegex, '', $file->getPathname());
+                $matched = false;
+
+                foreach ($map as $match => $replace) {
+                    if (0 === strpos($relative, $match)) {
+                        $relative = preg_replace(
+                            '/' . preg_quote($match, '/') . '/',
+                            $replace,
+                            $relative,
+                            1
+                        );
+
+                        $matched = true;
+
+                        break;
+                    }
+                }
+
+                if ($this->isVerbose()) {
                     if (false === $file->isReadable()) {
                         throw new RuntimeException(
                             sprintf(
@@ -576,15 +624,14 @@ HELP
                         );
                     }
 
-                    $this->putln('+', $file);
-
-                    $box->addFile(
-                        $file,
-                        preg_replace($baseRegex, '', $file->getPathname())
-                    );
+                    if ($matched) {
+                        $this->putln('+', $file . ' > ' . $relative);
+                    } else {
+                        $this->putln('+', $file);
+                    }
                 }
-            } else {
-                $box->buildFromIterator($iterator, $base);
+
+                $this->box->addFile($file, $relative);
             }
         }
     }

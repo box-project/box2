@@ -50,6 +50,9 @@ KEY
         $php = new PhpExecutableFinder();
         $php = '#!' . $php->find();
 
+        mkdir('a/deep/test/directory', 0755, true);
+        touch('a/deep/test/directory/test.php');
+
         mkdir('one');
         mkdir('two');
         touch('test.phar');
@@ -69,12 +72,14 @@ KEY
                     'bootstrap' => 'bootstrap.php',
                     'chmod' => '0755',
                     'compactors' => array('Herrera\\Box\\Compactor\\Composer'),
+                    'directories' => 'a',
                     'files' => 'test.php',
                     'finder' => array(array('in' => 'one')),
                     'finder-bin' => array(array('in' => 'two')),
                     'key' => 'private.key',
                     'key-pass' => true,
                     'main' => 'run.php',
+                    'map' => array('a/deep/test/directory' => 'sub'),
                     'metadata' => array('rand' => $rand = rand()),
                     'output' => 'test.phar',
                     'shebang' => $php,
@@ -106,6 +111,8 @@ KEY
   + {$dir}one{$ds}test.php
 ? Adding binary Finder files...
   + {$dir}two{$ds}test.png
+? Adding directories...
+  + {$dir}a{$ds}deep{$ds}test{$ds}directory{$ds}test.php > sub{$ds}test.php
 ? Adding files...
   + {$dir}test.php
 ? Adding main file: {$dir}run.php
