@@ -610,6 +610,23 @@ class Configuration
         if (isset($this->raw->map)) {
             $map = array();
 
+            foreach ((array) $this->raw->map as $item) {
+                $processed = array();
+
+                foreach ($item as $match => $replace) {
+                    $processed[canonical_path($match)] = canonical_path($replace);
+                }
+
+                if (isset($processed['_empty_'])) {
+                    $processed[''] = $processed['_empty_'];
+
+                    unset($processed['_empty_']);
+                }
+
+                $map[] = $processed;
+            }
+
+            /*
             foreach ((array) $this->raw->map as $match => $replace) {
                 $map[canonical_path($match)] = canonical_path($replace);
             }
@@ -619,6 +636,7 @@ class Configuration
 
                 unset($map['_empty_']);
             }
+            */
 
             return $map;
         }
@@ -636,6 +654,21 @@ class Configuration
         $map = $this->getMap();
 
         return function ($path) use ($map) {
+            foreach ($map as $item) {
+                foreach ($item as $match => $replace) {
+                    if (empty($match)) {
+                        return $replace . $path;
+                    } else if (0 === strpos($path, $match)) {
+                        return preg_replace(
+                            '/^' . preg_quote($match, '/') . '/',
+                            $replace,
+                            $path
+                        );
+                    }
+                }
+            }
+
+            /*
             foreach ($map as $match => $replace) {
                 if (empty($match)) {
                     return $replace . $path;
@@ -647,6 +680,7 @@ class Configuration
                     );
                 }
             }
+            */
         };
     }
 

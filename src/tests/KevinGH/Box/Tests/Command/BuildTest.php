@@ -80,8 +80,8 @@ KEY
                     'key-pass' => true,
                     'main' => 'run.php',
                     'map' => array(
-                        'a/deep/test/directory' => 'sub',
-                        '' => 'other/'
+                        array('a/deep/test/directory' => 'sub'),
+                        array('' => 'other/')
                     ),
                     'metadata' => array('rand' => $rand = rand()),
                     'output' => 'test.phar',

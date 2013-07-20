@@ -164,7 +164,12 @@
         },
         "map": {
             "description": "The mapping of file system paths to phar paths.",
-            "type": "object"
+            "type": {
+                "type": "array",
+                "items": {
+                    "type": "object"
+                }
+            }
         },
         "metadata": {
             "description": "Extra PHAR metadata.",

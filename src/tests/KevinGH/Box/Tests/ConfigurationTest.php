@@ -688,16 +688,16 @@ class ConfigurationTest extends TestCase
         $this->setConfig(
             array(
                 'map' => array(
-                    'a' => 'b',
-                    '_empty_' => 'c'
+                    array('a' => 'b'),
+                    array('_empty_' => 'c')
                 )
             )
         );
 
         $this->assertEquals(
             array(
-                'a' => 'b',
-                '' => 'c'
+                array('a' => 'b'),
+                array('' => 'c')
             ),
             $this->config->getMap()
         );
@@ -708,8 +708,8 @@ class ConfigurationTest extends TestCase
         $this->setConfig(
             array(
                 'map' => array(
-                    'first/test/path' => 'a',
-                    '' => 'b/'
+                    array('first/test/path' => 'a'),
+                    array('' => 'b/')
                 )
             )
         );

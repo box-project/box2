@@ -77,6 +77,7 @@ Note that all settings are optional.
     "key": ?,
     "key-pass": ?,
     "main": ?,
+    "map": ?,
     "metadata": ?,
     "mimetypes": ?,
     "mung": ?,
@@ -280,16 +281,19 @@ it will be automatically added after it has been compacted and had its
 placeholder values replaced. Also, the #! line will be automatically
 removed if present.
 
-The <info>map</info> <comment>(object)</comment> setting is used to map a path of a file or directory
-being added, to a different one inside the phar. The key is a simple
-string that will be matched against, while the value is the new path
-to replace it with.
+The <info>map</info> <comment>(array)</comment> setting is used to change where some (or all) files are
+stored inside the phar. The key is a beginning of the relative path that
+will be matched against the file being added to the phar. If the key is
+a match, the matched segment will be replaced with the value. If the key
+is empty, the value will be prefixed to all paths (except for those
+already matched by an earlier key).
 
 <comment>
   {
-    "map": {
-      "my/test/path": "src/Test"
-    }
+    "map": [
+      { "my/test/path": "src/Test" },
+      { "": "src/Another" }
+    ]
   }
 </comment>
 
@@ -306,7 +310,7 @@ to replace it with.
 <comment>
   1. src/Test/file.php
   2. src/Test/some/other.php
-  3. my/test/another.php
+  3. src/Another/my/test/another.php
 </comment>
 
 The <info>metadata</info> <comment>(any)</comment> setting can be any value. This value will be stored as
@@ -414,12 +418,14 @@ HELP
         if (array() !== ($map = $this->config->getMap())) {
             $this->putln('?', 'Mapping paths:');
 
-            foreach ($map as $match => $replace) {
-                if (empty($match)) {
-                    $match = "(all)";
-                }
+            foreach ($map as $item) {
+                foreach ($item as $match => $replace) {
+                    if (empty($match)) {
+                        $match = "(all)";
+                    }
 
-                $this->putln('-', "$match <info>></info> $replace");
+                    $this->putln('-', "$match <info>></info> $replace");
+                }
             }
         }
 
