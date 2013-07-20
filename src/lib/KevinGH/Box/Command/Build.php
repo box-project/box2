@@ -410,6 +410,19 @@ HELP
             }
         }
 
+        // alert about mapped paths
+        if (array() !== ($map = $this->config->getMap())) {
+            $this->putln('?', 'Mapping paths:');
+
+            foreach ($map as $match => $replace) {
+                if (empty($match)) {
+                    $match = "(all)";
+                }
+
+                $this->putln('-', "$match <info>></info> $replace");
+            }
+        }
+
         // start adding files
         if (array() !== ($iterators = $this->config->getFinders())) {
             $this->putln('?', 'Adding Finder files...');
@@ -452,22 +465,24 @@ HELP
         if (null !== ($main = $this->config->getMainScriptPath())) {
             $phar = $this->box->getPhar();
 
-            if (isset($phar[$main])) {
-                $this->putln(
-                    '?',
-                    'Setting main file: ' . $this->config->getBasePath() . DIRECTORY_SEPARATOR . $main
-                );
-            } else {
-                $this->putln(
-                    '?',
-                    'Adding main file: ' . $this->config->getBasePath() . DIRECTORY_SEPARATOR . $main
-                );
+            $this->putln(
+                '?',
+                'Adding main file: ' . $this->config->getBasePath() . DIRECTORY_SEPARATOR . $main
+            );
 
-                $this->box->addFromString(
-                    $main,
-                    $this->config->getMainScriptContents()
-                );
+            $mapper = $this->config->getMapper();
+            $pharPath = $mapper($main);
+
+            if (null !== $pharPath) {
+                $this->putln('>', $pharPath);
+
+                $main = $pharPath;
             }
+
+            $this->box->addFromString(
+                $main,
+                $this->config->getMainScriptContents()
+            );
         }
 
         // set the appropriate stub
@@ -476,7 +491,7 @@ HELP
 
             $stub = StubGenerator::create()
                 ->alias($this->config->getAlias())
-                ->index($this->config->getMainScriptPath())
+                ->index($main)
                 ->intercept($this->config->isInterceptFileFuncs())
                 ->mimetypes($this->config->getMimetypeMapping())
                 ->mung($this->config->getMungVariables())
@@ -590,28 +605,15 @@ HELP
             }
 
             $box = $binary ? $this->box->getPhar() : $this->box;
-            $base = $this->config->getBasePath();
             $baseRegex = $this->config->getBasePathRegex();
-            $map = $this->config->getMap();
+            $mapper = $this->config->getMapper();
 
             /** @var $file SplFileInfo */
             foreach ($iterator as $file) {
                 $relative = preg_replace($baseRegex, '', $file->getPathname());
-                $matched = false;
 
-                foreach ($map as $match => $replace) {
-                    if (0 === strpos($relative, $match)) {
-                        $relative = preg_replace(
-                            '/' . preg_quote($match, '/') . '/',
-                            $replace,
-                            $relative,
-                            1
-                        );
-
-                        $matched = true;
-
-                        break;
-                    }
+                if (null !== ($mapped = $mapper($relative))) {
+                    $relative = $mapped;
                 }
 
                 if ($this->isVerbose()) {
@@ -624,14 +626,14 @@ HELP
                         );
                     }
 
-                    if ($matched) {
-                        $this->putln('+', $file . ' > ' . $relative);
-                    } else {
-                        $this->putln('+', $file);
+                    $this->putln('+', $file);
+
+                    if (null !== $mapped) {
+                        $this->putln('>', $relative);
                     }
                 }
 
-                $this->box->addFile($file, $relative);
+                $box->addFile($file, $relative);
             }
         }
     }

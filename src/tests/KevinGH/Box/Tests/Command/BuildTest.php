@@ -79,7 +79,10 @@ KEY
                     'key' => 'private.key',
                     'key-pass' => true,
                     'main' => 'run.php',
-                    'map' => array('a/deep/test/directory' => 'sub'),
+                    'map' => array(
+                        'a/deep/test/directory' => 'sub',
+                        '' => 'other/'
+                    ),
                     'metadata' => array('rand' => $rand = rand()),
                     'output' => 'test.phar',
                     'shebang' => $php,
@@ -107,15 +110,23 @@ KEY
 ? Output path: {$dir}test.phar
 ? Registering compactors...
   + Herrera\\Box\\Compactor\\Composer
+? Mapping paths:
+  - a{$ds}deep{$ds}test{$ds}directory > sub
+  - (all) > other/
 ? Adding Finder files...
   + {$dir}one{$ds}test.php
+    > other{$ds}one{$ds}test.php
 ? Adding binary Finder files...
   + {$dir}two{$ds}test.png
+    > other{$ds}two{$ds}test.png
 ? Adding directories...
-  + {$dir}a{$ds}deep{$ds}test{$ds}directory{$ds}test.php > sub{$ds}test.php
+  + {$dir}a{$ds}deep{$ds}test{$ds}directory{$ds}test.php
+    > sub{$ds}test.php
 ? Adding files...
   + {$dir}test.php
+    > other{$ds}test.php
 ? Adding main file: {$dir}run.php
+    > other{$ds}run.php
 ? Generating new stub...
   - Using custom shebang line: $php
   - Using custom banner.
@@ -205,7 +216,7 @@ OUTPUT;
   + @name@: world
 ? Adding files...
   + {$dir}test.php
-? Setting main file: {$dir}test.php
+? Adding main file: {$dir}test.php
 ? Generating new stub...
 * Done.
 
@@ -253,7 +264,7 @@ OUTPUT;
 ? Output path: {$dir}test.phar
 ? Adding files...
   + {$dir}test.php
-? Setting main file: {$dir}test.php
+? Adding main file: {$dir}test.php
 ? Generating new stub...
   - Using custom banner from file: {$dir}banner
 * Done.
@@ -379,7 +390,7 @@ OUTPUT;
 ? Output path: {$dir}test.phar
 ? Adding files...
   + {$dir}test.php
-? Setting main file: {$dir}test.php
+? Adding main file: {$dir}test.php
 ? Generating new stub...
 ? Compressing...
 * Done.
