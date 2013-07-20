@@ -62,6 +62,9 @@ abstract class AbstractCommand extends Command
             case '+':
                 $prefix = "  <comment>$prefix</comment>";
                 break;
+            case '>':
+                $prefix = "    <comment>$prefix</comment>";
+                break;
         }
 
         $this->verboseln("$prefix $message");
