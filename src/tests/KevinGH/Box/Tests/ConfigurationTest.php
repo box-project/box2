@@ -685,9 +685,47 @@ class ConfigurationTest extends TestCase
 
     public function testGetMapSet()
     {
-        $this->setConfig(array('map' => array('a' => 'b')));
+        $this->setConfig(
+            array(
+                'map' => array(
+                    'a' => 'b',
+                    '_empty_' => 'c'
+                )
+            )
+        );
 
-        $this->assertEquals(array('a' => 'b'), $this->config->getMap());
+        $this->assertEquals(
+            array(
+                'a' => 'b',
+                '' => 'c'
+            ),
+            $this->config->getMap()
+        );
+    }
+
+    public function testGetMapper()
+    {
+        $this->setConfig(
+            array(
+                'map' => array(
+                    'first/test/path' => 'a',
+                    '' => 'b/'
+                )
+            )
+        );
+
+        $ds = DIRECTORY_SEPARATOR;
+        $mapper = $this->config->getMapper();
+
+        $this->assertEquals(
+            "a{$ds}sub{$ds}path{$ds}file.php",
+            $mapper('first/test/path/sub/path/file.php')
+        );
+
+        $this->assertEquals(
+            "b{$ds}second{$ds}test{$ds}path{$ds}sub{$ds}path{$ds}file.php",
+            $mapper('second/test/path/sub/path/file.php')
+        );
     }
 
     public function testGetMetadata()
