@@ -1,7 +1,8 @@
-.*
-!.gitignore
-*.phar
-composer.lock
-bin/
-coverage/
-src/
+/.idea/
+/bin/
+/coverage/
+/src/vendors/
+
+/*.iml
+/*.phar
+/composer.lock
