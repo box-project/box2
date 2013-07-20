@@ -28,7 +28,6 @@
         "symfony/process": "~2.1"
     },
     "require-dev": {
-        "herrera-io/go": "2.*",
         "herrera-io/phpunit-test-case": "1.*",
         "mikey179/vfsStream": "1.1.0",
         "phpunit/phpunit": "3.7.*"
