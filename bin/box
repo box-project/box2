@@ -8,10 +8,12 @@
  */
 define('BOX_PATH', dirname(__DIR__));
 
-if ($uri = Phar::running()) {
+if (extension_loaded('phar') && ($uri = Phar::running())) {
     require "$uri/src/vendors/autoload.php";
+} elseif (class_exists('Extract')) {
+    require __DIR__ . '/../src/vendors/autoload.php';
 } else {
-    load_composer_classloader(realpath($_SERVER['argv'][0]));
+    loadComposerClassloader(realpath($_SERVER['argv'][0]));
 }
 
 $app = new KevinGH\Box\Application();
@@ -27,7 +29,7 @@ $app->run();
  *
  * @throws RuntimeException If the loader could not be loaded.
  */
-function load_composer_classloader($dir = null, $skip = 0)
+function loadComposerClassloader($dir = null, $skip = 0)
 {
     $up = $dir;
     $skips = 0;
@@ -47,26 +49,30 @@ function load_composer_classloader($dir = null, $skip = 0)
     } while ($dir !== ($up = dirname($dir)));
 
     if (empty($path)) {
-        throw new RuntimeException (
+        throw new RuntimeException(
             'The composer.json file could not be found.'
         );
     }
 
     if (false === ($json = file_get_contents($path))) {
-        throw new RuntimeException(sprintf(
-            'The file "%s" could not be read.',
-            $path
-        ));
+        throw new RuntimeException(
+            sprintf(
+                'The file "%s" could not be read.',
+                $path
+            )
+        );
     }
 
     $json = json_decode($json);
 
     if (JSON_ERROR_NONE !== ($code = json_last_error())) {
-        throw new RuntimeException(sprintf(
-            'The file "%s" could not be parsed [%d].',
-            $path,
-            $code
-        ));
+        throw new RuntimeException(
+            sprintf(
+                'The file "%s" could not be parsed [%d].',
+                $path,
+                $code
+            )
+        );
     }
 
     $path = dirname($path);
@@ -80,9 +86,11 @@ function load_composer_classloader($dir = null, $skip = 0)
     $path .= DIRECTORY_SEPARATOR . 'autoload.php';
 
     if (false === file_exists($path)) {
-        throw RuntimeException::create(
-            'The Composer class loader "%s" could not be found.',
-            $path
+        throw new RuntimeException(
+            sprintf(
+                'The Composer class loader "%s" could not be found.',
+                $path
+            )
         );
     }
 

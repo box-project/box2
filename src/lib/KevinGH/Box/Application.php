@@ -83,13 +83,17 @@ class Application extends Base
     protected function getDefaultCommands()
     {
         $commands = parent::getDefaultCommands();
+
+        if (extension_loaded('phar')) {
+            $commands[] = new Command\Add();
+            $commands[] = new Command\Build();
+            $commands[] = new Command\Extract();
+            $commands[] = new Command\Info();
+            $commands[] = new Command\Remove();
+        }
+
         $commands[] = new Command\Key\Create();
         $commands[] = new Command\Key\Extract();
-        $commands[] = new Command\Add();
-        $commands[] = new Command\Build();
-        $commands[] = new Command\Extract();
-        $commands[] = new Command\Info();
-        $commands[] = new Command\Remove();
         $commands[] = new Command\Validate();
         $commands[] = new Command\Verify();
 
