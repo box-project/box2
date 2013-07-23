@@ -6,6 +6,7 @@
         "Herrera\\Box\\Compactor\\Php"
     ],
     "directories": ["src/lib"],
+    "extract": true,
     "files": [
         "LICENSE",
         "res/schema.json",
