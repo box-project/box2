@@ -7,6 +7,10 @@ use KevinGH\Amend;
 use KevinGH\Box\Command;
 use KevinGH\Box\Helper;
 use Symfony\Component\Console\Application as Base;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Sets up the application.
@@ -49,6 +53,30 @@ class Application extends Base
         }
 
         return '<info>' . $this->getName() . '</info> (repo)';
+    }
+
+    /**
+     * @override
+     */
+    public function run(
+        InputInterface $input = null,
+        OutputInterface $output = null
+    ) {
+        if (null === $output) {
+            $output = new ConsoleOutput();
+
+            $output->getFormatter()->setStyle(
+                'error',
+                new OutputFormatterStyle('red')
+            );
+
+            $output->getFormatter()->setStyle(
+                'question',
+                new OutputFormatterStyle('cyan')
+            );
+        }
+
+        return parent::run($input, $output);
     }
 
     /**
