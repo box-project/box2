@@ -62,19 +62,17 @@ class Application extends Base
         InputInterface $input = null,
         OutputInterface $output = null
     ) {
-        if (null === $output) {
-            $output = new ConsoleOutput();
+        $output = $output ? : new ConsoleOutput();
 
-            $output->getFormatter()->setStyle(
-                'error',
-                new OutputFormatterStyle('red')
-            );
+        $output->getFormatter()->setStyle(
+            'error',
+            new OutputFormatterStyle('red')
+        );
 
-            $output->getFormatter()->setStyle(
-                'question',
-                new OutputFormatterStyle('cyan')
-            );
-        }
+        $output->getFormatter()->setStyle(
+            'question',
+            new OutputFormatterStyle('cyan')
+        );
 
         return parent::run($input, $output);
     }
