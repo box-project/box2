@@ -1051,6 +1051,18 @@ COMMENT;
         $this->assertNull($this->config->getStubPath());
     }
 
+    public function testIsExtractable()
+    {
+        $this->assertFalse($this->config->isExtractable());
+    }
+
+    public function testIsExtractableSet()
+    {
+        $this->setConfig(array('extract' => true));
+
+        $this->assertTrue($this->config->isExtractable());
+    }
+
     public function testIsInterceptFileFuncs()
     {
         $this->assertFalse($this->config->isInterceptFileFuncs());

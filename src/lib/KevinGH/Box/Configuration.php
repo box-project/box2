@@ -969,6 +969,20 @@ class Configuration
     }
 
     /**
+     * Checks if StubGenerator->extract() should be used.
+     *
+     * @return boolean TRUE if it should be used, FALSE if not.
+     */
+    public function isExtractable()
+    {
+        if (isset($this->raw->extract)) {
+            return $this->raw->extract;
+        }
+
+        return false;
+    }
+
+    /**
      * Checks if Phar::interceptFileFuncs() should be used.
      *
      * @return boolean TRUE if it should be used, FALSE if not.

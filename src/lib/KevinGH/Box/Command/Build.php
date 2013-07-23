@@ -68,6 +68,7 @@ Note that all settings are optional.
     "compression": ?,
     "directories": ?,
     "directories-bin": ?,
+    "extract": ?,
     "files": ?,
     "files-bin": ?,
     "finder": ?,
@@ -200,6 +201,10 @@ Phar. Files listed in the <info>blacklist</info> setting will not be added.
 The <info>directories-bin</info> <comment>(string, array)</comment> setting is similar to <info>directories</info>,
 except all file types are added to the Phar unmodified. This is suitable
 for directories containing images or other binary data.
+
+The <info>extract</info> <comment>(boolean)</comment> setting determines whether or not the generated
+stub should include a class to extract the phar. This class would be
+used if the phar is not available. (Increases stub file size.)
 
 The <info>files</info> <comment>(string, array)</comment> setting is a list of files paths relative to
 <info>base-path</info>. Each file will be compacted, have their placeholder files
@@ -497,6 +502,7 @@ HELP
 
             $stub = StubGenerator::create()
                 ->alias($this->config->getAlias())
+                ->extract($this->config->isExtractable())
                 ->index($main)
                 ->intercept($this->config->isInterceptFileFuncs())
                 ->mimetypes($this->config->getMimetypeMapping())

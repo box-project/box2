@@ -92,6 +92,10 @@
                 "string"
             ]
         },
+        "extract": {
+            "description": "The flag to embed an extraction class into the stub.",
+            "type": "boolean"
+        },
         "files": {
             "description": "A list of relative file paths to include.",
             "items": {
