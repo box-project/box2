@@ -2,7 +2,7 @@
     {
         "name": "box.phar",
         "sha1": "0809660c1527daae1665806a6b3db157b36f621d",
-        "url": "https://bitbucket.org/kherge/php-box/downloads/box-1.0.9.phar",
+        "url": "https://github.com/kherge/Box/releases/download/1.0.9/box-1.0.9.phar",
         "version": "1.0.9"
     },
     {
