@@ -86,7 +86,7 @@ namespace
     );
 
     // check suhosin setting
-    if (extension_loaded('suhosin') || defined('SUHOSIN_PATCH')) {
+    if (extension_loaded('suhosin')) {
         check(
             'The "phar" stream wrapper is allowed by suhosin.',
             'The "phar" stream wrapper is blocked by suhosin.',
