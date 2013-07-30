@@ -77,7 +77,7 @@ $ box help
 Creating a Phar
 ---------------
 
-To get started, you may want to check out the [example application](https://github.com/kherge/BoxExample) that is ready to be built by Box. How your project is structued is entirely up to you. All that Box requires is that you have a file called `box.json` at the root of your project directory. You can find a complete and detailed list of configuration settings available by seeing the help information for the `build` command:
+To get started, you may want to check out the [example application](https://github.com/kherge/BoxExample) that is ready to be built by Box. How your project is structured is entirely up to you. All that Box requires is that you have a file called `box.json` at the root of your project directory. You can find a complete and detailed list of configuration settings available by seeing the help information for the `build` command:
 
 ```sh
 $ box help build
