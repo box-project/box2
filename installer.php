@@ -21,7 +21,7 @@ namespace
     echo "Box Installer$n";
     echo "=============$n$n";
 
-    echo "Enivornment Check$n";
+    echo "Environment Check$n";
     echo "-----------------$n$n";
 
     echo "\"-\" indicates success.$n";
