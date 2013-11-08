@@ -474,8 +474,6 @@ HELP
         );
 
         if (null !== ($main = $this->config->getMainScriptPath())) {
-            $phar = $this->box->getPhar();
-
             $this->putln(
                 '?',
                 'Adding main file: ' . $this->config->getBasePath() . DIRECTORY_SEPARATOR . $main
@@ -524,9 +522,9 @@ HELP
                 $this->putln(
                     '-',
                     'Using custom banner from file: '
-                        . $this->config->getBasePath()
-                        . DIRECTORY_SEPARATOR
-                        . $this->config->getStubBannerPath()
+                    . $this->config->getBasePath()
+                    . DIRECTORY_SEPARATOR
+                    . $this->config->getStubBannerPath()
                 );
 
                 $stub->banner($banner);
