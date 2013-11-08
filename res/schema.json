@@ -28,15 +28,7 @@
             "items": {
                 "type": "string"
             },
-            "type": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "string"
-            ]
+            "type": ["array", "string"]
         },
         "bootstrap": {
             "description": "A file used to load third-party class compactors.",
@@ -48,15 +40,10 @@
         },
         "compactors": {
             "description": "The list of file contents compactor classes to register.",
-            "type": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "string"
-            ]
+            "items": {
+                "type": "string"
+            },
+            "type": ["array", "string"]
         },
         "compression": {
             "description": "The compression algorithm to use for the PHAR.",
@@ -67,30 +54,14 @@
             "items": {
                 "type": "string"
             },
-            "type": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "string"
-            ]
+            "type": ["array", "string"]
         },
         "directories-bin": {
             "description": "(binary safe) A list of relative directory paths to search for files.",
             "items": {
                 "type": "string"
             },
-            "type": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "string"
-            ]
+            "type": ["array", "string"]
         },
         "extract": {
             "description": "The flag to embed an extraction class into the stub.",
@@ -101,30 +72,14 @@
             "items": {
                 "type": "string"
             },
-            "type": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "string"
-            ]
+            "type": ["array", "string"]
         },
         "files-bin": {
             "description": "(binary safe) A list of relative file paths to include.",
             "items": {
                 "type": "string"
             },
-            "type": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "string"
-            ]
+            "type": ["array", "string"]
         },
         "finder": {
             "description": "A list of Finder configuration settings.",
@@ -168,16 +123,13 @@
         },
         "map": {
             "description": "The mapping of file system paths to phar paths.",
-            "type": {
-                "type": "array",
-                "items": {
-                    "type": "object"
-                }
+            "type": "array",
+            "items": {
+                "type": "object"
             }
         },
         "metadata": {
-            "description": "Extra PHAR metadata.",
-            "type": "any"
+            "description": "Extra PHAR metadata."
         },
         "mimetypes": {
             "description": "The mapping from file extension to MIME type.",
