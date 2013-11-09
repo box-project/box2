@@ -4,6 +4,7 @@ namespace KevinGH\Box\Command;
 
 use Herrera\Box\Box;
 use KevinGH\Box\Configuration;
+use Phine\Path\Path;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -194,7 +195,7 @@ HELP
 
         // add the file
         $phar = $this->box->getPhar();
-        $local = str_replace('\\', '/', canonical_path($input->getArgument('local')));
+        $local = str_replace('\\', '/', Path::canonical($input->getArgument('local')));
 
         if (isset($phar[$local]) && (false === $input->getOption('replace'))) {
             $output->writeln(

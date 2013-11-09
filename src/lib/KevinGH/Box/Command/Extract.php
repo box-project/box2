@@ -3,6 +3,7 @@
 namespace KevinGH\Box\Command;
 
 use Phar;
+use Phine\Path\Path;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -95,7 +96,7 @@ HELP
                     $file = str_replace(
                         '\\',
                         '/',
-                        canonical_path($file)
+                        Path::canonical($file)
                     );
                 }
             );

@@ -3,6 +3,7 @@
 namespace KevinGH\Box\Command;
 
 use Phar;
+use Phine\Path\Path;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -67,7 +68,7 @@ HELP
 
         foreach ((array) $input->getArgument('file') as $file) {
             if (isset($phar[$file])) {
-                $phar->delete(str_replace('\\', '/', canonical_path($file)));
+                $phar->delete(str_replace('\\', '/', Path::canonical($file)));
             }
         }
 

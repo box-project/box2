@@ -8,6 +8,7 @@ use Herrera\Box\Compactor\CompactorInterface;
 use Herrera\Box\Compactor\Php;
 use InvalidArgumentException;
 use Phar;
+use Phine\Path\Path;
 use RuntimeException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -113,7 +114,7 @@ class Configuration
                 function (&$directory) use ($base) {
                     $directory = $base
                                . DIRECTORY_SEPARATOR
-                               . canonical_path($directory);
+                               . Path::canonical($directory);
                 }
             );
 
@@ -154,7 +155,7 @@ class Configuration
 
             foreach ((array) $this->raw->{'files-bin'} as $file) {
                 $files[] = new SplFileInfo(
-                    $base . DIRECTORY_SEPARATOR . canonical_path($file)
+                    $base . DIRECTORY_SEPARATOR . Path::canonical($file)
                 );
             }
 
@@ -205,7 +206,7 @@ class Configuration
             array_walk(
                 $blacklist,
                 function (&$file) {
-                    $file = canonical_path($file);
+                    $file = Path::canonical($file);
                 }
             );
 
@@ -228,7 +229,7 @@ class Configuration
               . '/';
 
         return function (SplFileInfo $file) use ($base, $blacklist) {
-            $path = canonical_path(
+            $path = Path::canonical(
                 preg_replace($base, '', $file->getPathname())
             );
 
@@ -250,8 +251,8 @@ class Configuration
         if (isset($this->raw->bootstrap)) {
             $path = $this->raw->bootstrap;
 
-            if (false === is_absolute_path($path)) {
-                $path = canonical_path(
+            if (false === Path::isAbsolute($path)) {
+                $path = Path::canonical(
                     $this->getBasePath() . DIRECTORY_SEPARATOR . $path
                 );
             }
@@ -361,7 +362,7 @@ class Configuration
                 function (&$directory) use ($base) {
                     $directory = $base
                                . DIRECTORY_SEPARATOR
-                               . canonical_path($directory);
+                               . Path::canonical($directory);
                 }
             );
 
@@ -418,7 +419,7 @@ class Configuration
 
             foreach ((array) $this->raw->files as $file) {
                 $file = new SplFileInfo(
-                    $path = $base . DIRECTORY_SEPARATOR . canonical_path($file)
+                    $path = $base . DIRECTORY_SEPARATOR . Path::canonical($file)
                 );
 
                 if (false === $file->isFile()) {
@@ -610,7 +611,7 @@ class Configuration
     public function getMainScriptPath()
     {
         if (isset($this->raw->main)) {
-            return canonical_path($this->raw->main);
+            return Path::canonical($this->raw->main);
         }
 
         return null;
@@ -630,7 +631,7 @@ class Configuration
                 $processed = array();
 
                 foreach ($item as $match => $replace) {
-                    $processed[canonical_path($match)] = canonical_path($replace);
+                    $processed[Path::canonical($match)] = Path::canonical($replace);
                 }
 
                 if (isset($processed['_empty_'])) {
@@ -748,8 +749,8 @@ class Configuration
         if (isset($this->raw->output)) {
             $path = $this->raw->output;
 
-            if (false === is_absolute_path($path)) {
-                $path = canonical_path($base . $path);
+            if (false === Path::isAbsolute($path)) {
+                $path = Path::canonical($base . $path);
             }
         } else {
             $path = $base . 'default.phar';
@@ -941,7 +942,7 @@ class Configuration
     public function getStubBannerPath()
     {
         if (isset($this->raw->{'banner-file'})) {
-            return canonical_path($this->raw->{'banner-file'});
+            return Path::canonical($this->raw->{'banner-file'});
         }
         return null;
     }
@@ -1078,7 +1079,7 @@ class Configuration
                 array_walk(
                     $methods->in,
                     function (&$directory) use ($base) {
-                        $directory = canonical_path(
+                        $directory = Path::canonical(
                             $base . DIRECTORY_SEPARATOR . $directory
                         );
                     }
