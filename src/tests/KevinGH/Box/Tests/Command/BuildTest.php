@@ -71,7 +71,7 @@ KEY
                     'banner' => 'custom banner',
                     'bootstrap' => 'bootstrap.php',
                     'chmod' => '0755',
-                    'compactors' => array('Herrera\\Box\\Compactor\\Composer'),
+                    'compactors' => array('Herrera\\Box\\Compactor\\Php'),
                     'directories' => 'a',
                     'files' => 'test.php',
                     'finder' => array(array('in' => 'one')),
@@ -109,7 +109,7 @@ KEY
 * Building...
 ? Output path: {$dir}test.phar
 ? Registering compactors...
-  + Herrera\\Box\\Compactor\\Composer
+  + Herrera\\Box\\Compactor\\Php
 ? Mapping paths:
   - a{$ds}deep{$ds}test{$ds}directory > sub
   - (all) > other/

@@ -17,7 +17,8 @@
     },
     "require": {
         "php": ">=5.3.3",
-        "herrera-io/box": "~1.0",
+        "herrera-io/annotations": "~1.0",
+        "herrera-io/box": "~1.5",
         "herrera-io/file-system-functions": "~1.0",
         "herrera-io/json": "~1.0",
         "kherge/amend": "~3.0",

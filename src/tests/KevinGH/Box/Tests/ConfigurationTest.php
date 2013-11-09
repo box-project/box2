@@ -2,6 +2,8 @@
 
 namespace KevinGH\Box\Tests;
 
+use Herrera\Annotations\Tokenizer;
+use Herrera\Box\Compactor\Php;
 use Herrera\PHPUnit\TestCase;
 use KevinGH\Box\Configuration;
 use Phar;
@@ -254,7 +256,7 @@ class ConfigurationTest extends TestCase
         $this->setConfig(
             array(
                 'compactors' => array(
-                    'Herrera\\Box\\Compactor\\Composer',
+                    'Herrera\\Box\\Compactor\\Php',
                     __NAMESPACE__ . '\\TestCompactor'
                 )
             )
@@ -263,7 +265,7 @@ class ConfigurationTest extends TestCase
         $compactors = $this->config->getCompactors();
 
         $this->assertInstanceof(
-            'Herrera\\Box\\Compactor\\Composer',
+            'Herrera\\Box\\Compactor\\Php',
             $compactors[0]
         );
         $this->assertInstanceof(
@@ -296,6 +298,34 @@ class ConfigurationTest extends TestCase
         );
 
         $this->config->getCompactors();
+    }
+
+    public function testGetCompactorsAnnotations()
+    {
+        $this->setConfig(
+            array(
+                'annotations' => (object) array(
+                    'ignore' => array(
+                        'author'
+                    )
+                ),
+                'compactors' => array(
+                    'Herrera\\Box\\Compactor\\Php'
+                )
+            )
+        );
+
+        $compactors = $this->config->getCompactors();
+
+        /** @var Tokenizer $tokenizer */
+        $tokenizer = $this->getPropertyValue($compactors[0], 'tokenizer');
+
+        $this->assertNotNull($tokenizer);
+
+        $this->assertEquals(
+            array('author'),
+            $this->getPropertyValue($tokenizer, 'ignored')
+        );
     }
 
     public function testGetCompressionAlgorithm()

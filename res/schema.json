@@ -11,6 +11,19 @@
             "description": "The internal PHAR alias used for I/O streams.",
             "type": "string"
         },
+        "annotations": {
+            "description": "The PHP annotation compactor settings.",
+            "type": ["boolean", "object"],
+            "properties": {
+                "ignore": {
+                    "description": "A list of annotation names to ignore.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": ["array", "string"]
+                }
+            }
+        },
         "banner": {
             "description": "The header comment for the generated stub.",
             "type": "string"

@@ -3,7 +3,7 @@
 namespace KevinGH\Box\Tests\Command;
 
 use Herrera\Box\Box;
-use Herrera\Box\Compactor\Composer;
+use Herrera\Box\Compactor\Php;
 use Herrera\Box\StubGenerator;
 use KevinGH\Box\Command\Add;
 use KevinGH\Box\Test\CommandTestCase;
@@ -51,7 +51,7 @@ CODE
 ? Setting replacement values...
   + @name@: world
 ? Registering compactors...
-  + Herrera\\Box\\Compactor\\Composer
+  + Herrera\\Box\\Compactor\\Php
 ? Adding file: {$dir}goodbye.php
 * Done.
 
@@ -103,7 +103,7 @@ CODE
 ? Setting replacement values...
   + @name@: world
 ? Registering compactors...
-  + Herrera\\Box\\Compactor\\Composer
+  + Herrera\\Box\\Compactor\\Php
 ? Adding binary file: {$dir}goodbye.php
 * Done.
 
@@ -146,7 +146,7 @@ OUTPUT;
 ? Setting replacement values...
   + @name@: world
 ? Registering compactors...
-  + Herrera\\Box\\Compactor\\Composer
+  + Herrera\\Box\\Compactor\\Php
 ? Using stub file: {$dir}stub.php
 * Done.
 
@@ -198,7 +198,7 @@ CODE
 ? Setting replacement values...
   + @name@: world
 ? Registering compactors...
-  + Herrera\\Box\\Compactor\\Composer
+  + Herrera\\Box\\Compactor\\Php
 ? Adding main file: {$dir}main.php
 * Done.
 
@@ -342,7 +342,7 @@ OUTPUT;
             json_encode(
                 array(
                     'bootstrap' => 'bootstrap.php',
-                    'compactors' => 'Herrera\\Box\\Compactor\\Composer',
+                    'compactors' => 'Herrera\\Box\\Compactor\\Php',
                     'main' => 'bin/run',
                     'replacements' => array('name' => 'world'),
                     'stub' => true
@@ -351,7 +351,7 @@ OUTPUT;
         );
 
         $box = Box::create('test.phar');
-        $box->addCompactor(new Composer());
+        $box->addCompactor(new Php());
         $box->setValues(array('name' => 'world'));
         $box->addFromString(
             'bin/run',

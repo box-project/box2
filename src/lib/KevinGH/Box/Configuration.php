@@ -3,7 +3,9 @@
 namespace KevinGH\Box;
 
 use ArrayIterator;
+use Herrera\Annotations\Tokenizer;
 use Herrera\Box\Compactor\CompactorInterface;
+use Herrera\Box\Compactor\Php;
 use InvalidArgumentException;
 use Phar;
 use RuntimeException;
@@ -291,6 +293,20 @@ class Configuration
                             $class
                         )
                     );
+                }
+
+                if ($compactor instanceof Php) {
+                    if (!empty($this->raw->annotations)) {
+                        $tokenizer = new Tokenizer();
+
+                        if (isset($this->raw->annotations->ignore)) {
+                            $tokenizer->ignore(
+                                (array) $this->raw->annotations->ignore
+                            );
+                        }
+
+                        $compactor->setTokenizer($tokenizer);
+                    }
                 }
 
                 $compactors[] = $compactor;

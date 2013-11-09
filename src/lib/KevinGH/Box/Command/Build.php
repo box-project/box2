@@ -109,6 +109,28 @@ The <info>alias</info> <comment>(string)</comment> setting is used when generati
 the <comment>Phar::mapPhar()</comment> method. This makes it easier to refer to files in
 the Phar.
 
+The <info>annotations</info> <comment>(boolean, object)</comment> setting is used to enable compacting
+annotations in PHP source code. By setting it to <info>true</info>, all Doctrine-style
+annotations are compacted in PHP files. You may also specify a list of
+annotations to ignore, which will be stripped while protecting the
+remaining annotations:
+<comment>
+  {
+      "annotations": {
+          "ignore": {
+              "author",
+              "package",
+              "version",
+              "see"
+          }
+      }
+  }
+</comment>
+You may want to see this website for a list of annotations which are
+commonly ignored:
+<comment>
+  https://github.com/herrera-io/php-annotations
+</comment>
 The <info>banner</info> <comment>(string)</comment> setting is the banner comment that will be used when
 a new stub is generated. The value of this setting must not already be
 enclosed within a comment block, as it will be automatically done for
@@ -180,8 +202,8 @@ a simple example:
 </comment>
 The following compactors are included with Box:
 <comment>
-  - Herrera\\Box\\Compactor\\Composer
   - Herrera\\Box\\Compactor\\Json
+  - Herrera\\Box\\Compactor\\Php
 </comment>
 The <info>compression</info> <comment>(string, integer)</comment> setting is the compression algorithm
 to use when the Phar is built. The compression affects the individual
