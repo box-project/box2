@@ -1,7 +1,6 @@
-/.idea/
-/bin/
-/coverage/
-/src/vendors/
+/bin
+/coverage
+/src/vendors
 
 /*.iml
 /*.phar
