@@ -53,7 +53,7 @@ $ box update
 This is probably the best way when you have other tools like phpunit and other tools installed in this way:
 
 ```sh
-$ composer global require 'kherge/box=~2.0' --prefer-source
+$ composer global require 'kherge/box=~2.4' --prefer-source
 ```
 
 ### As a Composer Dependency
