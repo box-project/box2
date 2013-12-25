@@ -26,7 +26,7 @@ Since the application is based on the [Box library](https://github.com/herrera-i
 How do I get started?
 ---------------------
 
-You can use Box in one of two ways:
+You can use Box in one of three ways:
 
 ### As a Phar (Recommended)
 
@@ -46,6 +46,14 @@ Whenever a new version of the application is released, you can simply run the `u
 
 ```sh
 $ box update
+```
+
+### As a Global Composer Install
+
+This is probably the best way when you have other tools like phpunit and other tools installed in this way:
+
+```sh
+$ composer global require 'kherge/box=~2.4' --prefer-source
 ```
 
 ### As a Composer Dependency
