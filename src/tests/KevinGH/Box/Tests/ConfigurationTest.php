@@ -519,7 +519,7 @@ class ConfigurationTest extends TestCase
         );
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -539,7 +539,7 @@ class ConfigurationTest extends TestCase
         );
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -587,7 +587,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('1.0.0', $this->config->getGitTag());
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -630,7 +630,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('1.0.0', $this->config->getGitVersion());
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -650,7 +650,7 @@ class ConfigurationTest extends TestCase
         );
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -849,7 +849,7 @@ class ConfigurationTest extends TestCase
         );
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -919,7 +919,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals($rand, $values['@rand@']);
 
         // some process does not release the git files
-        if (false !== strpos(strtolower(PHP_OS), 'win')) {
+        if ($this->isWindows()) {
             exec('rd /S /Q .git');
         }
     }
@@ -1218,5 +1218,14 @@ CODE
     private function setConfig(array $config)
     {
         $this->setPropertyValue($this->config, 'raw', (object) $config);
+    }
+    
+    private function isWindows()
+    {
+        if (false === strpos(strtolower(PHP_OS), 'darwin') && $this->isWindows() ) {
+            return true;
+        }
+        
+        return false;
     }
 }
