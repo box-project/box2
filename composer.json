@@ -1,0 +1,47 @@
+{
+    "name": "kherge/box",
+    "description": "A simplified, customizable PHP archive builder.",
+    "keywords": ["phar"],
+    "homepage": "https://github.com/kherge/Box",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Herrera",
+            "email": "kevin@herrera.io",
+            "homepage": "http://kevin.herrera.io"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/kherge/Box/issues"
+    },
+    "require": {
+        "php": ">=5.3.3",
+        "phine/path": "~1.0",
+        "phine/phar": "~1.0",
+        "phine/phar-compact": "~1.0",
+        "phine/phar-replace": "~1.0",
+        "symfony/config": "~2.3",
+        "symfony/console": "~2.3"
+    },
+    "require-dev": {
+        "league/phpunit-coverage-listener": "~1.0",
+        "phine/test": "~1.0"
+    },
+    "suggest": {
+        "ext-openssl": "For signing and verifying PHP archives.",
+        "ext-phar": "For creating PHP archives."
+    },
+    "autoload": {
+        "psr-0": {
+            "KHerGe\\Box": "src/lib"
+        }
+    },
+    "bin": [
+        "bin/box"
+    ],
+    "extra": {
+        "branch-alias": {
+            "dev-master": "3.0-dev"
+        }
+    }
+}
