@@ -146,6 +146,34 @@ class DefinitionTest extends TestCase
     }
 
     /**
+     * Make sure that the default git settings are set as expected.
+     */
+    public function testDefaultGit()
+    {
+        $expected = array(
+            'git' => array(
+                'replace' => '@version@',
+                'value' => 'tag/commit',
+            ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
+        );
+
+        $stub = array(
+            'git' => '@version@',
+        );
+
+        $this->assertEquals(
+            $expected,
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($stub)
+            )
+        );
+    }
+
+    /**
      * Make sure that the default source settings are set as expected.
      */
     public function testDefaultSource()

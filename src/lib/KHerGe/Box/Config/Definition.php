@@ -24,6 +24,7 @@ class Definition implements ConfigurationInterface
         $root = $builder->root('box');
 
         $this->buildBasic($root);
+        $this->buildGit($root);
         $this->buildSources($root);
         $this->buildStub($root);
 
@@ -61,6 +62,49 @@ class Definition implements ConfigurationInterface
                 ->end()
                 ->scalarNode('output')
                     ->defaultValue('output.phar')
+                ->end()
+            ->end();
+    }
+
+    /**
+     * Builds the Git information configuration tree.
+     *
+     * This part of the configuration tree builder will define how Git tags and
+     * commit hashes can be used to replace a placeholder value in files that
+     * are added, as well as some default options. With the default options, we
+     * should be able to simply apply them with the user given values.
+     *
+     * @param ArrayNodeDefinition|NodeDefinition $root The root node.
+     */
+    private function buildGit($root)
+    {
+        $root
+            ->children()
+                ->arrayNode('git')
+                    ->beforeNormalization()
+                        ->ifString()->then(
+                            function ($value) {
+                                return array(
+                                    'replace' => $value,
+                                );
+                            }
+                        )
+                    ->end()
+                    ->children()
+                        ->scalarNode('replace')->isRequired()->cannotBeEmpty()->end()
+                        ->enumNode('value')
+                            ->defaultValue('tag/commit')
+                            ->values(
+                                array(
+                                    'commit',
+                                    'commit-long',
+                                    'tag',
+                                    'tag/commit',
+                                    'tag/commit-long',
+                                )
+                            )
+                        ->end()
+                    ->end()
                 ->end()
             ->end();
     }
