@@ -40,7 +40,10 @@ class DefinitionTest extends TestCase
                 'base' => null,
                 'dirs' => array(),
                 'files' => array(),
-            )
+            ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
         );
 
         $sources = array(
@@ -122,6 +125,9 @@ class DefinitionTest extends TestCase
                 'banner' => null,
                 'shebang' => '#!/usr/bin/env php',
             ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
         );
 
         $stub = array(
@@ -150,12 +156,14 @@ class DefinitionTest extends TestCase
                 'dirs' => array(
                     array(
                         'path' => 'path/to/directory',
+                        'binary' => false,
                         'extension' => array('php'),
                         'filter' => null,
                         'ignore' => array(),
                         'rename' => null,
                     ),
                     array(
+                        'binary' => true,
                         'extension' => array('php'),
                         'filter' => '/filter/',
                         'ignore' => array(
@@ -169,14 +177,19 @@ class DefinitionTest extends TestCase
                 'files' => array(
                     array(
                         'path' => 'path/to/file.php',
+                        'binary' => false,
                         'rename' => null,
                     ),
                     array(
+                        'binary' => true,
                         'path' => 'path/to/another/file.php',
                         'rename' => 'different/internal/path.php',
                     ),
                 ),
-            )
+            ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
         );
 
         $sources = array(
@@ -185,6 +198,7 @@ class DefinitionTest extends TestCase
                 'dirs' => array(
                     'path/to/directory',
                     array(
+                        'binary' => true,
                         'filter' => '/filter/',
                         'ignore' => array(
                             'directory/to/ignore/',
@@ -197,6 +211,7 @@ class DefinitionTest extends TestCase
                 'files' => array(
                     'path/to/file.php',
                     array(
+                        'binary' => true,
                         'path' => 'path/to/another/file.php',
                         'rename' => 'different/internal/path.php',
                     ),
@@ -324,6 +339,9 @@ BANNER
                     ),
                 ),
             ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
         );
 
         $stub = array(
@@ -403,7 +421,11 @@ BANNER
     public function testEmptyConfig()
     {
         $this->assertEquals(
-            array(),
+            array(
+                'compression' => 'NONE',
+                'mode' => 644,
+                'output' => 'output.phar',
+            ),
             $this->processor->processConfiguration(
                 $this->definition,
                 array(

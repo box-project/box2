@@ -23,10 +23,46 @@ class Definition implements ConfigurationInterface
         $builder = new TreeBuilder();
         $root = $builder->root('box');
 
+        $this->buildBasic($root);
         $this->buildSources($root);
         $this->buildStub($root);
 
         return $builder;
+    }
+
+    /**
+     * Builds the basic configuration tree.
+     *
+     * This part of the configuration tree builder will define very basic
+     * options used to build the archive, as well as some default values for
+     * those options. With the default options, we should be able to simply
+     * iterate through each option and apply them.
+     *
+     * @param ArrayNodeDefinition|NodeDefinition $root The root node.
+     */
+    private function buildBasic($root)
+    {
+        $root
+            ->children()
+                ->enumNode('compression')
+                    ->defaultValue('NONE')
+                    ->treatNullLike('NONE')
+                    ->values(
+                        array(
+                            'BZ2',
+                            'GZ',
+                            'NONE'
+                        )
+                    )
+                ->end()
+                ->variableNode('metadata')->end()
+                ->integerNode('mode')
+                    ->defaultValue(644)
+                ->end()
+                ->scalarNode('output')
+                    ->defaultValue('output.phar')
+                ->end()
+            ->end();
     }
 
     /**
@@ -63,6 +99,7 @@ class Definition implements ConfigurationInterface
                                     )
                                 ->end()
                                 ->children()
+                                    ->booleanNode('binary')->defaultFalse()->end()
                                     ->arrayNode('extension')
                                         ->beforeNormalization()
                                             ->ifString()->then(function ($value) { return array($value); })
@@ -96,6 +133,7 @@ class Definition implements ConfigurationInterface
                                     ->ifString()->then(function ($value) { return array('path' => $value); })
                                 ->end()
                                 ->children()
+                                    ->booleanNode('binary')->defaultFalse()->end()
                                     ->scalarNode('path')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('rename')->defaultNull()->end()
                                 ->end()
