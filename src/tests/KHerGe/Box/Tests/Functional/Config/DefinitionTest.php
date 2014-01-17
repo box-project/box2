@@ -83,6 +83,81 @@ class DefinitionTest extends TestCase
     }
 
     /**
+     * Make sure that the default compact settings are set as expected.
+     */
+    public function testDefaultCompact()
+    {
+        $expected = array(
+            'compact' => array(
+                'loader' => '/path/to/external/loader.php',
+                'setup' => array(
+                    array(
+                        'class' => 'Compactor1',
+                        'arguments' => array(),
+                        'methods' => array(),
+                    ),
+                    array(
+                        'class' => 'Compactor2',
+                        'arguments' => array(
+                            'test',
+                        ),
+                        'methods' => array(
+                            array(
+                                'name' => 'test',
+                                'arguments' => array(),
+                            ),
+                            array(
+                                'name' => 'another',
+                                'arguments' => array(
+                                    'test',
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
+        );
+
+        $sources = array(
+            'compact' => array(
+                'loader' => '/path/to/external/loader.php',
+                'setup' => array(
+                    'Compactor1',
+                    array(
+                        'class' => 'Compactor2',
+                        'arguments' => array(
+                            'test'
+                        ),
+                        'methods' => array(
+                            'test',
+                            array(
+                                'name' => 'another',
+                                'arguments' => array(
+                                    'test',
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        );
+
+        $this->assertEquals(
+            $expected,
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($sources)
+            )
+        );
+    }
+
+    /**
      * Make sure that the default empty basic settings are set as expected.
      */
     public function testDefaultEmptyBasic()
@@ -97,6 +172,36 @@ class DefinitionTest extends TestCase
         );
 
         $sources = array();
+
+        $this->assertEquals(
+            $expected,
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($sources)
+            )
+        );
+    }
+
+    /**
+     * Make sure that the default empty compact settings are set as expected.
+     */
+    public function testDefaultEmptyCompact()
+    {
+        $expected = array(
+            'compact' => array(
+                'setup' => array(),
+            ),
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
+        );
+
+        $sources = array(
+            'compact' => null,
+        );
 
         $this->assertEquals(
             $expected,
