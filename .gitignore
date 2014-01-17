@@ -3,3 +3,4 @@
 
 # ignore files
 /composer.lock
+/coverage.xml
