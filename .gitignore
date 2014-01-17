@@ -1,6 +1,0 @@
-/bin
-/coverage
-/src/vendors
-
-/*.phar
-/composer.lock
