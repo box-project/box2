@@ -84,9 +84,7 @@ class Definition implements ConfigurationInterface
                     ->beforeNormalization()
                         ->ifString()->then(
                             function ($value) {
-                                return array(
-                                    'replace' => $value,
-                                );
+                                return array('replace' => $value);
                             }
                         )
                     ->end()
@@ -135,9 +133,7 @@ class Definition implements ConfigurationInterface
                                 ->beforeNormalization()
                                     ->ifString()->then(
                                         function ($value) {
-                                            return array(
-                                                'path' => $value
-                                            );
+                                            return array('path' => $value);
                                         }
                                     )
                                 ->end()
@@ -145,7 +141,11 @@ class Definition implements ConfigurationInterface
                                     ->booleanNode('binary')->defaultFalse()->end()
                                     ->arrayNode('extension')
                                         ->beforeNormalization()
-                                            ->ifString()->then(function ($value) { return array($value); })
+                                            ->ifString()->then(
+                                                function ($value) {
+                                                    return array($value);
+                                                }
+                                            )
                                         ->end()
                                         ->prototype('scalar')
                                             ->isRequired()
@@ -156,7 +156,11 @@ class Definition implements ConfigurationInterface
                                     ->scalarNode('filter')->defaultNull()->end()
                                     ->arrayNode('ignore')
                                         ->beforeNormalization()
-                                            ->ifString()->then(function ($value) { return array($value); })
+                                            ->ifString()->then(
+                                                function ($value) {
+                                                    return array($value);
+                                                }
+                                            )
                                         ->end()
                                         ->prototype('scalar')
                                             ->isRequired()
@@ -173,7 +177,11 @@ class Definition implements ConfigurationInterface
                         ->arrayNode('files')
                             ->prototype('array')
                                 ->beforeNormalization()
-                                    ->ifString()->then(function ($value) { return array('path' => $value); })
+                                    ->ifString()->then(
+                                        function ($value) {
+                                            return array('path' => $value);
+                                        }
+                                    )
                                 ->end()
                                 ->children()
                                     ->booleanNode('binary')->defaultFalse()->end()
@@ -209,7 +217,11 @@ class Definition implements ConfigurationInterface
                         ->arrayNode('require')
                             ->prototype('array')
                                 ->beforeNormalization()
-                                    ->ifString()->then(function ($value) { return array('file' => $value); })
+                                    ->ifString()->then(
+                                        function ($value) {
+                                            return array('file' => $value);
+                                        }
+                                    )
                                 ->end()
                                 ->children()
                                     ->scalarNode('file')->isRequired()->cannotBeEmpty()->end()
@@ -222,7 +234,11 @@ class Definition implements ConfigurationInterface
                         ->arrayNode('source')
                             ->prototype('array')
                                 ->beforeNormalization()
-                                    ->ifString()->then(function ($value) { return array('source' => $value); })
+                                    ->ifString()->then(
+                                        function ($value) {
+                                            return array('source' => $value);
+                                        }
+                                    )
                                 ->end()
                                 ->children()
                                     ->booleanNode('after')->defaultTrue()->end()
@@ -238,7 +254,11 @@ class Definition implements ConfigurationInterface
                         ->arrayNode('load')
                             ->prototype('array')
                                 ->beforeNormalization()
-                                    ->ifString()->then(function ($value) { return array('file' => $value); })
+                                    ->ifString()->then(
+                                        function ($value) {
+                                            return array('file' => $value);
+                                        }
+                                    )
                                 ->end()
                                 ->children()
                                     ->scalarNode('alias')->defaultNull()->end()
