@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true" strict="true">
+  <filter>
+    <whitelist>
+      <directory suffix=".php">src/lib/</directory>
+    </whitelist>
+  </filter>
+  <logging>
+    <log type="coverage-clover" target="coverage.xml"/>
+  </logging>
+  <testsuites>
+    <testsuite name="KHerGe Box Test Suite">
+      <directory phpVersion="5.3.3" phpVersionOperator=">=" suffix="Test.php">src/tests/</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>
