@@ -63,6 +63,32 @@ class Definition implements ConfigurationInterface
                 ->scalarNode('output')
                     ->defaultValue('output.phar')
                 ->end()
+                ->arrayNode('signature')
+                    ->addDefaultsIfNotSet()
+                    ->beforeNormalization()
+                        ->ifString()->then(
+                            function ($value) {
+                                return array('type' => $value);
+                            }
+                        )
+                    ->end()
+                    ->children()
+                        ->scalarNode('file')->cannotBeEmpty()->end()
+                        ->enumNode('type')
+                            ->defaultValue('SHA1')
+                            ->isRequired()
+                            ->values(
+                                array(
+                                    'MD5',
+                                    'SHA1',
+                                    'SHA256',
+                                    'SHA512',
+                                    'OPENSSL'
+                                )
+                            )
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
     }
 
