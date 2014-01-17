@@ -92,7 +92,6 @@ class Definition implements ConfigurationInterface
                                     ->ifString()->then(
                                         function ($value) {
                                             return array(
-                                                'extension' => array('php'),
                                                 'path' => $value
                                             );
                                         }
