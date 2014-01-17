@@ -1,0 +1,5 @@
+# ignore directories
+/vendor/
+
+# ignore files
+/composer.lock
