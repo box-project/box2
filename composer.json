@@ -22,7 +22,8 @@
         "phine/phar-replace": "~1.0",
         "symfony/config": "~2.3",
         "symfony/console": "~2.3",
-        "symfony/process": "~2.3"
+        "symfony/process": "~2.3",
+        "symfony/yaml": "~2.3"
     },
     "require-dev": {
         "league/phpunit-coverage-listener": "~1.0",
