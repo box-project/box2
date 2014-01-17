@@ -593,6 +593,9 @@ class Configuration
 
             if (false === ($contents = @file_get_contents($path))) {
                 $errors = error_get_last();
+                if ($errors === null) {
+                    $errors = array('message' => 'failed to get contents of \''.$path.'\'');
+                }
 
                 throw new RuntimeException($errors['message']);
             }
@@ -924,6 +927,9 @@ class Configuration
 
             if (false === ($contents = @file_get_contents($path))) {
                 $errors = error_get_last();
+                if ($errors === null) {
+                    $errors = array('message' => 'failed to get contents of \''.$path.'\'');
+                }
 
                 throw new RuntimeException($errors['message']);
             }
