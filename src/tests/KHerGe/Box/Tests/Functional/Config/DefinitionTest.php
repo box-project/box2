@@ -31,6 +31,83 @@ class DefinitionTest extends TestCase
     private $processor;
 
     /**
+     * Make sure that the default basic settings are set as expected.
+     */
+    public function testDefaultBasic()
+    {
+        $expected = array(
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'MD5',
+            ),
+        );
+
+        $sources = array(
+            'signature' => 'MD5',
+        );
+
+        $this->assertEquals(
+            $expected,
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($sources)
+            )
+        );
+
+        $expected = array(
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
+            'signature' => array(
+                'file' => '/path/to/private.key',
+                'type' => 'OPENSSL',
+            ),
+        );
+
+        $sources = array(
+            'signature' => array(
+                'file' => '/path/to/private.key',
+                'type' => 'OPENSSL',
+            ),
+        );
+
+        $this->assertEquals(
+            $expected,
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($sources)
+            )
+        );
+    }
+
+    /**
+     * Make sure that the default empty basic settings are set as expected.
+     */
+    public function testDefaultEmptyBasic()
+    {
+        $expected = array(
+            'compression' => 'NONE',
+            'mode' => 644,
+            'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
+        );
+
+        $sources = array();
+
+        $this->assertEquals(
+            $expected,
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($sources)
+            )
+        );
+    }
+
+    /**
      * Make sure that the default empty source settings are set as expected.
      */
     public function testDefaultEmptySource()
@@ -44,6 +121,9 @@ class DefinitionTest extends TestCase
             'compression' => 'NONE',
             'mode' => 644,
             'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
         );
 
         $sources = array(
@@ -128,6 +208,9 @@ class DefinitionTest extends TestCase
             'compression' => 'NONE',
             'mode' => 644,
             'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
         );
 
         $stub = array(
@@ -158,6 +241,9 @@ class DefinitionTest extends TestCase
             'compression' => 'NONE',
             'mode' => 644,
             'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
         );
 
         $stub = array(
@@ -226,6 +312,9 @@ class DefinitionTest extends TestCase
             'compression' => 'NONE',
             'mode' => 644,
             'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
         );
 
         $sources = array(
@@ -383,6 +472,9 @@ BANNER
             'compression' => 'NONE',
             'mode' => 644,
             'output' => 'output.phar',
+            'signature' => array(
+                'type' => 'SHA1',
+            ),
         );
 
         $stub = array(
@@ -460,6 +552,9 @@ BANNER
                 'compression' => 'NONE',
                 'mode' => 644,
                 'output' => 'output.phar',
+                'signature' => array(
+                    'type' => 'SHA1',
+                ),
             ),
             $this->processor->processConfiguration(
                 $this->definition,
