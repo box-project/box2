@@ -1,6 +1,8 @@
 /bin
 /coverage
 /src/vendors
+/vendor/
 
 /*.phar
 /composer.lock
+/coverage.xml
