@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/autoload.php" colors="true" strict="true">
+<phpunit bootstrap="src/tests/bootstrap.php" colors="true" strict="true">
   <filter>
     <whitelist>
       <directory suffix=".php">src/lib/</directory>
