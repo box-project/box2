@@ -191,8 +191,16 @@ class DefinitionTest extends TestCase
                         'rename' => null,
                     ),
                     array(
-                        'binary' => true,
+                        'ignore' => array('path/to/ignore'),
+                        'path' => 'path/to/directory',
+                        'binary' => false,
                         'extension' => array('php'),
+                        'filter' => null,
+                        'rename' => null,
+                    ),
+                    array(
+                        'binary' => true,
+                        'extension' => array('inc'),
                         'filter' => '/filter/',
                         'ignore' => array(
                             'directory/to/ignore/',
@@ -226,7 +234,12 @@ class DefinitionTest extends TestCase
                 'dirs' => array(
                     'path/to/directory',
                     array(
+                        'ignore' => 'path/to/ignore',
+                        'path' => 'path/to/directory',
+                    ),
+                    array(
                         'binary' => true,
+                        'extension' => 'inc',
                         'filter' => '/filter/',
                         'ignore' => array(
                             'directory/to/ignore/',
@@ -385,9 +398,7 @@ BANNER
                 'extractable' => true,
                 'intercept' => true,
                 'load' => array(
-                    array(
-                        'file' => '/path/to/test.phar',
-                    ),
+                    '/path/to/test.phar',
                     array(
                         'alias' => 'alias.phar',
                         'file' => '/path/to/test.phar',
@@ -408,9 +419,7 @@ BANNER
                     'PHP_SELF',
                 ),
                 'require' => array(
-                    array(
-                        'file' => 'internal/path/to/file.php',
-                    ),
+                    'internal/path/to/file.php',
                     array(
                         'file' => '/external/path/to/file.php',
                         'internal' => false,
@@ -418,9 +427,7 @@ BANNER
                 ),
                 'shebang' => '#!/usr/bin/php',
                 'source' => array(
-                    array(
-                        'source' => 'testFunc();',
-                    ),
+                    'testFunc();',
                     array(
                         'after' => false,
                         'source' => 'anotherFunc();',
