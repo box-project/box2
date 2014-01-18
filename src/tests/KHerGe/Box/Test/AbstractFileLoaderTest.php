@@ -61,4 +61,12 @@ abstract class AbstractFileLoaderTest extends TestCase
         $this->locator = new FileLocator($this->dir);
         $this->loader = new $class($this->locator);
     }
+
+    /**
+     * @override
+     */
+    protected function tearDown()
+    {
+        $this->temp->purgePaths();
+    }
 }
