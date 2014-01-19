@@ -53,7 +53,7 @@ class GitHelperTest extends TestCase
         chdir($dir);
 
         try {
-            $this->helper->getCommit('/does/not/exist');
+            $this->helper->getCommit($dir);
         } catch (\Exception $exception) {
             chdir($now);
 
