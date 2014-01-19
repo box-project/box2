@@ -47,7 +47,18 @@ class GitHelperTest extends TestCase
             'Not a git repository'
         );
 
-        $this->helper->getCommit('/does/not/exist');
+        $dir = $this->temp->createDir();
+        $now = realpath('.');
+
+        chdir($dir);
+
+        try {
+            $this->helper->getCommit('/does/not/exist');
+        } catch (\Exception $exception) {
+            chdir($now);
+
+            throw $exception;
+        }
     }
 
     /**
