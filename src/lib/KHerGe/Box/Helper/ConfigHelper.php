@@ -68,11 +68,15 @@ class ConfigHelper extends Helper
             } elseif (is_file($path)) {
                 /** @var DelegatingLoader $loader */
                 $loader = $this->createLoader(dirname($path));
+                $dir = $loader[1];
                 $loader = $loader[0];
 
-                return $this->processor->processConfiguration(
-                    $this->definition,
-                    array($loader->load(basename($path)))
+                return $this->finalize(
+                    $this->processor->processConfiguration(
+                        $this->definition,
+                        array($loader->load(basename($path)))
+                    ),
+                    $dir
                 );
             } else {
                 throw new InvalidArgumentException(
@@ -85,9 +89,12 @@ class ConfigHelper extends Helper
 
         $file = $this->findFile($dir, $extensions);
 
-        return $this->processor->processConfiguration(
-            $this->definition,
-            array($loader->load($file))
+        return $this->finalize(
+            $this->processor->processConfiguration(
+                $this->definition,
+                array($loader->load($file))
+            ),
+            $dir
         );
     }
 
@@ -124,6 +131,23 @@ class ConfigHelper extends Helper
             $dir,
             $extensions
         );
+    }
+
+    /**
+     * Finalizes the configuration settings by making last minute changes.
+     *
+     * @param array  $config The processed configuration settings.
+     * @param string $dir    The configuration directory path.
+     *
+     * @return array The finalized configuration settings.
+     */
+    private function finalize(array $config, $dir)
+    {
+        if (isset($config['sources']) && empty($config['sources']['base'])) {
+            $config['sources']['base'] = $dir;
+        }
+
+        return $config;
     }
 
     /**
