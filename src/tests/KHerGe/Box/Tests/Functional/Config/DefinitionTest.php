@@ -83,21 +83,17 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * Make sure that the default compact settings are set as expected.
+     * Make sure that the default observers settings are set as expected.
      */
-    public function testDefaultCompact()
+    public function testDefaultObservers()
     {
         $expected = array(
-            'compact' => array(
+            'observers' => array(
                 'loader' => '/path/to/external/loader.php',
                 'setup' => array(
                     array(
-                        'class' => 'Compactor1',
-                        'arguments' => array(),
-                        'methods' => array(),
-                    ),
-                    array(
-                        'class' => 'Compactor2',
+                        'class' => 'Observer',
+                        'event' => 'ADD_STRING',
                         'arguments' => array(
                             'test',
                         ),
@@ -125,12 +121,12 @@ class DefinitionTest extends TestCase
         );
 
         $sources = array(
-            'compact' => array(
+            'observers' => array(
                 'loader' => '/path/to/external/loader.php',
                 'setup' => array(
-                    'Compactor1',
                     array(
-                        'class' => 'Compactor2',
+                        'class' => 'Observer',
+                        'event' => 'ADD_STRING',
                         'arguments' => array(
                             'test'
                         ),
@@ -183,12 +179,12 @@ class DefinitionTest extends TestCase
     }
 
     /**
-     * Make sure that the default empty compact settings are set as expected.
+     * Make sure that the default empty observers settings are set as expected.
      */
-    public function testDefaultEmptyCompact()
+    public function testDefaultEmptyObservers()
     {
         $expected = array(
-            'compact' => array(
+            'observers' => array(
                 'setup' => array(),
             ),
             'compression' => 'NONE',
@@ -200,7 +196,7 @@ class DefinitionTest extends TestCase
         );
 
         $sources = array(
-            'compact' => null,
+            'observers' => null,
         );
 
         $this->assertEquals(

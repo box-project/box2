@@ -24,7 +24,7 @@ class Definition implements ConfigurationInterface
         $root = $builder->root('box');
 
         $this->buildBasic($root);
-        $this->buildCompact($root);
+        $this->buildObservers($root);
         $this->buildGit($root);
         $this->buildSources($root);
         $this->buildStub($root);
@@ -95,64 +95,6 @@ class Definition implements ConfigurationInterface
     }
 
     /**
-     * Builds the compactor configuration tree.
-     *
-     * This part of the configuration tree builder will define how compactor
-     * class are loaded and configured, as well as some default options. With
-     * the default options, we should be able to iterate the settings and be
-     * able to instantiate and configure each compactor that will be added
-     * to the builder.
-     *
-     * @param ArrayNodeDefinition|NodeDefinition $root The root node.
-     */
-    private function buildCompact($root)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $root
-            ->children()
-                ->arrayNode('compact')
-                    ->children()
-                        ->scalarNode('loader')->cannotBeEmpty()->end()
-                        ->arrayNode('setup')
-                            ->prototype('array')
-                                ->beforeNormalization()
-                                    ->ifString()->then(
-                                        function ($value) {
-                                            return array('class' => $value);
-                                        }
-                                    )
-                                ->end()
-                                ->children()
-                                    ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
-                                    ->arrayNode('arguments')
-                                        ->prototype('variable')->end()
-                                    ->end()
-                                    ->arrayNode('methods')
-                                        ->prototype('array')
-                                            ->beforeNormalization()
-                                                ->ifString()->then(
-                                                    function ($value) {
-                                                        return array('name' => $value);
-                                                    }
-                                                )
-                                            ->end()
-                                            ->children()
-                                                ->scalarNode('name')->isRequired()->cannotBeEmpty()->end()
-                                                ->arrayNode('arguments')
-                                                    ->prototype('variable')->end()
-                                                ->end()
-                                            ->end()
-                                        ->end()
-                                    ->end()
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end();
-    }
-
-    /**
      * Builds the Git information configuration tree.
      *
      * This part of the configuration tree builder will define how Git tags and
@@ -188,6 +130,70 @@ class Definition implements ConfigurationInterface
                                     'tag/commit-long',
                                 )
                             )
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }
+
+    /**
+     * Builds the observers configuration tree.
+     *
+     * This part of the configuration tree builder will define how observer
+     * class are loaded and configured, as well as some default options. With
+     * the default options, we should be able to iterate the settings and be
+     * able to instantiate and configure each observer that will be registered
+     * with the builder.
+     *
+     * @param ArrayNodeDefinition|NodeDefinition $root The root node.
+     */
+    private function buildObservers($root)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $root
+            ->children()
+                ->arrayNode('observers')
+                    ->children()
+                        ->scalarNode('loader')->cannotBeEmpty()->end()
+                        ->arrayNode('setup')
+                            ->prototype('array')
+                                ->children()
+                                    ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
+                                    ->enumNode('event')
+                                        ->isRequired()
+                                        ->values(
+                                            array(
+                                                'ADD_DIR',
+                                                'ADD_FILE',
+                                                'ADD_STRING',
+                                                'BUILD_DIR',
+                                                'BUILD_ITERATOR',
+                                                'SET_STUB',
+                                            )
+                                        )
+                                    ->end()
+                                    ->arrayNode('arguments')
+                                        ->prototype('variable')->end()
+                                    ->end()
+                                    ->arrayNode('methods')
+                                        ->prototype('array')
+                                            ->beforeNormalization()
+                                                ->ifString()->then(
+                                                    function ($value) {
+                                                        return array('name' => $value);
+                                                    }
+                                                )
+                                            ->end()
+                                            ->children()
+                                                ->scalarNode('name')->isRequired()->cannotBeEmpty()->end()
+                                                ->arrayNode('arguments')
+                                                    ->prototype('variable')->end()
+                                                ->end()
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                ->end()
+                            ->end()
                         ->end()
                     ->end()
                 ->end()
