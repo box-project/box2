@@ -11,7 +11,7 @@ before_script:
     - composer install --dev --no-interaction --prefer-source
 
     # setup git for test commits
-    - git config user.name "Test User"
-    - git config user.email "test@test.test"
+    - git config --global user.name "Test User"
+    - git config --global user.email "test@test.test"
 
 script: phpunit -c .travis-phpunit.xml
