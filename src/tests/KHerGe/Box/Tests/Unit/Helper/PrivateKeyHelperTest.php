@@ -133,12 +133,12 @@ class PrivateKeyHelperTest extends TestCase
      */
     protected function setUp()
     {
+        $this->helper = new PrivateKeyHelper();
+        $this->temp = new Temp();
+
         if (!extension_loaded('openssl')) {
             $this->markTestSkipped('The "openssl" extension is required.');
         }
-
-        $this->helper = new PrivateKeyHelper();
-        $this->temp = new Temp();
     }
 
     /**
