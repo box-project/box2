@@ -5,6 +5,7 @@ namespace KHerGe\Box\Tests\Unit\Helper;
 use KHerGe\Box\Helper\GitHelper;
 use Phine\Test\Temp;
 use PHPUnit_Framework_TestCase as TestCase;
+use Symfony\Component\Process\ExecutableFinder;
 
 /**
  * Performs unit testing on `GitHelper`
@@ -101,6 +102,12 @@ class GitHelperTest extends TestCase
      */
     protected function setUp()
     {
+        $finder = new ExecutableFinder();
+
+        if (null === $finder->find('git')) {
+            $this->markTestSkipped('The "git" command is not available.');
+        }
+
         $this->helper = new GitHelper();
         $this->temp = new Temp();
         $this->dir = $this->temp->createDir();
