@@ -147,6 +147,10 @@ class ConfigHelper extends Helper
             $config['sources']['base'] = $dir;
         }
 
+        if (isset($config['git']) && empty($config['git']['path'])) {
+            $config['git']['path'] = $config['sources']['base'];
+        }
+
         return $config;
     }
 

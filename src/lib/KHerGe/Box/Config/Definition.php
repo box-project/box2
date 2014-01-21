@@ -118,6 +118,7 @@ class Definition implements ConfigurationInterface
                         )
                     ->end()
                     ->children()
+                        ->scalarNode('path')->cannotBeEmpty()->end()
                         ->scalarNode('replace')->isRequired()->cannotBeEmpty()->end()
                         ->enumNode('value')
                             ->defaultValue('tag/commit')

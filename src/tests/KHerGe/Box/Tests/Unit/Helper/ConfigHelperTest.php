@@ -75,10 +75,15 @@ class ConfigHelperTest extends TestCase
             'The distribution configuration file should be loaded.'
         );
 
-        file_put_contents("{$this->dir}/box.json", '{"sources":null}');
+        file_put_contents("{$this->dir}/box.json", '{"git":"version","sources":null}');
 
         $this->assertEquals(
             array(
+                'git' => array(
+                    'replace' => 'version',
+                    'path' => $this->dir,
+                    'value' => 'tag/commit',
+                ),
                 'sources' => array(
                     'base' => $this->dir,
                     'dirs' => array(),
