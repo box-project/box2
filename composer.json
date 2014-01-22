@@ -22,6 +22,7 @@
         "phine/phar-replace": "~1.0",
         "symfony/config": "~2.3",
         "symfony/console": "~2.3",
+        "symfony/finder": "~2.3",
         "symfony/process": "~2.3",
         "symfony/yaml": "~2.3"
     },
