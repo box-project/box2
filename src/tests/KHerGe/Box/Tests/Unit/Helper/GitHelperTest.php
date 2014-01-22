@@ -135,6 +135,7 @@ class GitHelperTest extends TestCase
         touch($this->dir . '/test');
         exec("cd {$this->dir} && git add test");
         exec("cd {$this->dir} && git commit -m \"Creating a test repository.\"");
+        exec("cd {$this->dir} && git tag 1.0.0");
         touch($this->dir . '/test2');
         exec("cd {$this->dir} && git add test2");
         exec("cd {$this->dir} && git commit -m \"Bumping up version.\"");
