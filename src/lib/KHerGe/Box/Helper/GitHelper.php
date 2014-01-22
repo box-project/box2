@@ -51,20 +51,22 @@ class GitHelper extends Helper
      */
     public function getTag($dir)
     {
-        return $this->runCommand('git describe --tags HEAD', $dir);
+        return $this->runCommand('git describe --tags HEAD', $dir, false);
     }
 
     /**
      * Returns the result for the command string.
      *
-     * @param string $command The command string.
-     * @param string $dir     The working directory path.
+     * @param string  $command The command string.
+     * @param string  $dir     The working directory path.
+     * @param boolean $throw   Throw an exception on error?
      *
-     * @return string The output from the command.
+     * @return string The output from the command or null if there is an
+     *                error and an exception was not thrown.
      *
      * @throws RuntimeException If there is a problem running the command.
      */
-    private function runCommand($command, $dir)
+    private function runCommand($command, $dir, $throw = true)
     {
         $process = new Process($command, $dir);
 
@@ -72,12 +74,16 @@ class GitHelper extends Helper
             return trim($process->getOutput()) ?: null;
         }
 
-        throw new RuntimeException(
-            sprintf(
-                "Git repository error:\n\nOutput:\n%s\n\nError:%s",
-                $process->getOutput() ?: '(none)',
-                $process->getErrorOutput() ?: '(none)'
-            )
-        );
+        if ($throw) {
+            throw new RuntimeException(
+                sprintf(
+                    "Git repository error:\n\nOutput:\n%s\n\nError:%s",
+                    $process->getOutput() ?: '(none)',
+                    $process->getErrorOutput() ?: '(none)'
+                )
+            );
+        }
+
+        return null;
     }
 }

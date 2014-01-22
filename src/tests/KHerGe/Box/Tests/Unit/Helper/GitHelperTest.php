@@ -106,6 +106,14 @@ class GitHelperTest extends TestCase
             $this->helper->getTag($this->dir),
             'The current tag should be returned.'
         );
+
+        exec("cd {$this->dir} && git tag -d 1.0.0");
+        exec("cd {$this->dir} && git tag -d 1.1.0");
+
+        $this->assertNull(
+            $this->helper->getTag($this->dir),
+            'No tag should be returned.'
+        );
     }
 
     /**
