@@ -70,6 +70,11 @@ class ConfigHelperTest extends TestCase
                 'signature' => array(
                     'type' => 'SHA1',
                 ),
+                'sources' => array(
+                    'base' => $this->dir,
+                    'dirs' => array(),
+                    'files' => array(),
+                ),
             ),
             $this->helper->load(),
             'The distribution configuration file should be loaded.'
@@ -118,6 +123,11 @@ class ConfigHelperTest extends TestCase
                 'signature' => array(
                     'type' => 'SHA1',
                 ),
+                'sources' => array(
+                    'base' => $dir,
+                    'dirs' => array(),
+                    'files' => array(),
+                ),
             ),
             $this->helper->load($dir),
             'The default configuration file should be loaded.'
@@ -138,6 +148,11 @@ class ConfigHelperTest extends TestCase
                 'output' => 'output.phar',
                 'signature' => array(
                     'type' => 'SHA1',
+                ),
+                'sources' => array(
+                    'base' => $this->dir,
+                    'dirs' => array(),
+                    'files' => array(),
                 ),
             ),
             $this->helper->load('alt.json'),

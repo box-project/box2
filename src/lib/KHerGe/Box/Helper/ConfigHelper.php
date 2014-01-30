@@ -5,6 +5,7 @@ namespace KHerGe\Box\Helper;
 use InvalidArgumentException;
 use KHerGe\Box\Config\Definition;
 use KHerGe\Box\Config\Loader\AbstractFileLoader;
+use Phine\Path\Path;
 use RuntimeException;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
@@ -108,8 +109,8 @@ class ConfigHelper extends Helper
      */
     private function createLoader($dir = null)
     {
-        if (null === $dir) {
-            $dir = realpath('.');
+        if ((null === $dir) || ('.' === $dir)) {
+            $dir = Path::current();
         }
 
         $extensions = array();
