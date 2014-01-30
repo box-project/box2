@@ -1,5 +1,5 @@
-Phar
-====
+Box
+===
 
 [![Build Status][]](https://travis-ci.org/kherge/Box)
 [![Coverage Status][]](https://coveralls.io/r/kherge/Box)
