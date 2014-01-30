@@ -217,6 +217,7 @@ class Definition implements ConfigurationInterface
         $root
             ->children()
                 ->arrayNode('sources')
+                    ->addDefaultsIfNotSet()
                     ->children()
 
                         // base directory path
@@ -248,7 +249,6 @@ class Definition implements ConfigurationInterface
                                         ->end()
                                         ->defaultValue(array('php'))
                                     ->end()
-                                    ->scalarNode('filter')->defaultNull()->end()
                                     ->arrayNode('ignore')
                                         ->beforeNormalization()
                                             ->ifString()->then(

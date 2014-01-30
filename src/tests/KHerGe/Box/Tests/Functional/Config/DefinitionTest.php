@@ -42,6 +42,11 @@ class DefinitionTest extends TestCase
             'signature' => array(
                 'type' => 'MD5',
             ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
+            ),
         );
 
         $sources = array(
@@ -63,6 +68,11 @@ class DefinitionTest extends TestCase
             'signature' => array(
                 'file' => '/path/to/private.key',
                 'type' => 'OPENSSL',
+            ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
             ),
         );
 
@@ -118,6 +128,11 @@ class DefinitionTest extends TestCase
             'signature' => array(
                 'type' => 'SHA1',
             ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
+            ),
         );
 
         $sources = array(
@@ -165,6 +180,11 @@ class DefinitionTest extends TestCase
             'signature' => array(
                 'type' => 'SHA1',
             ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
+            ),
         );
 
         $sources = array();
@@ -192,6 +212,11 @@ class DefinitionTest extends TestCase
             'output' => 'output.phar',
             'signature' => array(
                 'type' => 'SHA1',
+            ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
             ),
         );
 
@@ -312,6 +337,11 @@ class DefinitionTest extends TestCase
             'signature' => array(
                 'type' => 'SHA1',
             ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
+            ),
         );
 
         $stub = array(
@@ -345,6 +375,11 @@ class DefinitionTest extends TestCase
             'signature' => array(
                 'type' => 'SHA1',
             ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
+            ),
         );
 
         $stub = array(
@@ -373,7 +408,6 @@ class DefinitionTest extends TestCase
                         'path' => 'path/to/directory',
                         'binary' => false,
                         'extension' => array('php'),
-                        'filter' => null,
                         'ignore' => array(),
                         'rename' => null,
                     ),
@@ -382,13 +416,11 @@ class DefinitionTest extends TestCase
                         'path' => 'path/to/directory',
                         'binary' => false,
                         'extension' => array('php'),
-                        'filter' => null,
                         'rename' => null,
                     ),
                     array(
                         'binary' => true,
                         'extension' => array('inc'),
-                        'filter' => '/filter/',
                         'ignore' => array(
                             'directory/to/ignore/',
                             'file/to/ignore.php',
@@ -430,7 +462,6 @@ class DefinitionTest extends TestCase
                     array(
                         'binary' => true,
                         'extension' => 'inc',
-                        'filter' => '/filter/',
                         'ignore' => array(
                             'directory/to/ignore/',
                             'file/to/ignore.php',
@@ -576,6 +607,11 @@ BANNER
             'signature' => array(
                 'type' => 'SHA1',
             ),
+            'sources' => array(
+                'base' => null,
+                'dirs' => array(),
+                'files' => array(),
+            ),
         );
 
         $stub = array(
@@ -655,6 +691,11 @@ BANNER
                 'output' => 'output.phar',
                 'signature' => array(
                     'type' => 'SHA1',
+                ),
+                'sources' => array(
+                    'base' => null,
+                    'dirs' => array(),
+                    'files' => array(),
                 ),
             ),
             $this->processor->processConfiguration(
