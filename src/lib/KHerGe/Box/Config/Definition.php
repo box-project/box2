@@ -397,7 +397,7 @@ class Definition implements ConfigurationInterface
                         ->scalarNode('banner')->defaultNull()->end()
 
                         // setShebang()
-                        ->scalarNode('shebang')->defaultValue('#!/usr/bin/env php')->end()
+                        ->scalarNode('shebang')->end()
 
                         // webPhar()
                         ->arrayNode('web')

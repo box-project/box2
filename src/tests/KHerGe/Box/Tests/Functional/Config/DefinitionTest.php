@@ -272,6 +272,7 @@ class DefinitionTest extends TestCase
     {
         $expected = array(
             'stub' => array(
+                'shebang' => null,
                 'web' => array(
                     'alias' => null,
                     'index' => 'index.php',
@@ -329,7 +330,6 @@ class DefinitionTest extends TestCase
                 'mung' => array(),
                 'extractable' => false,
                 'banner' => null,
-                'shebang' => '#!/usr/bin/env php',
             ),
             'compression' => 'NONE',
             'mode' => 644,
@@ -346,6 +346,7 @@ class DefinitionTest extends TestCase
 
         $stub = array(
             'stub' => array(
+                'shebang' => null,
                 'web' => null,
             )
         );
