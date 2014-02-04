@@ -2,9 +2,10 @@ Box
 ===
 
 [![Build Status][]](https://travis-ci.org/kherge/Box)
-[![Coverage Status][]](https://coveralls.io/r/kherge/Box)
-[![Latest Stable Version][]](https://packagist.org/packages/kherge/Box)
-[![Total Downloads][]](https://packagist.org/packages/kherge/Box)
+[![Coverage Status][]](https://coveralls.io/r/kherge/Box?branch=master)
+[![Latest Stable Version][]](https://packagist.org/packages/kherge/box)
+[![Latest Unstable Version][]](https://packagist.org/packages/kherge/box)
+[![Total Downloads][]](https://packagist.org/packages/kherge/box)
 
 A simplified, customizable PHP archive builder.
 
@@ -39,10 +40,11 @@ License
 
 This library is available under the [MIT license](LICENSE).
 
-[Build Status]: https://travis-ci.org/phine/lib-phar.png?branch=master
-[Coverage Status]: https://coveralls.io/repos/phine/lib-phar/badge.png
-[Latest Stable Version]: https://poser.pugx.org/phine/phar/v/stable.png
-[Total Downloads]: https://poser.pugx.org/phine/phar/downloads.png
+[Build Status]: https://travis-ci.org/kherge/Box.png?branch=master
+[Coverage Status]: https://coveralls.io/repos/kherge/Box/badge.png?branch=master
+[Latest Stable Version]: https://poser.pugx.org/kherge/box/v/stable.png
+[Latest Unstable Version]: https://poser.pugx.org/kherge/box/v/unstable.png
+[Total Downloads]: https://poser.pugx.org/kherge/box/downloads.png
 
 [Phine Path]: https://github.com/phine/lib-path
 [Phine Phar]: https://github.com/phine/lib-phar
