@@ -7,8 +7,8 @@
     },
     {
         "name": "box.phar",
-        "sha1": "b3d273e82dfde65cbf76097a661c82d244872211",
-        "url": "https://github.com/kherge/Box/releases/download/2.4.2/box-2.4.2.phar",
-        "version": "2.4.2"
+        "sha1": "7f34357666c1b812fe675dec8e9b0177dbaf7b1c",
+        "url": "https://github.com/kherge/Box/releases/download/2.4.3/box-2.4.3.phar",
+        "version": "2.4.3"
     }
 ]
