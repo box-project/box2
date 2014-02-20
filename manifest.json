@@ -2,13 +2,13 @@
     {
         "name": "box.phar",
         "sha1": "0809660c1527daae1665806a6b3db157b36f621d",
-        "url": "https://github.com/kherge/Box/releases/download/1.0.9/box-1.0.9.phar",
+        "url": "https://github.com/kherge-archive/Box/releases/download/1.0.9/box-1.0.9.phar",
         "version": "1.0.9"
     },
     {
         "name": "box.phar",
         "sha1": "7f34357666c1b812fe675dec8e9b0177dbaf7b1c",
-        "url": "https://github.com/kherge/Box/releases/download/2.4.3/box-2.4.3.phar",
+        "url": "https://github.com/kherge-archive/Box/releases/download/2.4.3/box-2.4.3.phar",
         "version": "2.4.3"
     }
 ]
