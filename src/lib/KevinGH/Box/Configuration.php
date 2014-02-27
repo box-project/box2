@@ -759,8 +759,8 @@ class Configuration
             $path = $base . 'default.phar';
         }
 
-        if (false !== strpos($path, '@git-version@')) {
-            $path = str_replace('@git-version@', $this->getGitVersion(), $path);
+        if (false !== strpos($path, '@' . 'git-version@')) {
+            $path = str_replace('@' . 'git-version@', $this->getGitVersion(), $path);
         }
 
         return $path;
