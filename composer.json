@@ -2,7 +2,7 @@
     "name": "kherge/box",
     "description": "A tool to simplify building PHARs.",
     "keywords": ["phar"],
-    "homepage": "http://kherge.github.com/Box",
+    "homepage": "http://box-project.org",
     "license": "MIT",
     "authors": [
         {
@@ -12,8 +12,7 @@
         }
     ],
     "support": {
-        "forum": "https://groups.google.com/d/forum/herrera-io-users",
-        "issues": "https://github.com/kherge/Box/issues"
+        "issues": "https://github.com/kherge/php-box/issues"
     },
     "require": {
         "php": ">=5.3.3",
