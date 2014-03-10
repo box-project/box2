@@ -61,7 +61,7 @@ $ composer global require 'kherge/box=~2.4' --prefer-source
 You may also install Box as a dependency for your Composer managed project:
 
 ```sh
-$ composer require --dev kherge/box=~2.0
+$ composer require --dev kherge/box=~2.4
 ```
 
 (or)
@@ -69,14 +69,14 @@ $ composer require --dev kherge/box=~2.0
 ```json
 {
     "require-dev": {
-        "kherge/box": "~2.0"
+        "kherge/box": "~2.4"
     }
 }
 ```
 
-> Be aware that using this approach requires additional configuration steps to prevent Box's own dependencies from accidentally being added to your Phar, causing file size bloat. You can find more information about this [issue on the wiki](https://github.com/kherge/Box/wiki/App%2C-or-Library%3F).
+> Be aware that using this approach requires additional configuration steps to prevent Box's own dependencies from accidentally being added to your Phar, causing file size bloat. You can find more information about this [issue on the wiki](https://github.com/kherge/php-box/wiki/App%2C-or-Library%3F).
 
-Once you have installed the application, you can run the `help` command to get detailed information about all of the available commands. This should be your go-to place for information about how to use Box. You may also find additional useful information [on the wiki](https://github.com/kherge/Box/wiki). If you happen to come across any information that could prove to be useful to others, the wiki is open for you to contribute.
+Once you have installed the application, you can run the `help` command to get detailed information about all of the available commands. This should be your go-to place for information about how to use Box. You may also find additional useful information [on the wiki](https://github.com/kherge/php-box/wiki). If you happen to come across any information that could prove to be useful to others, the wiki is open for you to contribute.
 
 ```sh
 $ box help
@@ -85,7 +85,7 @@ $ box help
 Creating a Phar
 ---------------
 
-To get started, you may want to check out the [example application](https://github.com/kherge/BoxExample) that is ready to be built by Box. How your project is structured is entirely up to you. All that Box requires is that you have a file called `box.json` at the root of your project directory. You can find a complete and detailed list of configuration settings available by seeing the help information for the `build` command:
+To get started, you may want to check out the [example application](https://github.com/kherge-archive/BoxExample) that is ready to be built by Box. How your project is structured is entirely up to you. All that Box requires is that you have a file called `box.json` at the root of your project directory. You can find a complete and detailed list of configuration settings available by seeing the help information for the `build` command:
 
 ```sh
 $ box help build
@@ -106,7 +106,7 @@ Contributing
 
 You can contribute in one of three ways:
 
-1. File bug reports using the [issue tracker](https://github.com/kherge/Box/issues).
+1. File bug reports using the [issue tracker](https://github.com/kherge/php-box/issues).
 2. Answer questions or fix bugs on the issue tracker.
 3. Contribute new features or update the wiki.
 
