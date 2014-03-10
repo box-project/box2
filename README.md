@@ -1,8 +1,8 @@
 Box
 ===
 
-[![Build Status][]](https://travis-ci.org/kherge/Box)
-[![Coverage Status][]](https://coveralls.io/r/kherge/Box?branch=master)
+[![Build Status][]](https://travis-ci.org/kherge/php-box)
+[![Coverage Status][]](https://coveralls.io/r/kherge/php-box?branch=master)
 [![Latest Stable Version][]](https://packagist.org/packages/kherge/box)
 [![Latest Unstable Version][]](https://packagist.org/packages/kherge/box)
 [![Total Downloads][]](https://packagist.org/packages/kherge/box)
@@ -40,8 +40,8 @@ License
 
 This library is available under the [MIT license](LICENSE).
 
-[Build Status]: https://travis-ci.org/kherge/Box.png?branch=master
-[Coverage Status]: https://coveralls.io/repos/kherge/Box/badge.png?branch=master
+[Build Status]: https://travis-ci.org/kherge/php-box.png?branch=master
+[Coverage Status]: https://coveralls.io/repos/kherge/php-box/badge.png?branch=master
 [Latest Stable Version]: https://poser.pugx.org/kherge/box/v/stable.png
 [Latest Unstable Version]: https://poser.pugx.org/kherge/box/v/unstable.png
 [Total Downloads]: https://poser.pugx.org/kherge/box/downloads.png
