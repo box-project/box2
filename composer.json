@@ -2,7 +2,7 @@
     "name": "kherge/box",
     "description": "A simplified, customizable PHP archive builder.",
     "keywords": ["phar"],
-    "homepage": "https://github.com/kherge/Box",
+    "homepage": "https://github.com/kherge/php-box",
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/kherge/Box/issues"
+        "issues": "https://github.com/kherge/php-box/issues"
     },
     "require": {
         "php": ">=5.3.3",
@@ -44,7 +44,7 @@
     ],
     "extra": {
         "branch-alias": {
-            "dev-master": "3.0-dev"
+            "dev-master": "3.x-dev"
         }
     }
 }
