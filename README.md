@@ -1,7 +1,7 @@
 Box
 ===
 
-[![Build Status](https://secure.travis-ci.org/kherge/Box.png?branch=2.0)](http://travis-ci.org/kherge/Box)
+[![Build Status](https://secure.travis-ci.org/kherge/php-box.png?branch=2.0)](http://travis-ci.org/kherge/php-box)
 
 What is it?
 -----------
