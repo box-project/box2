@@ -1,6 +1,6 @@
 # ignore directories
+/coverage/
 /vendor/
 
 # ignore files
 /composer.lock
-/coverage.xml
