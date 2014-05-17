@@ -5,9 +5,6 @@
       <directory suffix=".php">src/lib/</directory>
     </whitelist>
   </filter>
-  <logging>
-    <log type="coverage-clover" target="coverage.xml"/>
-  </logging>
   <testsuites>
     <testsuite name="KHerGe Box Test Suite">
       <directory phpVersion="5.3.3" phpVersionOperator=">=" suffix="Test.php">src/tests/</directory>
