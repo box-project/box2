@@ -20,11 +20,11 @@
         "phine/phar": "~1.0",
         "phine/phar-compact": "~1.0",
         "phine/phar-replace": "~1.0",
-        "symfony/config": "~2.3",
-        "symfony/console": "~2.3",
-        "symfony/finder": "~2.3",
-        "symfony/process": "~2.3",
-        "symfony/yaml": "~2.3"
+        "symfony/config": "~2.4",
+        "symfony/console": "~2.4",
+        "symfony/finder": "~2.4",
+        "symfony/process": "~2.4",
+        "symfony/yaml": "~2.4"
     },
     "require-dev": {
         "league/phpunit-coverage-listener": "~1.0",
