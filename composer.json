@@ -12,7 +12,7 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/kherge/php-box/issues"
+        "issues": "https://github.com/box-project/box2/issues"
     },
     "require": {
         "php": ">=5.3.3",
