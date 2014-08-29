@@ -70,6 +70,7 @@ OUTPUT;
     {
         $phar = new Phar('test.phar');
         $phar->addFromString('a/b/c/d.php', '<?php echo "Hello!\n";');
+        $phar->setMetadata(array('test' => 123));
 
         $version = $phar->getVersion();
         $signature = $phar->getSignature();
@@ -81,7 +82,8 @@ OUTPUT;
             array(
                 'command' => 'info',
                 'phar' => 'test.phar',
-                '--list' => true
+                '--list' => true,
+                '--metadata' => true,
             )
         );
 
@@ -99,6 +101,11 @@ a/
   b/
     c/
       d.php
+
+Metadata:
+array (
+  'test' => 123,
+)
 
 OUTPUT;
 
