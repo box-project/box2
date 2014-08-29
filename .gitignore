@@ -6,3 +6,4 @@
 /*.phar
 /composer.lock
 /coverage.xml
+/phpunit.xml
