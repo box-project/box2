@@ -820,13 +820,29 @@ class Configuration
             $values[$git] = $this->getGitVersion();
         }
 
+        $sigil = $this->getReplacementSigil();
+
         foreach ($values as $key => $value) {
             unset($values[$key]);
 
-            $values["@$key@"] = $value;
+            $values["$sigil$key$sigil"] = $value;
         }
 
         return $values;
+    }
+
+    /**
+     * Returns the replacement placeholder sigil.
+     *
+     * @return string The placeholder sigil.
+     */
+    public function getReplacementSigil()
+    {
+        if (isset($this->raw->{'replacement-sigil'})) {
+            return $this->raw->{'replacement-sigil'};
+        }
+
+        return '@';
     }
 
     /**

@@ -160,6 +160,10 @@
             "description": "The file name or path of the new PHAR.",
             "type": "string"
         },
+        "replacement-sigil": {
+            "description": "The sigil that surrounds the replacement names.",
+            "type": "string"
+        },
         "replacements": {
             "description": "A list of replacement names and their values.",
             "type": "object"

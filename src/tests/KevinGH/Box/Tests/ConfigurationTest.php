@@ -3,7 +3,6 @@
 namespace KevinGH\Box\Tests;
 
 use Herrera\Annotations\Tokenizer;
-use Herrera\Box\Compactor\Php;
 use Herrera\PHPUnit\TestCase;
 use KevinGH\Box\Configuration;
 use Phar;
@@ -924,6 +923,15 @@ class ConfigurationTest extends TestCase
         }
     }
 
+    public function testGetReplacementSigil()
+    {
+        $this->assertEquals('@', $this->config->getReplacementSigil());
+
+        $this->setConfig(array('replacement-sigil' => '$'));
+
+        $this->assertEquals('$', $this->config->getReplacementSigil());
+    }
+
     public function testGetReplacements()
     {
         $this->assertSame(array(), $this->config->getReplacements());
@@ -1219,7 +1227,7 @@ CODE
     {
         $this->setPropertyValue($this->config, 'raw', (object) $config);
     }
-    
+
     private function isWindows()
     {
         if (false === strpos(strtolower(PHP_OS), 'darwin') && false !== strpos(strtolower(PHP_OS), 'win')) {
