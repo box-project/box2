@@ -66,6 +66,12 @@ HELP
             'List the contents of the Phar?'
         );
         $this->addOption(
+            'metadata',
+            null,
+            InputOption::VALUE_NONE,
+            'Display metadata?'
+        );
+        $this->addOption(
             'mode',
             'm',
             InputOption::VALUE_OPTIONAL,
@@ -105,6 +111,12 @@ HELP
                     ('indent' === $input->getOption('mode')) ? 0 : false,
                     'phar://' . str_replace('\\', '/', realpath($file)) . '/'
                 );
+            }
+
+            if ($input->getOption('metadata')) {
+                $output->writeln('');
+                $output->writeln('<comment>Metadata:</comment>');
+                $output->writeln(var_export($phar->getMetadata(), true));
             }
 
             unset($phar);
