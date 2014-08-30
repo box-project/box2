@@ -146,27 +146,24 @@ HELP
         $indent,
         $base
     ) {
+        /** @var SplFileInfo[] $list */
         foreach ($list as $item) {
-            /** @var $item SplFileInfo */
-
             if (false !== $indent) {
                 $output->write(str_repeat(' ', $indent));
 
+                $path = $item->getFilename();
+
                 if ($item->isDir()) {
-                    $output->writeln(
-                        '<info>' . $item->getFilename() . '/</info>'
-                    );
-                } else {
-                    $output->writeln($item->getFilename());
+                    $path .= '/';
                 }
             } else {
                 $path = str_replace($base, '', $item->getPathname());
+            }
 
-                if ($item->isDir()) {
-                    $output->writeln("<info>$path</info>");
-                } else {
-                    $output->writeln($path);
-                }
+            if ($item->isDir()) {
+                $output->writeln("<info>$path</info>");
+            } else {
+                $output->writeln($path);
             }
 
             if ($item->isDir()) {
