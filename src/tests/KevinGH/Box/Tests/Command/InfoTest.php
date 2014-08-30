@@ -55,7 +55,7 @@ OUTPUT;
         $expected = <<<OUTPUT
 API Version: $version
 
-Compression: None
+Archive Compression: None
 
 Signature: {$signature['hash_type']}
 
@@ -95,7 +95,7 @@ OUTPUT;
         $expected = <<<OUTPUT
 API Version: $version
 
-Compression: None
+Archive Compression: None
 
 Signature: {$signature['hash_type']}
 
@@ -142,7 +142,7 @@ OUTPUT;
         $expected = <<<OUTPUT
 API Version: $version
 
-Compression: None
+Archive Compression: None
 
 Signature: {$signature['hash_type']}
 

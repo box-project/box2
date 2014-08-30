@@ -103,9 +103,9 @@ HELP
                 $output,
                 array(
                     'API Version' => $phar->getVersion(),
-                    'Compression' => $phar->isCompressed()
-                                   ? self::$algorithms[$phar->isCompressed()]
-                                   : 'None',
+                    'Archive Compression' => $phar->isCompressed()
+                        ? self::$algorithms[$phar->isCompressed()]
+                        : 'None',
                     'Signature' => $signature['hash_type'],
                     'Signature Hash' => $signature['hash']
                 )
