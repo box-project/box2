@@ -4,7 +4,7 @@ namespace KevinGH\Box\Command;
 
 use DirectoryIterator;
 use Phar;
-use SplFileInfo;
+use PharFileInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,6 +29,16 @@ class Info extends Command
         Phar::GZ => 'GZ',
         Phar::TAR => 'TAR',
         Phar::ZIP => 'ZIP'
+    );
+
+    /**
+     * The list of recognized file compression algorithms.
+     *
+     * @var array
+     */
+    private static $fileAlgorithms = array(
+        Phar::BZ2 => 'BZ2',
+        Phar::GZ => 'GZ',
     );
 
     /**
@@ -105,11 +115,15 @@ HELP
                 $output->writeln('');
                 $output->writeln('<comment>Contents:</comment>');
 
+                $root = 'phar://' . str_replace('\\', '/', realpath($file)) . '/';
+
                 $this->contents(
                     $output,
                     $phar,
                     ('indent' === $input->getOption('mode')) ? 0 : false,
-                    'phar://' . str_replace('\\', '/', realpath($file)) . '/'
+                    $root,
+                    $phar,
+                    $root
                 );
             }
 
@@ -139,15 +153,21 @@ HELP
      * @param Traversable     $list   The traversable list.
      * @param boolean|integer $indent The indentation level.
      * @param string          $base   The base path.
+     * @param Phar            $phar   The PHP archive.
+     * @param string          $root   The root path to remove.
      */
     private function contents(
         OutputInterface $output,
         Traversable $list,
         $indent,
-        $base
+        $base,
+        Phar $phar,
+        $root
     ) {
-        /** @var SplFileInfo[] $list */
+        /** @var PharFileInfo $item */
         foreach ($list as $item) {
+            $item = $phar[str_replace($root, '', $item->getPathname())];
+
             if (false !== $indent) {
                 $output->write(str_repeat(' ', $indent));
 
@@ -163,7 +183,15 @@ HELP
             if ($item->isDir()) {
                 $output->writeln("<info>$path</info>");
             } else {
-                $output->writeln($path);
+                $compression = '';
+
+                foreach (self::$fileAlgorithms as $code => $name) {
+                    if ($item->isCompressed($code)) {
+                        $compression = " <fg=cyan>[$name]</fg=cyan>";
+                    }
+                }
+
+                $output->writeln($path . $compression);
             }
 
             if ($item->isDir()) {
@@ -171,7 +199,9 @@ HELP
                     $output,
                     new DirectoryIterator($item->getPathname()),
                     (false === $indent) ? $indent : $indent + 2,
-                    $base
+                    $base,
+                    $phar,
+                    $root
                 );
             }
         }

@@ -70,8 +70,13 @@ OUTPUT;
     {
         $phar = new Phar('test.phar');
         $phar->addFromString('a/b/c/d.php', '<?php echo "Hello!\n";');
+        $phar->addFromString('a/b/c/e.php', '<?php echo "Compressed!\n";');
         $phar->setMetadata(array('test' => 123));
 
+        /** @var \PharFileInfo[] $phar */
+        $phar['a/b/c/e.php']->compress(Phar::BZ2);
+
+        /** @var Phar $phar */
         $version = $phar->getVersion();
         $signature = $phar->getSignature();
 
@@ -101,6 +106,7 @@ a/
   b/
     c/
       d.php
+      e.php [BZ2]
 
 Metadata:
 array (
