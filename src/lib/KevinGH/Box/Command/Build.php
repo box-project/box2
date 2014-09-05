@@ -631,6 +631,8 @@ HELP
         $message = null,
         $binary = false
     ) {
+        static $count = 0;
+
         if ($iterator) {
             if ($message) {
                 $this->putln('?', $message);
@@ -642,6 +644,10 @@ HELP
 
             /** @var $file SplFileInfo */
             foreach ($iterator as $file) {
+                if (0 === (++$count % 100)) {
+                    gc_collect_cycles();
+                }
+
                 $relative = preg_replace($baseRegex, '', $file->getPathname());
 
                 if (null !== ($mapped = $mapper($relative))) {
