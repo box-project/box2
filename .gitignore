@@ -1,9 +1,13 @@
-/bin
-/coverage
-/src/vendors
-/vendor/
-
+# box files
 /*.phar
+/box.json
+
+# composer directories
+/bin/
+/src/vendors/
+
+# composer files
 /composer.lock
-/coverage.xml
+
+# phpunit files
 /phpunit.xml
