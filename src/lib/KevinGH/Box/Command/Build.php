@@ -370,6 +370,9 @@ when generating a new stub. By default, this line is used:
 
   <comment>#!/usr/bin/env php</comment>
 
+The shebang line can be removed altogether if <comment>false</comment> or an empty string
+is provided.
+
 The <info>stub</info> <comment>(string, boolean)</comment> setting is used to specify the location of a
 stub file, or if one should be generated. If a path is provided, the stub
 file will be used as is inside the Phar. If <comment>true</comment> is provided, a new stub

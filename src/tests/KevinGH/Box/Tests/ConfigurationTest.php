@@ -970,6 +970,20 @@ class ConfigurationTest extends TestCase
         $this->config->getShebang();
     }
 
+    public function testGetShebangBlank()
+    {
+        $this->setConfig(array('shebang' => ''));
+
+        $this->assertEquals('', $this->config->getShebang());
+    }
+
+    public function testGetShebangFalse()
+    {
+        $this->setConfig(array('shebang' => false));
+
+        $this->assertEquals('', $this->config->getShebang());
+    }
+
     public function testGetSigningAlgorithm()
     {
         $this->assertSame(Phar::SHA1, $this->config->getSigningAlgorithm());

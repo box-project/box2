@@ -869,6 +869,10 @@ class Configuration
     public function getShebang()
     {
         if (isset($this->raw->shebang)) {
+            if (('' === $this->raw->shebang) || (false === $this->raw->shebang)) {
+                return '';
+            }
+
             $shebang = trim($this->raw->shebang);
 
             if ('#!' !== substr($shebang, 0, 2)) {
