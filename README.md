@@ -53,7 +53,7 @@ $ box update
 This is probably the best way when you have other tools like phpunit and other tools installed in this way:
 
 ```sh
-$ composer global require 'kherge/box=~2.4' --prefer-source
+$ composer global require kherge/box --prefer-source
 ```
 
 ### As a Composer Dependency
@@ -61,7 +61,7 @@ $ composer global require 'kherge/box=~2.4' --prefer-source
 You may also install Box as a dependency for your Composer managed project:
 
 ```sh
-$ composer require --dev kherge/box=~2.4
+$ composer require --dev kherge/box
 ```
 
 (or)
@@ -69,7 +69,7 @@ $ composer require --dev kherge/box=~2.4
 ```json
 {
     "require-dev": {
-        "kherge/box": "~2.4"
+        "kherge/box": "~2.5"
     }
 }
 ```
