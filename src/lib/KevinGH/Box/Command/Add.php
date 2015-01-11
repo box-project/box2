@@ -132,6 +132,7 @@ HELP
 
         // load bootstrap file
         if (null !== ($bootstrap = $this->config->getBootstrapFile())) {
+            $this->config->loadBootstrap();
             $this->putln('?', "Loading bootstrap file: $bootstrap");
 
             unset($bootstrap);
