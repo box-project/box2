@@ -337,7 +337,14 @@ class Configuration
                     );
                 }
 
-                return constant('Phar::' . $this->raw->compression);
+                $value = constant('Phar::' . $this->raw->compression);
+
+                // Phar::NONE is not valid for compressFiles()
+                if (Phar::NONE === $value) {
+                    return null;
+                }
+
+                return $value;
             }
 
             return $this->raw->compression;
