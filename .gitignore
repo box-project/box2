@@ -11,3 +11,7 @@
 
 # phpunit files
 /phpunit.xml
+
+# phpstorm files
+/.idea/
+/*.iml
