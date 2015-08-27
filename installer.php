@@ -142,7 +142,7 @@ namespace
     // Retrieve manifest
     echo " - Downloading manifest...$n";
 
-    $manifest = file_get_contents('http://box-project.org/manifest.json');
+    $manifest = file_get_contents('http://box-project.github.io/box2/manifest.json');
 
     echo " - Reading manifest...$n";
 
