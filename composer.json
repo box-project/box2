@@ -2,7 +2,7 @@
     "name": "kherge/box",
     "description": "A tool to simplify building PHARs.",
     "keywords": ["phar"],
-    "homepage": "http://box-project.org",
+    "homepage": "http://box-project.github.io/box2/",
     "license": "MIT",
     "authors": [
         {
