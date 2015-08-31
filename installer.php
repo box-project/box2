@@ -125,14 +125,16 @@ namespace
     }
 
     // check apc cli caching
-    check(
-        'The "apc.enable_cli" setting is off.',
-        'Notice: The "apc.enable_cli" is on and may cause problems with Phars.',
-        function () {
-            return (false == ini_get('apc.enable_cli'));
-        },
-        false
-    );
+    if (!defined('HHVM_VERSION') && !extension_loaded('apcu') && extension_loaded('apc')) {
+        check(
+            'The "apc.enable_cli" setting is off.',
+            'Notice: The "apc.enable_cli" is on and may cause problems with Phars.',
+            function () {
+                return (false == ini_get('apc.enable_cli'));
+            },
+            false
+        );
+    }
 
     echo "{$n}Everything seems good!$n$n";
 
