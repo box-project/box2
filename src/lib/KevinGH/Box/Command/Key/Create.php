@@ -3,6 +3,7 @@
 namespace KevinGH\Box\Command\Key;
 
 use KevinGH\Box\Helper\PhpSecLibHelper;
+use phpseclib\Crypt\RSA;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -107,8 +108,8 @@ HELP
             );
         }
 
-        $rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-        $rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
+        $rsa->setPrivateKeyFormat(RSA::PRIVATE_FORMAT_PKCS1);
+        $rsa->setPublicKeyFormat(RSA::PUBLIC_FORMAT_PKCS1);
 
         $key = $rsa->createKey($input->getOption('bits'));
 

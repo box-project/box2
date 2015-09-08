@@ -2,11 +2,11 @@
 
 namespace KevinGH\Box\Tests\Command\Key;
 
-use Crypt_RSA;
+use phpseclib\Crypt\RSA;
 
-class MockCryptRSA extends Crypt_RSA
+class MockCryptRSA extends RSA
 {
-    public function getPublicKey($type = CRYPT_RSA_PUBLIC_FORMAT_PKCS1)
+    public function getPublicKey($type = self::PUBLIC_FORMAT_PKCS1)
     {
         return false;
     }

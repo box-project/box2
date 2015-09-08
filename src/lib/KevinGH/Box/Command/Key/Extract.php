@@ -3,6 +3,7 @@
 namespace KevinGH\Box\Command\Key;
 
 use KevinGH\Box\Helper\PhpSecLibHelper;
+use phpseclib\Crypt\RSA;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\DialogHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -92,7 +93,7 @@ HELP
 
         $result = $rsa->loadKey(
             file_get_contents($input->getArgument('private')),
-            CRYPT_RSA_PRIVATE_FORMAT_PKCS1
+            RSA::PRIVATE_FORMAT_PKCS1
         );
 
         if (false === $result) {

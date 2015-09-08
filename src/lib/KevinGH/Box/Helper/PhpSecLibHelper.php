@@ -2,7 +2,7 @@
 
 namespace KevinGH\Box\Helper;
 
-use Crypt_RSA;
+use phpseclib\Crypt\RSA;
 use Symfony\Component\Console\Helper\Helper;
 
 /**
@@ -19,7 +19,7 @@ class PhpSecLibHelper extends Helper
      */
     public function cryptRSA()
     {
-        return new Crypt_RSA();
+        return new RSA();
     }
 
     /**
