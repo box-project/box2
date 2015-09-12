@@ -107,7 +107,7 @@ OUTPUT;
 Validating the Box configuration file...
 The configuration file failed validation.
 
-  - The property test is not defined and the definition does not allow additional properties
+  - The property - test - is not defined and the definition does not allow additional properties
 
 OUTPUT;
 
