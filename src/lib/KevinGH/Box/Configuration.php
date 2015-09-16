@@ -475,6 +475,22 @@ class Configuration
         return array();
     }
 
+    public function getDatetimeNow()
+    {
+        $now = new \Datetime('now');
+
+        return $now->format('Y-m-d H:i:s');
+    }
+
+    public function getDatetimeNowPlaceHolder()
+    {
+        if (isset($this->raw->{'datetime'})) {
+            return $this->raw->{'datetime'};
+        }
+
+        return null;
+    }
+
     /**
      * Returns the Git commit hash.
      *

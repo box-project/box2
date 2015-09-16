@@ -503,6 +503,27 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('test.html', $results[1]->getBasename());
     }
 
+    public function testGetDatetimeNow()
+    {
+        $this->assertRegExp(
+            '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
+            $this->config->getDatetimeNow()
+        );
+    }
+
+    public function testGetDatetimeNowPlaceHolder()
+    {
+        $this->assertNull($this->config->getDatetimeNowPlaceHolder());
+
+        $this->setConfig(array('datetime' => 'date_time'));
+
+        $this->assertEquals(
+            'date_time',
+            $this->config->getDatetimeNowPlaceHolder()
+        );
+
+    }
+
     public function testGetGitHash()
     {
         touch('test');

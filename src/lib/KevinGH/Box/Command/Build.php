@@ -257,6 +257,11 @@ It may be useful to know that Box imports files in the following order:
  - files
  - files-bin
 </comment>
+The <info>datetime</info> <comment>(string)</comment> setting is the name of a placeholder value that
+will be replaced in all non-binary files by the current datetime.
+
+Example: <comment>2015-01-28 14:55:23</comment>
+
 The <info>git-commit</info> <comment>(string)</comment> setting is the name of a placeholder value that
 will be replaced in all non-binary files by the current Git commit hash
 of the repository.
