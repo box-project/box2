@@ -926,7 +926,8 @@ class ConfigurationTest extends TestCase
                 'git-commit-short' => 'git_commit_short',
                 'git-tag' => 'git_tag',
                 'git-version' => 'git_version',
-                'replacements' => array('rand' => $rand = rand())
+                'replacements' => array('rand' => $rand = rand()),
+                'datetime' => 'date_time'
             )
         );
 
@@ -937,6 +938,10 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('1.0.0', $values['@git_tag@']);
         $this->assertEquals('1.0.0', $values['@git_version@']);
         $this->assertEquals($rand, $values['@rand@']);
+        $this->assertRegExp(
+            '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
+            $values['@date_time@']
+        );
 
         // some process does not release the git files
         if ($this->isWindows()) {

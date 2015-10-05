@@ -843,6 +843,10 @@ class Configuration
             $values[$git] = $this->getGitVersion();
         }
 
+        if (null !== ($date = $this->getDatetimeNowPlaceHolder())) {
+            $values[$date] = $this->getDatetimeNow();
+        }
+
         $sigil = $this->getReplacementSigil();
 
         foreach ($values as $key => $value) {
