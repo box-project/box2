@@ -66,6 +66,8 @@ Note that all settings are optional.
     "chmod": ?,
     "compactors": ?,
     "compression": ?,
+    "datetime": ?,
+    "datetime_format": ?,
     "directories": ?,
     "directories-bin": ?,
     "extract": ?,
@@ -261,6 +263,10 @@ The <info>datetime</info> <comment>(string)</comment> setting is the name of a p
 will be replaced in all non-binary files by the current datetime.
 
 Example: <comment>2015-01-28 14:55:23</comment>
+
+The <info>datetime_format</info> <comment>(string)</comment> setting accepts a valid PHP date format. It can be used to change the format for the <info>datetime</info> setting.
+
+Example: <comment>Y-m-d H:i:s</comment>
 
 The <info>git-commit</info> <comment>(string)</comment> setting is the name of a placeholder value that
 will be replaced in all non-binary files by the current Git commit hash

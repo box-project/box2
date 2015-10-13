@@ -507,7 +507,15 @@ class ConfigurationTest extends TestCase
     {
         $this->assertRegExp(
             '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
-            $this->config->getDatetimeNow()
+            $this->config->getDatetimeNow('Y-m-d H:i:s')
+        );
+    }
+
+    public function testGetDatetimeNowFormatted()
+    {
+        $this->assertRegExp(
+            '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',
+            $this->config->getDatetimeNow('Y-m-d')
         );
     }
 
@@ -520,6 +528,19 @@ class ConfigurationTest extends TestCase
         $this->assertEquals(
             'date_time',
             $this->config->getDatetimeNowPlaceHolder()
+        );
+
+    }
+
+    public function testGetDatetimeFormat()
+    {
+        $this->assertEquals('Y-m-d H:i:s', $this->config->getDatetimeFormat());
+
+        $this->setConfig(array('datetime_format' => 'Y-m-d'));
+
+        $this->assertEquals(
+            'Y-m-d',
+            $this->config->getDatetimeFormat()
         );
 
     }
@@ -927,7 +948,8 @@ class ConfigurationTest extends TestCase
                 'git-tag' => 'git_tag',
                 'git-version' => 'git_version',
                 'replacements' => array('rand' => $rand = rand()),
-                'datetime' => 'date_time'
+                'datetime' => 'date_time',
+                'datetime_format' => 'Y:m:d'
             )
         );
 
@@ -939,7 +961,7 @@ class ConfigurationTest extends TestCase
         $this->assertEquals('1.0.0', $values['@git_version@']);
         $this->assertEquals($rand, $values['@rand@']);
         $this->assertRegExp(
-            '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
+            '/^[0-9]{4}:[0-9]{2}:[0-9]{2}$/',
             $values['@date_time@']
         );
 

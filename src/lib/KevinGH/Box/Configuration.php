@@ -475,11 +475,16 @@ class Configuration
         return array();
     }
 
-    public function getDatetimeNow()
+    public function getDatetimeNow($format)
     {
         $now = new \Datetime('now');
+        $datetime = $now->format($format);
 
-        return $now->format('Y-m-d H:i:s');
+        if (!$datetime) {
+            throw new RuntimeException("'$format' is not a valid PHP date format");
+        }
+
+        return $datetime;
     }
 
     public function getDatetimeNowPlaceHolder()
@@ -489,6 +494,15 @@ class Configuration
         }
 
         return null;
+    }
+
+    public function getDatetimeFormat()
+    {
+        if (isset($this->raw->{'datetime_format'})) {
+            return $this->raw->{'datetime_format'};
+        }
+
+        return 'Y-m-d H:i:s';
     }
 
     /**
@@ -844,7 +858,7 @@ class Configuration
         }
 
         if (null !== ($date = $this->getDatetimeNowPlaceHolder())) {
-            $values[$date] = $this->getDatetimeNow();
+            $values[$date] = $this->getDatetimeNow($this->getDatetimeFormat());
         }
 
         $sigil = $this->getReplacementSigil();
