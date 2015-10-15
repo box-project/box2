@@ -475,6 +475,36 @@ class Configuration
         return array();
     }
 
+    public function getDatetimeNow($format)
+    {
+        $now = new \Datetime('now');
+        $datetime = $now->format($format);
+
+        if (!$datetime) {
+            throw new RuntimeException("'$format' is not a valid PHP date format");
+        }
+
+        return $datetime;
+    }
+
+    public function getDatetimeNowPlaceHolder()
+    {
+        if (isset($this->raw->{'datetime'})) {
+            return $this->raw->{'datetime'};
+        }
+
+        return null;
+    }
+
+    public function getDatetimeFormat()
+    {
+        if (isset($this->raw->{'datetime_format'})) {
+            return $this->raw->{'datetime_format'};
+        }
+
+        return 'Y-m-d H:i:s';
+    }
+
     /**
      * Returns the Git commit hash.
      *
@@ -825,6 +855,10 @@ class Configuration
 
         if (null !== ($git = $this->getGitVersionPlaceholder())) {
             $values[$git] = $this->getGitVersion();
+        }
+
+        if (null !== ($date = $this->getDatetimeNowPlaceHolder())) {
+            $values[$date] = $this->getDatetimeNow($this->getDatetimeFormat());
         }
 
         $sigil = $this->getReplacementSigil();
