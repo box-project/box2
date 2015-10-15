@@ -62,6 +62,14 @@
             "description": "The compression algorithm to use for the PHAR.",
             "type": ["string", "number"]
         },
+        "datetime": {
+            "description": "The replacement date for the current date and time.",
+            "type": "string"
+        },
+        "datetime_format": {
+            "description": "The format for the current date and time.",
+            "type": "string"
+        },
         "directories": {
             "description": "A list of relative directory paths to search for scripts.",
             "items": {
