@@ -109,7 +109,7 @@ HELP
                 $output->writeln($signature['hash']);
             }
 
-            return 1;
+            return 0;
         }
 
         $output->writeln('<error>The Phar failed verification.</error>');
@@ -118,6 +118,6 @@ HELP
             throw $exception;
         }
 
-        return 0;
+        return 1;
     }
 }
