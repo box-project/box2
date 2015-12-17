@@ -429,6 +429,7 @@ HELP
         $this->putln('?', "Output path: $path");
 
         $this->box = Box::create($path);
+        $this->box->getPhar()->startBuffering();
 
         // set replacement values, if any
         if (array() !== ($values = $this->config->getProcessedReplacements())) {
