@@ -369,7 +369,7 @@ class Configuration
                 function (&$directory) use ($base) {
                     $directory = $base
                                . DIRECTORY_SEPARATOR
-                               . rtrim(Path::canonical($directory), '/');
+                               . rtrim(Path::canonical($directory), DIRECTORY_SEPARATOR);
                 }
             );
 
