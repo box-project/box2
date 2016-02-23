@@ -373,6 +373,21 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    public function testGetDirectoriesTrailingSlashRemoved()
+    {
+        $this->setConfig(
+            array('directories' => array('dir/subdir1/', 'dir/subdir2/'))
+        );
+
+        $this->assertEquals(
+            array(
+                $this->dir . DIRECTORY_SEPARATOR . 'dir/subdir1',
+                $this->dir . DIRECTORY_SEPARATOR . 'dir/subdir2',
+            ),
+            $this->config->getDirectories()
+        );
+    }
+
     public function testGetDirectoriesIterator()
     {
         $this->assertNull($this->config->getDirectoriesIterator());
