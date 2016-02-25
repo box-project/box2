@@ -23,7 +23,7 @@ class ExtractTest extends CommandTestCase
             array(
                 'command' => 'extract',
                 'phar' => $rand,
-                '--pick' => 'a/b/c/e.php',
+                '--pick' => array('a/b/c/e.php'),
                 '--out' => 'extracted'
             ),
             array(
