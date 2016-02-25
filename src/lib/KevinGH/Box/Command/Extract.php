@@ -88,8 +88,6 @@ HELP
 
         // backslash paths causes segfault
         if ($files) {
-            $files = (array) $files;
-
             array_walk(
                 $files,
                 function (&$file) {
