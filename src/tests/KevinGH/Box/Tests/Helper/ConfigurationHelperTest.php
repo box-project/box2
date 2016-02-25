@@ -55,6 +55,19 @@ class ConfigurationHelperTest extends TestCase
         );
     }
 
+    public function testLoadFileImport()
+    {
+        file_put_contents('box.json', '{"import": "test.json"}');
+        file_put_contents('test.json', '{"alias": "import.phar"}');
+
+        $config = $this->helper->loadFile();
+
+        $this->assertEquals(
+            'import.phar',
+            $config->getAlias()
+        );
+    }
+
     public function testGetDefaultPathNotExist()
     {
         $this->setExpectedException(

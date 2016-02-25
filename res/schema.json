@@ -126,6 +126,10 @@
             "description": "The replacement name for the current Git tag or commit hash.",
             "type": "string"
         },
+        "import": {
+            "description": "The path to a Box configuration file for importing.",
+            "type": "string"
+        },
         "intercept": {
             "description": "Allow the PHAR to intercept file functions?",
             "type": "boolean"

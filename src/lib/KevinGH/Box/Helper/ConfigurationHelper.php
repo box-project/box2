@@ -88,6 +88,13 @@ class ConfigurationHelper extends Helper
 
         $json = $this->json->decodeFile($file);
 
+        if (isset($json->import)) {
+            $json = (object) array_merge(
+                (array) $this->json->decodeFile($json->import),
+                (array) $json
+            );
+        }
+
         $this->json->validate(
             $this->json->decodeFile(BOX_SCHEMA_FILE),
             $json
