@@ -79,6 +79,7 @@ Note that all settings are optional.
     "intercept": ?,
     "key": ?,
     "key-pass": ?,
+    "lsb-init-params": ?,
     "main": ?,
     "map": ?,
     "metadata": ?,
@@ -311,6 +312,23 @@ The <info>key-pass</info> <comment>(string, boolean)</comment> setting is used t
 for the private <info>key</info>. If a <comment>string</comment> is provided, it will be used as is as
 the passphrase. If <comment>true</comment> is provided, you will be prompted for the
 passphrase.
+
+The <info>lsb-init-params</info> <comment>(object)</comment> setting is used to specify LSB init parameters
+to be included in the generated stub. This allows the generated Phar to be used as a Linux service script.
+
+<comment>
+  {
+    "lsb-init-params": {
+      "Provides": "name_of_binary",
+      "Required-Start": "\$local_fs \$remote_fs \$network",
+      "Required-Stop": "\$local_fs \$remote_fs \$network",
+      "Default-Start": "2 3 4 5",
+      "Default-Stop": "0 1 6",
+      "Short-Description": "My short description",
+      "Description": "My description"
+    }
+  }
+</comment>
 
 The <info>main</info> <comment>(string)</comment> setting is used to specify the file (relative to
 <info>base-path</info>) that will be run when the Phar is executed from the command
@@ -550,6 +568,14 @@ HELP
                 $this->putln('-', 'Using custom shebang line: ' . $shebang);
 
                 $stub->shebang($shebang);
+            }
+
+            if (null !== ($lsbInitParams = $this->config->getLsbInitParams())) {
+                foreach ($lsbInitParams as $param => $value) {
+                    $stub->lsbInitParam($param, $value);
+                }
+
+                unset ($param, $value);
             }
 
             if (null !== ($banner = $this->config->getStubBanner())) {

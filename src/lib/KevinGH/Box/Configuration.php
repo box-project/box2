@@ -617,6 +617,26 @@ class Configuration
     }
 
     /**
+     * Returns the LSB init parameters
+     *
+     * @return array LSB init parameter array
+     */
+    public function getLsbInitParams()
+    {
+        $params = null;
+
+        if (isset($this->raw->{'lsb-init-params'})) {
+            $params = array();
+
+            foreach ((array) $this->raw->{'lsb-init-params'} as $param => $value) {
+                $params[$param] = $value;
+            }
+        }
+
+        return $params;
+    }
+
+    /**
      * Returns the processed contents of the main script file.
      *
      * @return string The contents.

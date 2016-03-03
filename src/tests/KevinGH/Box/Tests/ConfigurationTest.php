@@ -726,6 +726,31 @@ class ConfigurationTest extends TestCase
         );
     }
 
+    public function testGetLsbInitParams()
+    {
+        $this->assertNull($this->config->getLsbInitParams());
+    }
+
+    public function testGetLsbInitParamsSet()
+    {
+        $params = array(
+            'Provides' => 'provides_test',
+            'Required-Start' => 'required_start_test',
+            'Required-Stop' => 'required_stop_test',
+            'Default-Start' => 'default_start_test',
+            'Default-Stop' => 'default_stop_test',
+            'Short-Description' => 'short_description_test',
+            'Description' => 'description_test'
+        );
+
+        $this->setConfig(array('lsb-init-params' => $params));
+
+        $this->assertEquals(
+            $params,
+            $this->config->getLsbInitParams()
+        );
+    }
+
     public function testGetMainScriptPath()
     {
         $this->assertNull($this->config->getMainScriptPath());
