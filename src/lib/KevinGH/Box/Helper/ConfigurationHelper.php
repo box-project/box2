@@ -4,6 +4,7 @@ namespace KevinGH\Box\Helper;
 
 use Herrera\Json\Json;
 use KevinGH\Box\Configuration;
+use Phine\Path\Path;
 use RuntimeException;
 use Symfony\Component\Console\Helper\Helper;
 
@@ -89,6 +90,15 @@ class ConfigurationHelper extends Helper
         $json = $this->json->decodeFile($file);
 
         if (isset($json->import)) {
+            if (!Path::isAbsolute($json->import)) {
+                $json->import = Path::join(
+                    array(
+                        dirname($file),
+                        $json->import
+                    )
+                );
+            }
+
             $json = (object) array_merge(
                 (array) $this->json->decodeFile($json->import),
                 (array) $json
