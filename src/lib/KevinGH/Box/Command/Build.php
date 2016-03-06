@@ -119,12 +119,12 @@ remaining annotations:
 <comment>
   {
       "annotations": {
-          "ignore": {
+          "ignore": [
               "author",
               "package",
               "version",
               "see"
-          }
+          ]
       }
   }
 </comment>
