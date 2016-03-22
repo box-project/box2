@@ -631,6 +631,12 @@ HELP
         }
 
         $this->putln('*', 'Done.');
+
+        if (!file_exists($path)) {
+            $output->writeln(
+                '<fg=yellow>The archive was not generated because it did not have any contents.</fg=yellow>'
+            );
+        }
     }
 
     /**
