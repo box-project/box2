@@ -1,5 +1,6 @@
 # box files
 /*.phar
+/*.phar.sig
 /box.json
 
 # composer directories
