@@ -392,7 +392,6 @@ OUTPUT;
   + {$dir}test.php
 ? Adding main file: {$dir}test.php
 ? Generating new stub...
-? Compressing...
 * Done.
 
 OUTPUT;

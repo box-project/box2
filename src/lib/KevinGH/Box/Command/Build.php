@@ -586,13 +586,6 @@ HELP
             $this->box->getPhar()->setMetadata($metadata);
         }
 
-        // compress, if algorithm set
-        if (null !== ($algorithm = $this->config->getCompressionAlgorithm())) {
-            $this->putln('?', 'Compressing...');
-
-            $this->box->getPhar()->compressFiles($algorithm);
-        }
-
         $this->box->getPhar()->stopBuffering();
 
         // sign using private key, if applicable
@@ -661,6 +654,8 @@ HELP
             }
 
             $box = $binary ? $this->box->getPhar() : $this->box;
+            $phar = $this->box->getPhar();
+            $algorithm = $this->config->getCompressionAlgorithm();
             $baseRegex = $this->config->getBasePathRegex();
             $mapper = $this->config->getMapper();
 
@@ -694,6 +689,9 @@ HELP
                 }
 
                 $box->addFile($file, $relative);
+                if (null !== $algorithm) {
+                    $phar[$relative]->compress($algorithm);
+                }
             }
         }
     }
