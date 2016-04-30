@@ -36,5 +36,6 @@
     "replacements": {
         "manifest_url": "http://box-project.github.io/box2/manifest.json"
     },
+    "shebang": "#!/usr/bin/env php -d phar.readonly=0",
     "stub": true
 }
