@@ -701,7 +701,9 @@ HELP
 
                 $box->addFile($file, $relative);
             }
-            $box->addFilesFromQueue();
+            if($box instanceof Box) {
+                $box->addFilesFromQueue();
+            }
         }
     }
 }
