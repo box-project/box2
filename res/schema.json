@@ -43,6 +43,13 @@
             },
             "type": ["array", "string"]
         },
+        "exclude-from-value-replace": {
+            "description": "A list of regular expressions for file paths to not value replace but add verbatim",
+            "items": {
+                "type": "string"
+            },
+            "type": ["array", "string"]
+        },
         "bootstrap": {
             "description": "A file used to load third-party class compactors.",
             "type": "string"

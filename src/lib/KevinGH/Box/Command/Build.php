@@ -445,6 +445,12 @@ HELP
 
             unset($values, $key, $value);
         }
+        //set the regular expressions for files that don't need value replacement
+        if (array() !== ($excludedFromValueReplace = $this->config->getExcludedFromValueReplace())) {
+            $this->box->setExcludedFromValueReplace($excludedFromValueReplace, $this->config->getBasePath());
+        }
+
+
 
         // register configured compactors
         if (array() !== ($compactors = $this->config->getCompactors())) {
@@ -695,6 +701,7 @@ HELP
 
                 $box->addFile($file, $relative);
             }
+            $box->addFilesFromQueue();
         }
     }
 }

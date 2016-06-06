@@ -217,6 +217,18 @@ class Configuration
     }
 
     /**
+     * Returns a list of non parsed regular expressions to exclude files from getting replacements
+     *
+     * @return array
+     */
+    public function getExcludedFromValueReplace()
+    {
+        if (isset($this->raw->{'exclude-from-value-replace'})) {
+            return (array)$this->raw->{'exclude-from-value-replace'};
+        }
+        return array();
+    }
+    /**
      * Returns a filter callable for the configured blacklist.
      *
      * @return callable The callable.
