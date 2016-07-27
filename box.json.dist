@@ -34,7 +34,7 @@
     "main": "bin/box",
     "output": "box-@git-version@.phar",
     "replacements": {
-        "manifest_url": "http://box-project.github.io/box2/manifest.json"
+        "manifest_url": "https://box-project.github.io/box2/manifest.json"
     },
     "stub": true
 }
