@@ -13,7 +13,7 @@ if (extension_loaded('phar') && ($uri = Phar::running())) {
 } elseif (class_exists('Extract')) {
     require __DIR__ . '/../src/vendors/autoload.php';
 } else {
-    loadComposerClassloader(realpath($_SERVER['argv'][0]));
+    loadComposerClassloader(realpath($_SERVER['argv'][0]), 1);
 }
 
 $app = new KevinGH\Box\Application();
@@ -45,6 +45,7 @@ function loadComposerClassloader($dir = null, $skip = 0)
             }
 
             $path = realpath("$dir/composer.json");
+            break;
         }
     } while ($dir !== ($up = dirname($dir)));
 
