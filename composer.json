@@ -45,6 +45,9 @@
     ],
     "config": {
         "bin-dir": "bin",
+        "platform": {
+          "php": "5.3.3"
+        },
         "vendor-dir": "src/vendors"
     },
     "extra": {
