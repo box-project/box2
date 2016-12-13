@@ -7,7 +7,7 @@
     },
     {
         "name": "box.phar",
-        "sha1": "dc4552c1aa30df4478bb533a63561924e363cd3e",
+        "sha1": "77561a72b84880572bc6d3ad3b36a905c42b68ba",
         "url": "https://github.com/box-project/box2/releases/download/2.7.5/box-2.7.5.phar",
         "version": "2.7.5"
     }
