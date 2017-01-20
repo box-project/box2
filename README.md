@@ -115,7 +115,6 @@ You can contribute in one of three ways:
 GPG Signature
 -------------
 
-You can download Kevin Herrera's public key and verify the signature (`box.phar.sig`) of the `box.phar`.
+You can find [kherge's GPG on keybase.io](https://keybase.io/kherge).
 
-    gpg --keyserver hkp://pgp.mit.edu --recv-keys 41515FE8
-    gpg --verify box.phar.sig box.phar
+    32E4 B747 57B1 D652 34FC 389F 293D 7712 4151 5FE8
