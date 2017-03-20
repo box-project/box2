@@ -142,6 +142,10 @@
             "description": "The password or prompt flag used for the private key.",
             "type": ["boolean", "string"]
         },
+        "lsb-init-params": {
+            "description": "LSB init parameters to be included in the stub.",
+            "type": "object"
+        },
         "main": {
             "description": "The file path to the main script.",
             "type": "string"
