@@ -916,7 +916,7 @@ class Configuration
 
             $shebang = trim($this->raw->shebang);
 
-            if ('#!' !== substr($shebang, 0, 2)) {
+            if ($shebang !== '' && '#!' !== substr($shebang, 0, 2)) {
                 throw new InvalidArgumentException(
                     sprintf(
                         'The shebang line must start with "#!": %s',
