@@ -23,6 +23,11 @@ Since the application is based on the [Box library](https://github.com/herrera-i
 - Compact file contents based on file type.
 - Generate custom stubs.
 
+Forks
+-----
+
+Because of the lack of proper maintenance on my part, I created a wiki page to list the known forks of this project. Please feel free to add to this list. [You can find the wiki page here.](https://github.com/box-project/box2/wiki/Forks)
+
 How do I get started?
 ---------------------
 
