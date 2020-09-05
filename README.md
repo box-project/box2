@@ -1,3 +1,7 @@
+This project has been moved to https://github.com/box-project/box
+
+<hr/>
+
 Box
 ===
 
