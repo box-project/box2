@@ -1,5 +1,7 @@
 This project has been moved to https://github.com/box-project/box
 
+If you are looking to upgrade, don't forget to have a look at the [upgrade guide](https://github.com/box-project/box/blob/master/UPGRADE.md#from-27-to-30).
+
 <hr/>
 
 Box
