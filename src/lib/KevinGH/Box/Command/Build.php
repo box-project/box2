@@ -428,7 +428,7 @@ HELP
 
         $this->putln('?', "Output path: $path");
 
-        $this->box = Box::create($path);
+        $this->box = Box::create($path, null, null, true);
         $this->box->getPhar()->startBuffering();
 
         // set replacement values, if any
@@ -531,6 +531,9 @@ HELP
                 $this->config->getMainScriptContents()
             );
         }
+
+        // Flush lazy
+        $this->box->flushLazy();
 
         // set the appropriate stub
         if (true === $this->config->isStubGenerated()) {
